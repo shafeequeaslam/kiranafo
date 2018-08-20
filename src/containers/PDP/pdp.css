@@ -1,0 +1,29 @@
+.pdpImg .slick-slide {
+      height: 500px !important;
+}
+.pdpImg .slick-initialized .slick-slide {
+      display: flex !important;
+      align-items: center !important;
+  }
+  .pdpImg .slick-thumb li img {
+      max-width: 100% !important;
+  }
+  .pdpImg .card_button_container{
+      width: 100px;
+      margin: 10px 0;
+  }
+  .pdpImg .card_qty_container {
+      width: 150px;
+      margin: 10px 0;
+  }
+  .mrp_container{
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-content: center;
+      height: 50px;
+      align-items: center;
+      border: 1px solid #f7f7f7;
+      padding: 10px;
+      margin-top: 10px;
+  }

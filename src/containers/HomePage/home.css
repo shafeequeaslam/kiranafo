@@ -1,0 +1,276 @@
+
+h3 {
+    background: blue;
+    color: #fff;
+    font-size: 36px;
+    line-height: 100px;
+    margin: 10px;
+    padding: 2%;
+    position: relative;
+    text-align: center;
+  }
+  .variable-width .slick-slide p {
+    background: blue;
+    height: 100px;
+    color: #fff;
+    margin: 5px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .center .slick-center h3 {
+    color: #e67e22;
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  .center h3 {
+    opacity: 0.8;
+    transition: all 300ms ease;
+  }
+  .content {
+    padding: 20px;
+    margin: auto;
+    width: 90%;
+  }
+  .slick-slide .image {
+    padding: 10px;
+  }
+  .slick-slide img {
+    border: 5px solid #fff;
+    display: block;
+    margin: auto;
+  }
+  .slick-slide img.slick-loading {
+    border: 0;
+  }
+  .slick-slider {
+    margin: 30px auto 50px;
+  }
+  .slick-dots {
+    margin-left: 0;
+  }
+  .slick-thumb {
+    bottom: -45px;
+  }
+  .slick-thumb li {
+    width: 60px;
+    height: 45px;
+  }
+  .slick-thumb li img {
+    filter: grayscale(100%);
+  }
+  .slick-thumb li.slick-active img {
+    filter: grayscale(0%);
+  }
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 24px;
+    }
+    .center {
+      margin-left: -40px;
+      margin-right: -40px;
+    }
+    .center .slick-center h3 {
+      color: #e67e22;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .center h3 {
+      opacity: 0.8;
+      transform: scale(0.95);
+      transition: all 300ms ease;
+    }
+  }
+  .slick-vertical .slick-slide {
+    height: 180px;
+  }
+  .slick-arrow {
+    background-color:black;
+    /* color: black; */
+  }
+  .slick-arrow:hover {
+    background-color: black;
+  }
+
+  .heroContainer{
+    height: 350px;
+    width: 100%;
+    margin: 0 auto;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .slick-dots {
+    bottom: 10px;
+  }
+  .slick-dots li button:before {
+    font-size: 12px;
+    color: #fff;
+    opacity: 1;
+  }
+  .slick-dots li.slick-active button:before {
+    opacity: 1;
+    color: #d4d4d4;
+    font-size: 12px;
+}
+.slick-slider {
+  margin: 0;
+}
+
+
+.module_container{
+  background: url(https://web-img.kirana11.com/kirana11_V3/deals-bg/shocking-deal-content-left-side.jpg) no-repeat;
+  padding:0;
+  min-height: 400px;
+  text-align: center;
+  padding: 2% 0;
+}
+.deal_cards{
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  height: 300px;
+  width: 98%;
+  margin: 5px 0px;
+  background-color: #fff;
+  padding: 10px 5%;
+}
+
+.tab_active.nav-item .nav-link.active {
+  background-color: #f5f5f5;
+  border-color: #dee2e6 #dee2e6 #f5f5f5;
+}
+
+.nav-tabs {
+  border-bottom: 0px solid #dee2e6;
+}
+.category_tabs{
+  height: calc(100% - 70px);
+  width:100%;
+  background-color: #f5f5f5;
+  padding: 25px 0;
+}
+.card_img{
+  height: 45%;
+  width:80%;
+  margin: 0 auto;
+  /* background-image: url(https://img1.kirana11.com/files/public/styles/pdp_page/public/690225101127.jpg?QVNo3W2uiXKqvOOp0dIb7vJKAs8HRIwb&itok=S4L6DAC0); */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: flex;
+  justify-content: center;
+}
+.card_button_container{
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+.card_button{
+  padding:5px 0px;
+  background-color:#cf2717;
+  color:#fff;
+  width:100%;
+  border: none;
+}
+.card_btn_num{
+  width: 50%;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  border: 1px solid #cf2717;
+}
+.card_btn_plus{
+  background-color: rgb(207, 39, 23);
+    width: 40%;
+    height: auto;
+    align-items: center;
+}
+.card_price_container{
+  display: flex;
+  flex-direction: row ;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-bottom: 10px
+}
+.card_qty_container{
+  width:80%;
+  margin: 0 auto;
+  height:30px;
+}
+.card_qty_container select{
+  border: 1px solid #f7f7f7 !important;
+  height: 30px !important;
+}
+.arr{
+  cursor:pointer;
+  position:absolute;
+  top: 35%;
+  font-size: 30px;
+  font-weight: 900;
+  color: #d2d2d2
+}
+.arrow_prev{
+  left:-5%;
+}
+.arrow_prev:hover, .arrow_next:hover{
+  color:#222
+}
+.arrow_next{
+  right:-5%;
+}
+.category_card_width{
+  flex: 0 0 20% !important;
+    max-width: 20% !important;
+    padding: 5px 0 !important;
+}
+.card2x{
+  flex:auto;
+  height: 150px;
+  width:66%;
+  background-image: url(https://img1.kirana11.com/files/public/colgate-active-salt.jpg?dvxTLwj1yOX.nDuGCfZ3635WqPN1Z0TT);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-right-width: 5px;
+  border-style: solid;
+  border-color: #fff;
+}
+.card2y{
+  flex:auto;
+  height: 300px;
+  width:33%;
+  background-image: url(https://img1.kirana11.com/files/public/excitingdeals_tangmango-new.jpg?2FEc09Jde9cE_54mx9XZKOxjo_8M0XpG);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-right-width: 5px;
+  border-style: solid;
+  border-color: #fff;
+}
+.card1xy{
+  flex:auto;
+  height: 150px;
+  width:33%;
+  background-image: url(https://img1.kirana11.com/files/public/excitingdeals_cleanandclear.jpg?7B9fncNSFwjtVCz3m6qpYX8dsBDeEDt7);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-right-width: 5px;
+  border-style: solid;
+  border-color: #fff;
+}
+
+.card_title_lineOne,.card_title_lineTwo{
+  text-align: center;
+}
+.card_title_lineOne {
+    text-align: center;
+    height: 50px;
+    text-overflow: hidden;
+    /* width: 80%; */
+    /* margin: 0 auto; */
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

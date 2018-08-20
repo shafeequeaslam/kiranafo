@@ -1,0 +1,47 @@
+.thank_u_container{
+    width:50%;
+    margin:0 auto;
+    height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+.tq_logo{
+    width:80%;
+    margin: 0 auto;
+    height: 75px;
+}
+.tq_bold_text{
+    font-weight: 400;
+    font-size: 22px;
+    text-align: center;
+}
+.tq_underline{
+    width:20%;
+    margin:0 auto;
+    height: 5px;
+    background-color: #cf2717;
+    margin-bottom: 25px;
+}
+.tq_order_status p,.tq_order_status a{
+    color:#cf2717 !important;
+    display: inline;
+}
+.tq_order_status{
+    display: flex;
+    text-align: center;
+}
+.tq_order_status.red{
+    font-weight: 300;
+    font-size: 18px;
+}
+
+.tq_order_status a{
+    text-decoration: underline;
+    text-decoration-color: #cf2717;
+}
+
+.tq_order_status:nth-child(2n+1){
+    margin-bottom: 25px;
+}
