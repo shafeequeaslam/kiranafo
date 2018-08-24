@@ -24,7 +24,10 @@ class CardComponent extends Component {
             if (this.props.type === "deals" || this.props.type === "cat_deals") {
                   console.log(this.props, 'Deals')
                   let val = localStorage.getItem('cartObj');
-                  this.mapToCart_deals(JSON.parse(val))
+                  this.mapToCart_deals(JSON.parse(val));
+                  this.setState({
+                              product_deal_details:undefined
+                        })
                   this.setState({
                         product_deal_details: this.props.productDeals
                   })
@@ -34,6 +37,21 @@ class CardComponent extends Component {
                   this.mapToCart(JSON.parse(val))
             }
       }
+      // componentWillReceiveProps(){
+      //             if (this.props.type === "deals" || this.props.type === "cat_deals") {
+      //                   console.log(this.props, 'Dealsw')
+      //                   let val = localStorage.getItem('cartObj');
+      //                   this.mapToCart_deals(JSON.parse(val))
+                        
+      //                   this.setState({
+      //                         product_deal_details: this.props.productDeals
+      //                   })
+      //             }
+      //             else {
+      //                   let val = localStorage.getItem('cartObj');
+      //                   this.mapToCart(JSON.parse(val))
+      //             }
+      // }
       mapToCart_deals(val) {
             console.log(val, this.props.productDeals, "after items click")
             if (val != null) {
@@ -164,8 +182,10 @@ class CardComponent extends Component {
 
             }
             this.setState({
-                  cartObj: cartObj
+                  cartObj: cartObj,
+                
             })
+            this.props.change()
       }
 
 
@@ -297,6 +317,7 @@ class CardComponent extends Component {
             this.setState({
                   cartObj: cartObj
             })
+            this.props.change()
 
       }
 

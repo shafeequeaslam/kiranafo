@@ -38,7 +38,7 @@ class Header extends Component {
             isOpen: false,
             tooltip: false,
             modalOpen: false,
-            userMenu:false,
+            userMenu: false,
             loggedIn: false,
             cat_menu: false, categorisedProducts: []
         };
@@ -46,26 +46,32 @@ class Header extends Component {
         Geocode.setApiKey("AIzaSyDrX--l_ZLlQIZirllVuvpCqqTk8jbB4RE");
     }
     componentWillMount() {
+        let cartObj= JSON.parse(localStorage.getItem('cartObj'));
+        if(cartObj != null){
+            this.setState({
+                cartObj:cartObj
+            })
+        }
         let location = JSON.parse(localStorage.getItem("location"))
         if (location != null) {
             this.setState({
                 location: location
             })
         }
-        else if(location == null){
+        else if (location == null) {
             this.setState({
-                modalOpen:true
+                modalOpen: true
             })
         }
-        let userData=JSON.parse(localStorage.getItem("userDetails"));
+        let userData = JSON.parse(localStorage.getItem("userDetails"));
         if (userData != null) {
-        this.setState({
-            userData : userData
-        })
-         }
-         else if(userData == null){
             this.setState({
-                userData:undefined
+                userData: userData
+            })
+        }
+        else if (userData == null) {
+            this.setState({
+                userData: undefined
             })
         }
         fetch(PRODUCT_WITH_CATEGORIES_FETCH, {
@@ -106,6 +112,16 @@ class Header extends Component {
             window.location.href = '/login'
         }
     }
+    componentWillReceiveProps(nextProps, prevState) {
+        // this.setState({
+        //     cartObj:undefined
+        // })
+        let cartObj = JSON.parse(localStorage.getItem('cartObj'));
+        
+        this.setState({
+            cartObj:cartObj
+        })
+    }
 
     getPostalCodeFromAddress = (addressArray) => {
         let postal_code = null;
@@ -118,7 +134,7 @@ class Header extends Component {
 
         return postal_code;
     }
-    signout(){
+    signout() {
         localStorage.removeItem('userDetails');
         localStorage.removeItem('userToken');
         localStorage.removeItem('cartObj');
@@ -150,26 +166,85 @@ class Header extends Component {
                                     Geocode.fromLatLng(selectedLocation.lat, selectedLocation.lng).then(
                                         response => {
                                             selectedLocation.postalCode = this.getPostalCodeFromAddress(response.results[0].address_components);
+                                            console.log('1212 . 1')
                                             localStorage.setItem("location", JSON.stringify(selectedLocation));
                                         }
-                                    )}
-                                    else {
-                                        selectedLocation.postalCode = postalCode;
-                                        localStorage.setItem("location", JSON.stringify(selectedLocation));
-                                    }
-                                            // localStorage.setItem("location", JSON.stringify(selectedLocation));
-                                        
-                                        
-                                        error => {
-                                            console.error(error);
-                                        }
-                                    
-                                
-                                let location = JSON.parse(localStorage.getItem("location"))
-                                this.setState({
-                                    location: location,
-                                     modalOpen: !this.state.modalOpen 
-                                })
+                                    )
+                                }
+                                else {
+                                    selectedLocation.postalCode = postalCode;
+                                    console.log('1212 . 12')
+                                    localStorage.setItem("location", JSON.stringify(selectedLocation));
+                                }
+                                // localStorage.setItem("location", JSON.stringify(selectedLocation));
+
+
+                                error => {
+                                    console.error(error);
+                                }
+
+
+                                let locationOne = JSON.parse(localStorage.getItem("location"))
+                                let usr = JSON.parse(localStorage.getItem("userDetails"));
+                                let params = new URLSearchParams();
+                                if (locationOne != null && usr != null) {
+                                    this.setState({
+                                        location: null
+                                    })
+                                    console.log('here')
+                                    params.append('address', locationOne.formattedAddress);
+                                    params.append('latitude', locationOne.lat);
+                                    params.append('longitude', locationOne.lng);
+                                    params.append('source', 'web');
+                                    params.append('uid', usr.user.uid);
+                                    // console.log(datas)
+
+
+                                    Axios({
+                                        method: 'POST',
+                                        url: GET_DC_CENTER,
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        data: params
+
+                                    })
+
+                                        .then((value) => {
+
+                                            if (value.data.serving_area.length > 0) {
+                                                console.log(value, 'data11');
+                                                
+                                                localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
+                                                //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
+                                                //   this.props.getFooterActive(0);
+                                                //   Actions.home();
+
+
+                                            }
+                                            else {
+                                                alert("This area is not yet serviceable");
+                                                localStorage.removeItem('location');
+                                            }
+
+                                        })
+                                        .catch((err) => {
+                                            console.log(err.response, 'err');
+                                            localStorage.removeItem('location');
+
+                                        })
+                                    // window.location.href = '/'
+                                }
+                               setTimeout(()=>{
+                                let loc = JSON.parse(localStorage.getItem('location'))
+                                console.log(loc,'1111')
+                                if (loc != null) {
+                                    this.setState({
+                                        location: loc,
+                                        modalOpen: !this.state.modalOpen
+                                    })
+                                }
+                               },100) 
                             }}
                             types={'(geocode)'}
                             componentRestrictions={{ country: "in" }}
@@ -270,36 +345,36 @@ class Header extends Component {
                         <Nav className="ml-auto" navbar style={{ height: 60, alignItems: 'center' }}>
 
                             <NavItem >
-                                <NavLink style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <NavLink style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={() => this.setState({ user_menu: !this.state.user_menu })}>
                                     <div style={{ background: "url('https://web-img.kirana11.com/kirana11_V3/header-icons.png') #a51319 -136px -2px no-repeat", width: 35, height: 35 }}></div>
-                                    <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ?(this.state.userData.user ? 'none':'') : '' }} onClick={() => this.redirectTo('/login')}>Login / Sign Up</div>
-                                    <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ?(this.state.userData.user ? '':'none') : 'none'  }} onClick={()=>this.setState({user_menu:!this.state.user_menu})}>
-                                        {this.state.userData ? this.state.userData.user.mail:''}
+                                    <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ? (this.state.userData.user ? 'none' : '') : '' }} onClick={() => this.redirectTo('/login')}>Login / Sign Up</div>
+                                    <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ? (this.state.userData.user ? '' : 'none') : 'none' }} >
+                                        {this.state.userData ? this.state.userData.user.display_name : ''}
 
                                         <div className="user_menu" style={{ display: this.state.user_menu == true ? 'block' : 'none' }}>
-                                                        <Link to={{ pathname: '/myAddress' }}   >
-                                                            <div className="cat_sub_menu">
-                                                                My Address
+                                            <Link to={{ pathname: '/myAddress' }}   >
+                                                <div className="cat_sub_menu">
+                                                    My Address
                                                             </div>
-                                                        </Link>
-                                                        <Link to={{ pathname: '/myorders' }}   >
-                                                            <div className="cat_sub_menu">
-                                                                My Orders
+                                            </Link>
+                                            <Link to={{ pathname: '/myorders' }}   >
+                                                <div className="cat_sub_menu">
+                                                    My Orders
                                                             </div>
-                                                        </Link>
-                                                        <Link to='' onClick={()=>this.signout()} >
-                                                            <div className="cat_sub_menu">
-                                                               Signout
+                                            </Link>
+                                            <Link to='' onClick={() => this.signout()} >
+                                                <div className="cat_sub_menu">
+                                                    Signout
                                                             </div>
-                                                        </Link>
-                                            }
+                                            </Link>
                                         </div>
                                     </div>
                                 </NavLink>
                             </NavItem>
                             <NavItem className="header_cart">
-                                <Link to="" onClick={() => this.redirectTo("cart")} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <Link to="" onClick={() => this.redirectTo("cart")} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',position:'relative' }}>
                                     <img src="https://www.kirana11.com/sites/all/themes/kirana11_v3/images/cart.png" alt="cart" />
+                                    <div style={{display:this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex':'none'):'none'}} className="cart_tip">{this.state.cartObj?this.state.cartObj.length:''}</div>
                                 </Link>
                             </NavItem>
                         </Nav>

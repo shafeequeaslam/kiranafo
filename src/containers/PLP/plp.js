@@ -201,11 +201,20 @@ class ProductList extends Component {
 
     }
 
+    setChange() {
+        this.setState({
+            change: undefined
+        })
+        this.setState({
+            change: true
+        })
+    }
+
     render() {
         return (
             <main>
                 <div>
-                    <Header />
+                    <Header change={this.state.change}/>
                 </div>
                 <div style={{ backgroundImage: 'url("https://img1.kirana11.com/files/public/categoryfruits-vegetables-fed-14.jpg?ETlDb15Go2_HfTGERE41L1CGWtSTHxHg")' }} className="heroContainer">
                 </div>
@@ -218,7 +227,7 @@ class ProductList extends Component {
                         <Row>
                             {this.state.listItems ? this.state.listItems.map((item, index) => {
                                 return (
-                                   <CardComponent item={item} index={index} key={index}/>
+                                   <CardComponent item={item} index={index} key={index} change={() => this.setChange()}/>
                                 )
                             }) : ""
                             }

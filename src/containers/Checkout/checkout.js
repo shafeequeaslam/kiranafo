@@ -6,7 +6,8 @@ import PaymentComponent from '../../components/Payment/payment';
 import FooterComponent from '../../components/Footer/footer';
 import kiranalogo from '../../assets/Kirana logo.png';
 import Axios from 'axios';
-import { GET_ADDRESS_BY_DC } from '../../utis/D2'
+import { GET_ADDRESS_BY_DC } from '../../utis/D2';
+import { create } from 'apisauce'
 
 class CheckoutContainer extends Component {
     constructor(props) {
@@ -24,19 +25,18 @@ class CheckoutContainer extends Component {
             blg_name: '',
             street_name: '',
             landmark: '',
-            delivery_slots: [
-                {
-                    name: 'Tomorrow',
-                    timeSlots: ['10am to 12pm', '1pm to 3pm', '3pm to 5pm', '5pm to 7pm']
-                },
-                {
-                    name: 'Day After',
-                    timeSlots: ['10am to 1pm', '1pm to 3pm', '3pm to 5pm', '5pm to 7pm']
-                }
-            ]
+            dateSelected: 0,
+            timeSelected: 0,
 
         };
 
+    }
+    toggleDate(id, date) {
+
+        this.setState({
+            dateSelected: id,
+            dateValue: date
+        })
     }
     toggleTab(tab) {
         if (this.state.activeTab !== tab) {
@@ -55,26 +55,28 @@ class CheckoutContainer extends Component {
         if (user != null) {
             console.log(user)
             this.getAddress(user.access_token);
+            this.getTimeSlots();
+            
         }
+
 
 
     }
 
     getAddress(id) {
         let token;
-        if(!id){
+        if (!id) {
             let user = JSON.parse(localStorage.getItem('userToken'));
             token = user.access_token
         }
-        else{
+        else {
             token = id;
         }
-        
-        
+
+
         let loc = JSON.parse(localStorage.getItem('location'))
         let lat = (loc.lat).toString()
         let lng = (loc.lng).toString()
-        console.log(lat.lng)
         Axios({
             method: 'POST',
             url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_k11_customer_address.json',
@@ -88,6 +90,9 @@ class CheckoutContainer extends Component {
             }
         })
             .then((value) => {
+                this.setState({
+                    addressData: undefined
+                })
                 console.log(value, 'value_address')
                 this.setState({
                     addressData: value.data
@@ -170,7 +175,7 @@ class CheckoutContainer extends Component {
         console.log(this.state.name, this.state.blg_name, this.state.areaPincode, this.state.landmark, this.state.street_name)
         let location = JSON.parse(localStorage.getItem('location'));
         let usr = JSON.parse(localStorage.getItem('userDetails'));
-        let location_dc =JSON.parse(localStorage.getItem('location_dc'));
+        let location_dc = JSON.parse(localStorage.getItem('location_dc'));
         let details = {
             "address_1": this.state.blg_name,
             "administrative_area": "KA",
@@ -202,22 +207,284 @@ class CheckoutContainer extends Component {
             },
             data: formBody
         })
-           
+
             .then((data) => {
                 console.log(data, 'here')
                 this.addressFormActive();
                 this.getAddress();
                 // Actions[route].call({order_id:this.props.order_id});
-               
+
             })
             .catch((error) => {
                 console.log(error, '3')
-                this.getRefreshToken(undefined,"saveAddress",1)
+                this.getRefreshToken(undefined, "saveAddress", 1)
             })
     }
 
-    addAddressToCart(){
+    add_address_to_order(item) {
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let order_id = urlStr.searchParams.get("order_id");
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+        console.log(order_id)
+        this.setState({
+            order_id:order_id
+        })
+        let details = {
+            'order_id': order_id,
+            'address_id': item.address_id
+        }
+        let formBody = [];
+        for (let property in details) {
+            let encodedKey = encodeURIComponent(property);
+            let encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        formBody = formBody.join("&");
+        Axios({
+            method: 'post',
+            url: 'https://d2.kirana11.com/kirana11_api/orders/order_address_update',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + usr.access_token
+            },
+            data: formBody
+        })
+            .then((data) => {
+                console.log(data.data, "data");
+                this.toggle(1);
+            })
+            .catch((err) => {
+                console.log(err.response.status, "err");
+                if (err.response.status == 403) {
+                    this.getRefreshToken(usr, 'add_address_to_order', item)
+                }
+            })
+    }
+
+    getTimeSlots() {
+        console.log('here at timeslots')
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+        let loc_dc = JSON.parse(localStorage.getItem('location_dc'))
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let order_id = urlStr.searchParams.get("order_id");
+        let details = {
+            "order_id": order_id,
+            "dc_id": loc_dc.DistributionCentreId
+        }
+        let formBody = [];
+        for (let property in details) {
+            let encodedKey = encodeURIComponent(property);
+            let encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+
+        formBody = formBody.join("&");
+        Axios('https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_homedelivery_slots.json', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                "Authorization": "Bearer " + usr.access_token
+            },
+            data: formBody
+        })
+            .then((data) => {
+                console.log('here @axios success')
+                console.log(data.data, "data1111")
+                let dataVal = Object.values(data.data[0]);
+                console.log(dataVal);
+                let dat = dataVal[0].dates;
+                let dateToSend = [];
+                console.log(dat, "dat");
+                console.log(Object.values(dat), 'd2')
+                for (let i = 0; i < Object.values(dat).length; i++) {
+                    console.log(Object.values(dat)[i].date)
+                    dateToSend.push(Object.values(dat)[i].date);
+                }
+                let key_arr = Object.keys(dat);
+                console.log(key_arr, "key_arr")
+                // for(let i=0;i<dat.length;i++){
+                //     console.log(Object.values(dat[i]),'val');
+
+                // }
+                let value_arr = Object.values(dat)
+                console.log(value_arr, 'val_arr');
+                let time_arr = [];
+                for (let i = 0; i < value_arr.length; i++) {
+                    // console.log(Object.values(dat[i]),'val');
+                    time_arr.push(Object.values(value_arr[i].slots))
+                }
+                console.log(time_arr)
+                this.setState({
+                    timeSlotArr: time_arr,
+                    dateArray: key_arr,
+                    dateSelected: 0,
+                    timeSelected: 0,
+                    dateValue: key_arr[0],
+                    dateToSend: dateToSend
+                })
+                this.props.selectedData('date', this.state.dateArray[this.state.dateSelected], this.state.dateSelected)
+                let test = Object.values(this.state.timeSlotArr[0])
+                console.log(test[0], "test", this.state.timeSlotArr[0])
+                this.props.selectedData('time', test[this.state.timeSelected], this.state.timeSelected)
+            })
+            .catch((err) => {
+                console.log(err.response);
+                // this.getRefreshToken(usr.access_token);
+            })
+
+
+    }
+    setDeliverySlots() {
+        console.log(this.state.dateValue, this.state.timeValue, this.state.dateToSend[this.state.dateSelected]);
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+        // let loc_dc = JSON.parse(localStorage.getItem('location_dc'))
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let order_id = urlStr.searchParams.get("order_id");
         
+
+
+        const api = create({
+            baseURL: 'https://d2.kirana11.com/kirana11_api/orders/delivery_type_update',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + usr.access_token
+            },
+        })
+        api.post('https://d2.kirana11.com/kirana11_api/orders/delivery_type_update',
+            {
+                "orders": [{
+                    "delivery_date": this.state.dateToSend[this.state.dateSelected],
+                    "delivery_time": this.state.timeValue,
+                    "delivery_type": "delivery",
+                    "order_id": order_id
+                }]
+            }
+        )
+            .then((datas) => {
+                
+                this.getCartInfo();
+                console.log('111')
+                console.log(datas, '11121');
+                
+               
+                // Actions.payment({ total: this.state.total, order_id: val.data[0].order_id, totalFullAmount: this.state.totalFullAmount })
+            })
+            .catch((err) => {
+                console.log(err, '11')
+            })
+    }
+
+    getCartInfo() {
+        console.log('here@del_ch')
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+
+        // let details = {
+        //     "stores": "[" + storeId + "]"
+        // };
+        // let formBody = [];
+        // for (let property in details) {
+        //     let encodedKey = encodeURIComponent(property);
+        //     let encodedValue = encodeURIComponent(details[property]);
+        //     formBody.push(encodedKey + "=" + encodedValue);
+        // }
+        // formBody = formBody.join("&");
+        // Axios({
+        //     method: 'POST',
+        //     url: 'https://d2.kirana11.com/kirana11_api/orders/delivery_charge_by_store',
+        //     headers: {
+        //         "Content-Type": 'application/x-www-form-urlencoded',
+        //         "Authorization": 'Bearer ' + token
+        //     },
+        //     data: formBody
+        // })
+        //     .then((value) => {
+        //         console.log('12112ewew')
+        //         console.log(value, 'del_charge')
+        //         let del_charge = value.data[0].delivery_charge;
+        //         let str = del_charge.indexOf('INR');
+        //         let val = parseInt(del_charge.slice(0, str - 1))
+        //         this.setState({
+        //             delivery_fee: val
+        //         })
+                Axios({
+                    method: 'GET',
+                    url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Content-Type": 'application/x-www-form-urlencoded',
+                        "Authorization": 'Bearer ' + usr.access_token
+                    }
+                })
+                    .then((data) => {
+                        console.log(data.data);
+                        let keys = Object.values(data.data.group_total.data.components);
+                        this.setState({
+                            amountToPay: data.data.group_total.amount
+                        })
+                        for (let i = 0; i < keys.length; i++) {
+                            if (keys[i].name == "base_price") {
+                                this.setState({
+                                    subTotal: parseInt(keys[i].price.amount)
+                                })
+                            }
+                            else if (keys[i].name == "discount") {
+                                this.setState({
+                                    discount: parseInt(keys[i].price.amount)
+                                })
+                            }
+                            else if (keys[i].name == "flat_rate_delivery_charges") {
+                                this.setState({
+                                    delivery_fee: parseInt(keys[i].price.amount)
+                                })
+                            }
+                            else if (keys[i].name == "kirana11_discount") {
+                                this.setState({
+                                    couponAmt: parseInt(keys[i].price.amount)
+                                })
+                            }
+
+                            this.getPaymentList();
+                        }
+                        this.toggle(2);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        this.getRefreshToken(usr.access_token,"getCartInfo")
+                    })
+
+
+            // })
+            // .catch((err) => {
+            //     console.log(err)
+            // })
+        
+    }
+    getPaymentList() {
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+                fetch('https://d2.kirana11.com/kirana11_api/get_k11_payment_methods.json', {
+                    method: 'GET',
+                    headers: {
+                        //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                        "Authorization": "Bearer " + usr.access_token
+                    }
+                })
+                    .then((val => val.json())
+
+                    )
+                    .then((data) => {
+                        this.setState({
+                            paymentModes: data
+                        })
+                    })
+                    .catch((err) => {
+                        this.getRefreshToken(usr.access_token, "getPaymentList")
+                    })
     }
 
     render() {
@@ -249,16 +516,16 @@ class CheckoutContainer extends Component {
                                         <button onClick={() => this.addressFormActive()} className="button_white" style={{ display: this.state.addBtn ? '' : 'none', padding: '5px 10px' }}>Add Address</button>
                                     </div>
                                     <div style={{ display: this.state.formActive ? 'none' : '' }}>
-                                        <div style={{ display: 'flex', flexDirection: "row", width: '100%',flexWrap:'wrap' }}>
+                                        <div style={{ display: 'flex', flexDirection: "row", width: '100%', flexWrap: 'wrap' }}>
                                             {this.state.addressData ? this.state.addressData.map((item, ind) => {
                                                 console.log(item)
                                                 return (
-                                                    <div className="addressWrpr" style={{borderRightWidth:((ind+1) % 3 == 0 || ind+1 === this.state.addressData.length) ? 0:1}}>
-                                                        <div style={{ fontWeight: '500',textTransform:'capitalize' }}>{item.address_type}</div>
+                                                    <div className="addressWrpr" style={{ borderRightWidth: ((ind + 1) % 3 == 0 || ind + 1 === this.state.addressData.length) ? 0 : 1 }}>
+                                                        <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.address_type}</div>
                                                         <div>{item.address_1}</div>
                                                         <div>{item.landmark}</div>
-                                                        <div style={{width:'60%'}}>{item.area}</div>
-                                                        <div><button className="button_red" onClick={() => this.toggle(1)}>Deliver to this Address</button></div>
+                                                        <div style={{ width: '60%' }}>{item.area}</div>
+                                                        <div><button className="button_red" onClick={() => this.add_address_to_order(item)}>Deliver to this Address</button></div>
                                                     </div>
                                                 )
                                             }) : ''}
@@ -297,30 +564,30 @@ class CheckoutContainer extends Component {
                                             </div>
                                             <div style={{ display: 'flex', flexDirection: 'row', width: '30%', justifyContent: 'space-between' }}>
                                                 <div style={{ width: '30%' }}>
-                                                    <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => {this.setState({type:e.target.value})}} />
+                                                    <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="home">
                                                         <div style={{ width: '30%' }}>
-                                                            
+
                                                         </div>
                                                         <div style={{ width: '60%' }}>Home
                                                     </div>
                                                     </label>
                                                 </div>
                                                 <div style={{ width: '30%' }}>
-                                                    <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => {this.setState({type:e.target.value})}}/>
+                                                    <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="work">
                                                         <div style={{ width: '30%' }}>
-                                                            
+
                                                         </div>
                                                         <div style={{ width: '60%' }}>Work
                                                     </div>
                                                     </label>
                                                 </div>
                                                 <div style={{ width: '30%' }}>
-                                                    <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => {this.setState({type:e.target.value})}}/>
+                                                    <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="other">
                                                         <div style={{ width: '30%' }}>
-                                                            
+
                                                         </div>
                                                         <div style={{ width: '60%' }}>Other
                                                     </div>
@@ -352,54 +619,55 @@ class CheckoutContainer extends Component {
 
 
                                         <Nav tabs>
-                                            {this.state.delivery_slots.map((data, index) => {
+                                            {this.state.dateArray ? this.state.dateArray.map((date, index) => {
                                                 return (
                                                     <NavItem key={index}>
                                                         <NavLink
-                                                            className={classnames({ active: this.state.activeTab === (index + 1).toString() })}
-                                                            onClick={() => { this.toggleTab((index + 1).toString()) }}>
-                                                            {data.name}
+                                                            className={classnames({ active: this.state.dateSelected === index })}
+                                                            onClick={() => { this.toggleDate(index, date) }}>
+                                                            {date}
                                                         </NavLink>
                                                     </NavItem>
                                                 )
-                                            })}
+                                            }) : ''}
                                         </Nav>
+                                        <TabContent activeTab={this.state.dateSelected}>
 
-                                        <TabContent activeTab={this.state.activeTab}>
-                                            {this.state.delivery_slots.map((data, index) => {
-                                                return (
-                                                    <TabPane tabId={(index + 1).toString()} key={index}>
+                                            <TabPane tabId={this.state.dateSelected}>
 
-                                                        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
-                                                            {data.timeSlots.map((time, i) => {
-                                                                return (
-                                                                    <div key={i} style={{ width: '30%' }}>
-                                                                        <input type="radio" id={data.name + 'slot' + i} className="address delivery" name='delivery' />
-                                                                        <label className="add_type" htmlFor={data.name + 'slot' + i}>
-                                                                            <div>{time}
-                                                                            </div>
-                                                                        </label>
+                                                <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+                                                    {this.state.timeSlotArr ? this.state.timeSlotArr[this.state.dateSelected].map((time, i) => {
+                                                        console.log(this.state.timeSlotArr[0], 'time')
+                                                        return (
+                                                            <div key={i} style={{ width: '30%', height: 100 }} onClick={() => this.setState({
+                                                                timeSelected: i, timeValue: time
+                                                            })}>
+                                                                <input type="radio" id={i} className="address delivery" name='delivery' />
+                                                                <label className="add_type" htmlFor={i}>
+                                                                    <div>{time}
                                                                     </div>
-                                                                )
-                                                            })
-                                                            }
+                                                                </label>
+                                                            </div>
+                                                        )
+                                                    }) : ''
+                                                    }
 
 
-                                                            {/* <div style={{ width: '24%' }}>
+                                                    {/* <div style={{ width: '24%' }}>
                                                             <input type="radio" id="slotTwo" className="address delivery" name="delivery" defaultChecked={true} />
                                                             <label className="add_type" htmlFor="slotTwo">
                                                                 <div >Time Slot Two
                                                     </div>
                                                             </label>
                                                         </div> */}
-                                                            {/* <div style={{ width: '24%' }}>
+                                                    {/* <div style={{ width: '24%' }}>
                                                             <input type="radio" id="slotThree" className="address delivery" name="delivery" />
                                                             <label className="add_type" htmlFor="slotThree">
                                                                 <div>Time Slot Three
                                                     </div>
                                                             </label>
                                                         </div> */}
-                                                            {/* <div style={{ width: '24%' }}>
+                                                    {/* <div style={{ width: '24%' }}>
                                                             <input type="radio" id="slotFour" className="address delivery" name="delivery" />
                                                             <label className="add_type" htmlFor="slotFour">
 
@@ -408,15 +676,14 @@ class CheckoutContainer extends Component {
                                                             </label>
                                                         </div> */}
 
-                                                        </div>
+                                                </div>
 
-                                                    </TabPane>
-                                                )
-                                            })}
+                                            </TabPane>
+
 
                                         </TabContent>
                                         <div style={{ marginTop: 25 }}>
-                                            <button onClick={() => this.toggle(2)} className="button_red" >Continue</button>
+                                            <button onClick={() => this.setDeliverySlots()} className="button_red" >Continue</button>
                                         </div>
                                     </div>
                                 </CardBody>
@@ -435,7 +702,10 @@ class CheckoutContainer extends Component {
                         <Collapse isOpen={this.state.collapse == 3}>
                             <Card className="checkout_card">
                                 <CardBody>
-                                    <PaymentComponent />
+                                    {this.state.paymentModes ? (
+                                        console.log('here 12121'),
+                                         <PaymentComponent paymentModes={this.state.paymentModes?this.state.paymentModes:''} cartInfo={this.state.paymentModes?{subTotal:this.state.subTotal,discount:this.state.discount,delivery_fee:this.state.delivery_fee,couponAmt:this.state.couponAmt,amountToPay:this.state.amountToPay,order_id:this.state.order_id}:''}/>
+                                    ):''}
                                 </CardBody>
                                 {/* <button onClick={() => this.toggle(3)}>Open Next</button> */}
                             </Card>

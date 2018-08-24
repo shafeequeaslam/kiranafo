@@ -152,6 +152,9 @@ class ProductDescription extends Component {
         }
     }
     store_deal_Cart(type) {
+        this.setState({
+            change:undefined
+        })
         console.log(this.state.product_deal_details, type);
         // this.setState({
         //       unchangeState: false
@@ -195,7 +198,7 @@ class ProductDescription extends Component {
                         console.log('here 0')
                         for (let j = 0; j < cartObj.length; j++) {
                             if (cartObj[j].productData.pid === found.productData.pid) {
-                                // cartObj.splice(j, 1);
+                                cartObj.splice(j, 1);
                                 let pr_q = this.state.product_deal_quantity;
                                 pr_q = undefined;
                                 this.setState({
@@ -244,7 +247,8 @@ class ProductDescription extends Component {
 
         }
         this.setState({
-            cartObj: cartObj
+            cartObj: cartObj,
+            change:true
         })
     }
 
@@ -288,6 +292,9 @@ class ProductDescription extends Component {
     }
 
     storeCart(type) {
+        this.setState({
+            change:undefined
+        })
         console.log(this.state.productDetails[0]._source.products[this.state.activeButton], type);
         // this.setState({
         //       unchangeState: false
@@ -380,7 +387,8 @@ class ProductDescription extends Component {
 
         }
         this.setState({
-            cartObj: cartObj
+            cartObj: cartObj,
+            change:true
         })
 
     }
@@ -424,7 +432,7 @@ class ProductDescription extends Component {
 
             <main className="pdpImg">
                 <div>
-                    <Header />
+                    <Header change={this.state.change}/>
                 </div>
                 <div style={{ backgroundImage: 'url("https://img1.kirana11.com/files/public/categoryfruits-vegetables-fed-14.jpg?ETlDb15Go2_HfTGERE41L1CGWtSTHxHg")' }} className="heroContainer">
                 </div>

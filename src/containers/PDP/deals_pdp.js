@@ -214,7 +214,7 @@ class DealsProductDescription extends Component {
         return (
             <main className="pdpImg">
                 <div>
-                    <Header />
+                    <Header change={this.state.change}/>
                 </div>
                 <div style={{ backgroundImage: 'url("https://img1.kirana11.com/files/public/categoryfruits-vegetables-fed-14.jpg?ETlDb15Go2_HfTGERE41L1CGWtSTHxHg")' }} className="heroContainer">
                 </div>

@@ -3,7 +3,6 @@ import { InputGroup, InputGroupAddon, Input } from 'reactstrap'
 import nameIcon from '../../assets/name-icon@2x.png'
 import passwordIcon from '../../assets/password-icon@2x.png'
 import { Link } from 'react-router-dom'
-import { CLIENT_RENEG_LIMIT } from 'tls';
 import withRouter from 'react-router/withRouter';
 import Axios from 'axios';
 import { GET_DC_CENTER } from '../../utis/D2';
@@ -64,8 +63,7 @@ class LoginForm extends Component {
                   method: 'POST',
                   body:JSON.stringify(postData),
                   headers: {
-                        'content-type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
+                        'Content-Type': 'application/json',
                   },
             })
             .then(res=>res.json())
@@ -98,10 +96,12 @@ class LoginForm extends Component {
             .then((userDetails)=>{
                   console.log(userDetails)
                   localStorage.setItem("userDetails", JSON.stringify(userDetails));
+            
                   let location = JSON.parse(localStorage.getItem("location"));
                   let usr = JSON.parse(localStorage.getItem("userDetails"));
                   let params = new URLSearchParams();
-                  params.append('address', location.formatted_address);
+                  if(location != null){
+                  params.append('address', location.formattedAddress);
                   params.append('latitude', location.lat);
                   params.append('longitude', location.lng);
                   params.append('source', 'web');
@@ -140,6 +140,7 @@ class LoginForm extends Component {
                           console.log(err.response, 'err')
                       })
                   window.location.href = '/'
+                  }
             })
       }
       render() {

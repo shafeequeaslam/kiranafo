@@ -331,10 +331,11 @@ input[type="radio"]:disabled.delivery+.add_type {
     align-items: center;
     height: 50px;
     display: flex;
+    margin-bottom: 10px;
 }
 
 .pay_img {
-    width: 100px;
+    width: auto;
     height: 50px;
     background-position: center;
     background-repeat: no-repeat;

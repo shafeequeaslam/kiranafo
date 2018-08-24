@@ -70,7 +70,7 @@
     position: absolute;
     background: #fff;
     width: 25%;
-    padding-bottom: 50px;
+    padding-bottom: 0px;
     z-index: 2;
     top: 100%;
     left: 0;
@@ -79,14 +79,14 @@
 .user_menu{
     position: absolute;
     background: #fff;
-    width: 20%;
-    padding-bottom: 2px;
+    width: 200px;
+    padding-bottom: 0px;
     z-index: 2;
     top: 100%;
-    right: 40px;
+    right: 5%;
     border: 1px solid #f7f7ff;
 }
-.user_menu .cat_sub_menu:hover{
+.user_menu .cat_sub_menu:hover,.cat_menu .cat_sub_menu:hover{
     background-color: #cf2717;
     color:#fff
 }
@@ -106,4 +106,25 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 250px;
+}
+
+.cart_tip{
+    position: absolute;
+    width: 20px;
+    -ms-flex-line-pack: center;
+    align-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    height: 20px;
+    font-size: 13px;
+    top: 5px;
+    right: -5px;
+    color: #cf2717;
+    background-color: #fff;
+    font-weight: 800;
+    border-radius: 25%;
+}
+
+.ml-auto.navbar-nav .nav-item:nth-child(1) {
+    min-width: 200px;
 }
