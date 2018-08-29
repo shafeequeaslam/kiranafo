@@ -8,6 +8,7 @@ import Header from '../../components/Header/header';
 import { LISTING_BY_ID_CATEGORY } from '../../utis/API';
 import LinesEllipsis from 'react-lines-ellipsis';
 import CardComponent from '../../components/card';
+import Axios from 'axios';
 
 let cartObj = undefined;
 
@@ -22,11 +23,69 @@ class ProductList extends Component {
         this.loadProductDetails = this.loadProductDetails.bind(this)
     }
     componentWillMount() {
-        console.log(this.props)
-        this.setState({
-            productId: this.props.location.state.item.tid
-        });
-        this.loadProductDetails();
+        console.log(this.props);
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let category_id = urlStr.searchParams.get("categoryId");
+        let search = urlStr.searchParams.get("search");
+        if(search!=null){
+            let searchq = search.toLowerCase();
+            let query =
+            {
+                "query": {
+                    "bool": {
+                        "must": [
+                            { "prefix": { "title": { "value": searchq } } }
+                        ]
+                    }
+                },
+                "sort": [
+                    { "category_weight": { "order": "asc" } }
+                ],
+                "from": 0,
+                "size": 12
+            }
+
+            Axios({
+                method: 'post',
+                header: {
+                    'Content-type': 'application/json',
+                },
+                url: 'https://search-dev-es-copy-gwr5oh7fnmcdbbajt2t5iyfyf4.ap-south-1.es.amazonaws.com/kirana11/product_display/_search?pretty=true&filter_path=hits.hits',
+                data: query
+
+            })
+                // .then(res => res)
+                .then((data) => {
+                    console.log(data,'data');
+                    
+                        // for(let i=0;i<listingDetails.length;i++){
+                        //     activeBtn[i]=0; 
+                        //  }
+                        //  this.setState({
+                        //      listItems: listingDetails,
+                        //      activeButton:activeBtn
+                        //  })
+                    
+                   
+                    // })
+                    // this.setState({
+                    //     searchResults: data.data.hits.hits
+                    // })
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+        else if (category_id != null){
+            this.setState({
+                productId: category_id
+            });
+            this.loadProductDetails(category_id);
+        }
+       
+       
 
         let val =localStorage.getItem('cartObj')
         if(val!=null){
@@ -40,24 +99,73 @@ class ProductList extends Component {
     //     console.log(this.props)
     // }
     componentWillReceiveProps(nextProps, prevState) {
-        if (nextProps.location.search !== prevState.search) {
-            const search = nextProps.location.search;
-            console.log('here')
-            this.loadProductDetails(nextProps.location.state.item.tid);
-            //    const result = productlist.products.filter(obj => {
-
-            //      return obj.id === currentProductId;
-
-            //    })
-            return {
-                search: search
-
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let category_id = urlStr.searchParams.get("categoryId");
+        let search = urlStr.searchParams.get("search");
+        if(search!=null){
+            let searchq = search.toLowerCase();
+            let query =
+            {
+                "query": {
+                    "bool": {
+                        "must": [
+                            { "prefix": { "title": { "value": searchq } } }
+                        ]
+                    }
+                },
+                "sort": [
+                    { "category_weight": { "order": "asc" } }
+                ],
+                "from": 0,
+                "size": 12
             }
+
+            Axios({
+                method: 'post',
+                header: {
+                    'Content-type': 'application/json',
+                },
+                url: 'https://search-dev-es-copy-gwr5oh7fnmcdbbajt2t5iyfyf4.ap-south-1.es.amazonaws.com/kirana11/product_display/_search?pretty=true&filter_path=hits.hits',
+                data: query
+
+            })
+                // .then(res => res)
+                .then((data) => {
+                    console.log(data,'data');
+                    
+                        // for(let i=0;i<listingDetails.length;i++){
+                        //     activeBtn[i]=0; 
+                        //  }
+                        //  this.setState({
+                        //      listItems: listingDetails,
+                        //      activeButton:activeBtn
+                        //  })
+                    
+                   
+                    // })
+                    // this.setState({
+                    //     searchResults: data.data.hits.hits
+                    // })
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         }
+        else if (category_id != null){
+            this.setState({
+                productId: category_id
+            });
+            this.loadProductDetails(category_id);
+        }
+       
+           
+        
     }
 
     loadProductDetails = (data) => {
-        console.log("Category Listing", LISTING_BY_ID_CATEGORY + this.props.location.state.item.tid);
+        // console.log("Category Listing", LISTING_BY_ID_CATEGORY + this.props.location.state.item.tid);
         let id;
         if (!data) {
             id = this.props.location.state.item.tid;
@@ -74,17 +182,21 @@ class ProductList extends Component {
                 "sort": "asc",
                 "mode": "min",
                 "from": 0,
-                "size": 20
+                "size": 12
             })
         })
             .then(res => res.json())
             .then((listingDetails) => {
-                console.log(listingDetails)
+                this.setState({
+                    listItems: undefined,
+                })
+                console.log(listingDetails,"121")
                 let activeBtn=[]
                 
                 for(let i=0;i<listingDetails.length;i++){
                    activeBtn[i]=0; 
                 }
+                console.log(listingDetails,"121212")
                 this.setState({
                     listItems: listingDetails,
                     activeButton:activeBtn
@@ -216,18 +328,16 @@ class ProductList extends Component {
                 <div>
                     <Header change={this.state.change}/>
                 </div>
-                <div style={{ backgroundImage: 'url("https://img1.kirana11.com/files/public/categoryfruits-vegetables-fed-14.jpg?ETlDb15Go2_HfTGERE41L1CGWtSTHxHg")' }} className="heroContainer">
-                </div>
                 <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
                     <div className="col-sm-3" style={{ padding: 0 }}>
-                        <Sidebar menuItems={this.props.location.state.item.sub_category_tree} category_name={this.props.location.state.item.name} />
+                        <Sidebar menuItems={this.props.location.state?this.props.location.state.item.sub_category_tree:''} category_name={this.props.location.state?this.props.location.state.item.name:''} />
                     </div>
 
                     <div className="col-sm-9">
                         <Row>
                             {this.state.listItems ? this.state.listItems.map((item, index) => {
                                 return (
-                                   <CardComponent item={item} index={index} key={index} change={() => this.setChange()}/>
+                                   <CardComponent item={item} index={index} key={index}  change={() => this.setChange()}/>
                                 )
                             }) : ""
                             }

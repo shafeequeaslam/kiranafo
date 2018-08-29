@@ -51,7 +51,7 @@ class LoginComponent extends Component {
                 <div className="login_wrpr">
                     <div style={{ width: '60%', margin: '0 auto' }}>
                         <div className="headerLogin">
-                        <div style={{ display:'flex'}}><img style={{margin:'auto'}} src={kiranalogo}></img></div>
+                        <div style={{ display:'flex',height:50}}><img style={{margin:'auto'}} height="100%" src={kiranalogo}></img></div>
                         </div>
                         <div className="red_line"></div>
                         <div style={{ border: '1px solid #d4d4d4', padding: '10px 5px' }}>

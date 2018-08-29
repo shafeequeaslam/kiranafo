@@ -1,0 +1,35 @@
+.couponused_container{
+    width: 100%!important;
+    margin-left:5px!important
+}
+
+.couponused_background{
+	background-color:rgb(212, 212, 212, 0.43)!important;
+	height:auto!important;
+	 padding:10px 5px!important
+}
+
+.couponused_text1{
+
+	color:rgb(47, 46, 46, 0.43)!important
+}
+
+.couponused_text2{
+
+	color:red!important;
+	font-size: 25px!important
+}
+
+.button_width{
+	width:30%
+}
+
+.button_container{
+	display: flex;
+	 margin-top: 10px
+}
+
+.button_square{
+	border-radius:0px!important;
+	width: 30%!important
+}

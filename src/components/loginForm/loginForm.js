@@ -157,7 +157,7 @@ class LoginForm extends Component {
                               <Input className="login" placeholder="password" type="password" name="password" value={this.state.password} onChange={(e) => this.handleInput(e)} />
                         </InputGroup>
 
-                        <div> <a href="#" style={{ marginLeft: 35, fontSize: 12, marginTop: 10 }}>Forgot Password?</a></div>
+                        <div> <a href="/forgot_pwd" style={{ marginLeft: 35, fontSize: 12, marginTop: 10 }}>Forgot Password?</a></div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}><button className="button_red" style={{ width: '30%' }} onClick={() => this.submitForm()}>Login</button></div>
                   </div>
             );

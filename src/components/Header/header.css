@@ -128,3 +128,55 @@
 .ml-auto.navbar-nav .nav-item:nth-child(1) {
     min-width: 200px;
 }
+.list_container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 65px;
+    width:100%;
+    padding: 0 2%;
+    border-bottom: 1px solid #f7f7f7;
+    align-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.search_dropdown{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    min-height: 50px;
+    background-color: #fff;
+    z-index: 2;
+    border-radius: 0 0 5px 5px;
+    border:1px solid #f7f7f7;
+}
+.list_img{
+    height: 60px;
+    width: 50px;
+}
+.full_width{
+    width: 100%
+}
+.list_data{
+    display: flex;
+    align-items: center;
+    width:80%;
+    font-size: 14px;
+}
+.list_desc{
+    margin-left: 10px
+}
+.list_price{
+    font-size: 12px;
+}
+.search_no_items{
+    color: #cf2717;
+    font-size: 12px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 50px;
+}

@@ -635,7 +635,7 @@ class CheckoutContainer extends Component {
 
                                             <TabPane tabId={this.state.dateSelected}>
 
-                                                <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'flex-start' }}>
                                                     {this.state.timeSlotArr ? this.state.timeSlotArr[this.state.dateSelected].map((time, i) => {
                                                         console.log(this.state.timeSlotArr[0], 'time')
                                                         return (
@@ -703,7 +703,6 @@ class CheckoutContainer extends Component {
                             <Card className="checkout_card">
                                 <CardBody>
                                     {this.state.paymentModes ? (
-                                        console.log('here 12121'),
                                          <PaymentComponent paymentModes={this.state.paymentModes?this.state.paymentModes:''} cartInfo={this.state.paymentModes?{subTotal:this.state.subTotal,discount:this.state.discount,delivery_fee:this.state.delivery_fee,couponAmt:this.state.couponAmt,amountToPay:this.state.amountToPay,order_id:this.state.order_id}:''}/>
                                     ):''}
                                 </CardBody>

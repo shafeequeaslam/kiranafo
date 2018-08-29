@@ -467,12 +467,12 @@ input[type="radio"]:disabled.delivery+.add_type {
 }
 .addressWrpr{
     width: 30%;
-    margin: 0 auto;
-    border: 1px solid #d4d4d4; 
+    border: 1px solid #d4d4d4;
     border-width: 0;
     border-right-width: 1px;
-    margin-top: 25px; 
+    margin-top: 25px;
     font-weight: 300;
+    margin-left: 3%;
 }
 .addressWrpr:last-child{
     border-right-width: 0;

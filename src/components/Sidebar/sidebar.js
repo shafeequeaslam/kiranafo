@@ -30,13 +30,13 @@ class Sidebar extends Component {
                         <li>Fruit Drinks & Juices</li>
                     </ul> */}
                     <Nav vertical className="sidebarList">
-                        { this.props.menuItems.map((data,i) => {
+                        { this.props.menuItems ? this.props.menuItems.map((data,i) => {
                             return(
                             <NavItem key={i} onClick={()=>this.setState({active:i})}>
                                 <NavLink href="#" active={this.state.active === i }>{data.name}</NavLink>
                             </NavItem>
                             )
-                        })}
+                        }):''}
 
                     </Nav>
                 </div>

@@ -49,7 +49,7 @@ class PaymentComponent extends Component {
         })
     }
     makePayment(methodData) {
-        console.log('here')
+        console.log(methodData)
         let usr = JSON.parse(localStorage.getItem('userToken'))
         let loc_dc =JSON.parse(localStorage.getItem('location_dc'))
         if (this.state.activeTab === "2") {
@@ -165,6 +165,12 @@ class PaymentComponent extends Component {
                 console.log(err.response, 'auth_err')
             })
     }
+    setpayment(id){
+        console.log('here1212');
+        this.setState({
+            payment:id
+        })
+    }
     render() {
         return (
             <div>
@@ -252,12 +258,12 @@ class PaymentComponent extends Component {
                     <div>
                         <button className="button_red button_grey">Your total Savings <p>₹ {this.state.discount}</p></button>
                     </div>
-                    <div style={{ display: !this.state.paymentModal ? '' : 'none' }}>
+                    {/* <div style={{ display: !this.state.paymentModal ? '' : 'none' }}>
                         <button className="button_red" onClick={() => this.readyPayment()}>Make Payment</button>
-                    </div>
+                    </div> */}
 
                 </div>
-                <div className="payment_tabs" style={{ display: this.state.paymentModal ? '' : 'none' }}>
+                <div className="payment_tabs">
                     <Nav tabs>
                         <NavItem>
                             <NavLink
@@ -279,9 +285,9 @@ class PaymentComponent extends Component {
                             <div style={{ borderTopWidth: 1 }} className="payment_gates_wrpr">
                                 {this.props.paymentModes ? this.props.paymentModes.map((mode, index) => {
                                     return(
-                                    <div className="payment_gateway">
-                                        <input type="radio" id="phone_pay" name="pay_gates" onChange={() => this.setState({ payment: index })} />
-                                        <label htmlFor="phone_pay">
+                                    <div className="payment_gateway" onClick={() => this.setpayment(index)}>
+                                        <input type="radio" id={index+1} name="pay_gates" value={mode.method_name} checked={this.state.payment  === index}  />
+                                        <label htmlFor={index+1} >
                                             <div className="pay_img">
                                                 <img src={mode.method_icon} height='100%' width='100%' />
                                             </div>
@@ -319,7 +325,7 @@ class PaymentComponent extends Component {
                 </div>
 
 
-            </div >
+             </div >
         );
     }
 }

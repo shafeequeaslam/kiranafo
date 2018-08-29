@@ -11,6 +11,7 @@ let cartObj = undefined;
 class CardComponent extends Component {
       constructor(props) {
             super(props);
+            console.log(this.props.item,"12121")
             this.state = {
                   itemData: this.props.item,
                   activeButton: 0,
@@ -33,6 +34,7 @@ class CardComponent extends Component {
                   })
             }
             else {
+                  console.log('here')
                   let val = localStorage.getItem('cartObj');
                   this.mapToCart(JSON.parse(val))
             }

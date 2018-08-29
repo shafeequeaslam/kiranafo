@@ -20,7 +20,8 @@ import { Redirect } from 'react-router'
 import './header.css';
 import { PRODUCT_WITH_CATEGORIES_FETCH } from "../../utis/API";
 import { GET_DC_CENTER } from "../../utis/D2";
-import searchicon from '../../assets/header-search-icon@2x.png'
+import searchicon from '../../assets/header-search-icon@2x.png';
+import logo from '../../assets/logo.png'
 import location from '../../assets/header-location-hover@2x.png';
 import app from '../../assets/header-app-icon.png';
 import phone from '../../assets/header-phone-icon.png';
@@ -28,6 +29,8 @@ import arrow from '../../assets/header location arrow@2x.png';
 import Autocomplete from 'react-google-autocomplete';
 import Geocode from "react-geocode";
 import Axios from 'axios'
+import SearchResults from './search';
+import Geolocation from 'react-geolocation'
 
 
 class Header extends Component {
@@ -91,6 +94,8 @@ class Header extends Component {
             }, (error) => {
                 console.error(error)
             });
+
+
     }
     modalOpens() {
         this.setState({
@@ -110,6 +115,9 @@ class Header extends Component {
         }
         else if (id == "/login") {
             window.location.href = '/login'
+        }
+        else if(id == 'plp'){
+            window.location = '/listing?search='+this.state.searchParam
         }
     }
     componentWillReceiveProps(nextProps, prevState) {
@@ -139,6 +147,157 @@ class Header extends Component {
         localStorage.removeItem('userToken');
         localStorage.removeItem('cartObj');
         window.location.replace("/login");
+    }
+    handleSearch(e){
+        if(e.target.value.length > 2){
+            this.setState({
+                searchParam:e.target.value
+            })
+            console.log(e.target.value.toLowerCase())
+            let search = e.target.value.toLowerCase();
+            let query =
+            {
+                "query": {
+                    "bool": {
+                        "must": [
+                            { "prefix": { "title": { "value": search } } }
+                        ]
+                    }
+                },
+                "sort": [
+                    { "category_weight": { "order": "asc" } }
+                ],
+                "from": 0,
+                "size": 5
+            }
+
+            Axios({
+                method: 'post',
+                header: {
+                    'Content-type': 'application/json',
+                },
+                url: 'https://search-dev-es-copy-gwr5oh7fnmcdbbajt2t5iyfyf4.ap-south-1.es.amazonaws.com/kirana11/product_display/_search?pretty=true&filter_path=hits.hits',
+                data: query
+
+            })
+                // .then(res => res)
+                .then((data) => {
+                    console.log(data.data.hits.hits,'data');
+                    if(data.data.hits.hits.length > 0){
+                        this.setState({
+                            searchArray:data.data.hits.hits
+                        })
+                    }
+                    else{
+                        this.setState({
+                            searchArray:data.data.hits.hits
+                        })
+                    }
+                   
+                    // })
+                    // this.setState({
+                    //     searchResults: data.data.hits.hits
+                    // })
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+        else{
+            this.setState({
+                searchArray:undefined
+            })
+        }
+        
+    }
+    getCurrentPosition(lat,long){
+        let selectedLocation={};
+            Geocode.fromLatLng(lat,long).then(
+                response => {
+                    console.log(response.results[0],response.results[0].address_components)
+                    selectedLocation.name= response.results[0].address_components[0].long_name,
+                    selectedLocation.formattedAddress=response.results[0].formatted_address,
+                    selectedLocation.lat= lat,
+                    selectedLocation.lng=long,
+                    selectedLocation.postalCode = this.getPostalCodeFromAddress(response.results[0].address_components);
+                    console.log('1212 . 1')
+                    localStorage.setItem("location", JSON.stringify(selectedLocation));
+                }
+            )
+            error => {
+                console.error(error);
+            }
+        
+       
+        // localStorage.setItem("location", JSON.stringify(selectedLocation));
+
+
+        
+
+
+        let locationOne = JSON.parse(localStorage.getItem("location"))
+        let usr = JSON.parse(localStorage.getItem("userDetails"));
+        let params = new URLSearchParams();
+        if (locationOne != null && usr != null) {
+            console.log(locationOne)
+            this.setState({
+                location: null
+            })
+            console.log('here')
+            params.append('address', locationOne.formattedAddress);
+            params.append('latitude', locationOne.lat);
+            params.append('longitude', locationOne.lng);
+            params.append('source', 'web');
+            params.append('uid', usr.user.uid);
+            // console.log(datas)
+
+
+            Axios({
+                method: 'POST',
+                url: GET_DC_CENTER,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: params
+
+            })
+
+                .then((value) => {
+
+                    if (value.data.serving_area.length > 0) {
+                        console.log(value, 'data11');
+                        
+                        localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
+                        //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
+                        //   this.props.getFooterActive(0);
+                        //   Actions.home();
+
+
+                    }
+                    else {
+                        alert("This area is not yet serviceable");
+                        localStorage.removeItem('location');
+                    }
+
+                })
+                .catch((err) => {
+                    console.log(err.response, 'err');
+                    localStorage.removeItem('location');
+
+                })
+            // window.location.href = '/'
+        }
+       setTimeout(()=>{
+        let loc = JSON.parse(localStorage.getItem('location'))
+        console.log(loc,'1111')
+        if (loc != null) {
+            this.setState({
+                location: loc,
+                modalOpen: !this.state.modalOpen
+            })
+        }
+       },100) 
+    
     }
 
     render() {
@@ -252,7 +411,22 @@ class Header extends Component {
                     </div>
                     <p>OR</p>
                     <div className="get_loc">
-                        <button className="button_white">Deliver to my Current Location </button>
+                    <Geolocation
+  render={({
+    fetchingPosition,
+    position: { coords: { latitude, longitude } = {} } = {},
+    error,
+    getCurrentPosition
+  }) =>
+    <div>
+      {/* <button onClick={()=>this.getCurrentPosition(latitude, longitude)}>Get Position</button> */}
+      <button className="button_white" onClick={()=>this.getCurrentPosition(latitude, longitude)}>Deliver to my Current Location </button>
+     
+       
+      
+    </div>}
+/>
+                        {/* <button className="button_white">Deliver to my Current Location </button> */}
                     </div>
                 </div>
                 <Navbar style={{ backgroundColor: '#c01a20', width: '100%' }}>
@@ -293,7 +467,7 @@ class Header extends Component {
                 </Navbar>
                 <Navbar light expand="md" style={{ backgroundColor: '#d12129' }}>
 
-                    <NavbarBrand href="/" style={{ borderRightWidth: 2, borderRightStyle: 'solid', borderColor: '#c11a21', paddingRight: 20 }}><img src="https://www.kirana11.com/sites/all/themes/kirana11_v3/images/img/logo.png" height='50' /></NavbarBrand>
+                    <NavbarBrand href="/" style={{ borderRightWidth: 2, borderRightStyle: 'solid', borderColor: '#c11a21', paddingRight: 20 }}><img src={logo} height='50' /></NavbarBrand>
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-left" navbar>
@@ -332,13 +506,23 @@ class Header extends Component {
                             </NavItem>
                             <NavItem style={{ marginLeft: 20, display: 'flex', flexDirection: 'row' }}>
                                 <div className="input-group" style={{ width: '50vw' }}>
-                                    <div className="input-group-prepend">
+                                    <div className="input-group-prepend" style={{position:'relative'}}>
                                         <span className="input-group-text" style={{ backgroundColor: '#fff', border: 'none' }}><div><img style={{ margin: 'auto' }} src={searchicon}></img></div></span>
                                     </div>
-                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} />
+                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} onChange={(e)=>this.handleSearch(e)} />
+                                    {this.state.searchArray?
+                                    <div className="search_dropdown">
+                                         <SearchResults dataArray={this.state.searchArray}/>
+                                        {this.state.searchArray.length > 0 ? 
+                                         <div><button className="button_red full_width" onClick={()=>this.redirectTo('plp')}>View All Results</button></div>
+                                        :
+                                        <div className="search_no_items">There are no items related to the search .. Please try a different search</div>
+                                        }
+                                    </div>
+                                    :''}
                                 </div>
                                 <div>
-                                    <button className='search_btn'>Search</button>
+                                    <button className='search_btn' >Search</button>
                                 </div>
                             </NavItem>
                         </Nav>
@@ -360,6 +544,16 @@ class Header extends Component {
                                             <Link to={{ pathname: '/myorders' }}   >
                                                 <div className="cat_sub_menu">
                                                     My Orders
+                                                            </div>
+                                            </Link>
+                                            <Link to={{ pathname: '/change_pwd' }}   >
+                                                <div className="cat_sub_menu">
+                                                    Change Password
+                                                            </div>
+                                            </Link>
+                                            <Link to={{ pathname: '/shake_shake' }}   >
+                                                <div className="cat_sub_menu">
+                                                    Shake Shake
                                                             </div>
                                             </Link>
                                             <Link to='' onClick={() => this.signout()} >

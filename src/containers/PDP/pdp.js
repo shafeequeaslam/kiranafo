@@ -47,14 +47,23 @@ class ProductDescription extends Component {
             id = data;
 
         }
-        console.log(this.props.location.state.type)
-        if (this.props.location.state.type == 'nid') {
-            url = "nid"
-            id = this.props.location.state.item._source.nid
-            console.log('here1')
+        // console.log(this.props.location.state.type)
+        if (this.props.location.state) {
+            if (this.props.location.state.type == 'nid') {
+                url = "nid"
+                id = this.props.location.state.item._source.nid
+                console.log('here1')
+            }
+            else if (this.props.location.state.type == 'pid') {
+                url = "pid"
+            }
         }
-        else if (this.props.location.state.type == 'pid') {
-            url = "pid"
+        else if (!this.props.location.state) {
+            let urlHere = window.location.href;
+        let url_string = urlHere;
+        let urlStr = new URL(url_string);
+        url = "nid"
+        id = urlStr.searchParams.get("product");
         }
 
         if (url == "nid") {
@@ -153,7 +162,7 @@ class ProductDescription extends Component {
     }
     store_deal_Cart(type) {
         this.setState({
-            change:undefined
+            change: undefined
         })
         console.log(this.state.product_deal_details, type);
         // this.setState({
@@ -242,13 +251,13 @@ class ProductDescription extends Component {
                 }
             ]
             console.log(obj)
-            cartObj=obj;
+            cartObj = obj;
             localStorage.setItem('cartObj', JSON.stringify(obj));
 
         }
         this.setState({
             cartObj: cartObj,
-            change:true
+            change: true
         })
     }
 
@@ -293,7 +302,7 @@ class ProductDescription extends Component {
 
     storeCart(type) {
         this.setState({
-            change:undefined
+            change: undefined
         })
         console.log(this.state.productDetails[0]._source.products[this.state.activeButton], type);
         // this.setState({
@@ -382,13 +391,13 @@ class ProductDescription extends Component {
                 }
             ]
             console.log(obj)
-            cartObj=obj;
+            cartObj = obj;
             localStorage.setItem('cartObj', JSON.stringify(obj));
 
         }
         this.setState({
             cartObj: cartObj,
-            change:true
+            change: true
         })
 
     }
@@ -432,10 +441,9 @@ class ProductDescription extends Component {
 
             <main className="pdpImg">
                 <div>
-                    <Header change={this.state.change}/>
+                    <Header change={this.state.change} />
                 </div>
-                <div style={{ backgroundImage: 'url("https://img1.kirana11.com/files/public/categoryfruits-vegetables-fed-14.jpg?ETlDb15Go2_HfTGERE41L1CGWtSTHxHg")' }} className="heroContainer">
-                </div>
+               
                 <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
                     {/* <div className="col-sm-3" style={{ padding: 0 }}>
                         <Sidebar />

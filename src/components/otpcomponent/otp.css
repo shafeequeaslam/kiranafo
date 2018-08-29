@@ -1,0 +1,205 @@
+.active.login.nav-link {
+    background-color: #cf2127 !important;
+    color: #fff !important
+}
+
+.login.nav-link {
+    background-color: #d4d4d4 !important;
+    padding: .5rem 0 .2rem !important;
+}
+
+.login.form-control {
+    border:none!important;
+    border-bottom: 1px solid #d4d4d4 !important;
+    border-radius: 0 !important;
+    background-color: white!important;
+}
+
+/* .input-group-text{
+    background-color: transparent !important;
+    border: none !important;
+} */
+
+.login .input-group-append {
+    border-bottom: 1px solid #d4d4d4;
+    padding-left: 2%;
+    width: 30%;
+}
+
+.login.input-group {
+    padding: 5px 0;
+}
+
+.login .input-group-prepend {
+    width: 30px;
+    padding-right: 10px;
+}
+
+.labelIcon {
+    background-size: contain;
+    width: 25px;
+    margin: 0 auto;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.radio-custom, .check-custom {
+    opacity: 0;
+    position: absolute;
+}
+
+.radio-custom, .radio-custom-label {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.radio-custom-label, .check-custom-label {
+    position: relative;
+}
+
+.radio-custom+.radio-custom-label:before, .check-custom+.check-custom-label:before {
+    content: '';
+    background: #fff;
+    border: 2px solid #ddd;
+    display: inline-block;
+    vertical-align: middle;
+    width: 15px;
+    height: 15px;
+    padding: 2px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.radio-custom+.radio-custom-label:before {
+    border-radius: 50%;
+}
+
+.check-custom+.check-custom-label:before {
+    border-radius: 0%;
+}
+
+.radio-custom:checked+.radio-custom-label:before, .check-custom:checked+.check-custom-label:before {
+    content: "";
+    color: #cf2717;
+    background-image: url('data:image/png;base64,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');
+    background-position: center;
+    background-size: contain;
+    height: 15px;
+    width: 15px;
+}
+
+.radio-custom:checked+.radio-custom-label, .check-custom:checked+.check-custom-label {
+    color: #cf2717
+}
+
+.headerLogin {
+    margin: 0 auto;
+    height: 50px;
+    width: 60%;
+    margin-bottom: 5px;
+}
+
+.otp_container {
+    width: 70%;
+    margin: 0 auto;
+    height: auto!important;
+    overflow: hidden;
+}
+
+.otp_wrpr {
+    display: flex;
+    align-items: center;
+    height: auto!important;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    padding: 25px 0 0;
+}
+
+.terms_condn {
+    width: 100%;
+    margin-top: 5px;
+    text-align: center;
+    color: #d4d4d4;
+    font-size: 12px;
+}
+
+.terms_condn p {
+    color: #222;
+    font-size: 14px;
+    display: inline;
+}
+
+.social_wrpr {
+    width:20%!important;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 50%;
+    margin:auto;
+    
+}
+.Already_reg a{
+    color: #cf2127!important; 
+
+}
+.footer_wrpr {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid rgba(212, 212, 212, .3);
+    border-right-width: 0px;
+    border-left-width: 0px;
+}
+
+.footer_copyrights {
+    text-align: center;
+    color: #d4d4d4;
+    font-size: 10px;
+}
+
+.footer_deals {
+    display: flex;
+    flex-direction: row;
+    width: 23%;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer_icon {
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 5px;
+}
+.footer_text{
+    color: #999999;
+    text-transform: uppercase;
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: 0;
+    font-weight: bold;
+    width: calc(100% - 25px);
+}
+.savings_g{
+    background-image: url('../../assets/footer_savings.png')
+}
+.easy_ref{
+    background-image: url('../../assets/easy_refund.png')
+}
+.delivery_g{
+    background-image: url('../../assets/footer_delivery.png')
+}
+.quality_g{
+    background-image: url('../../assets/footer_quality.png')
+}

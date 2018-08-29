@@ -9,6 +9,14 @@ import CheckoutContainer from './containers/Checkout/checkout';
 import ThankYouComponent from './components/thank_you/thank_you';
 import { Provider } from 'react-redux';
 import store from './store';
+import Forgetpwd from './components/forgetpwd/forgetpwd';
+import Otp from './components/otpcomponent/otp';
+import ChangePassword from './components/changepassword/changepsw';
+import ShakeShake from './components/shakeshake/shakeshake';
+import MyAddress from './components/myAddress/myAddress';
+import Order_Status from './components/order_status';
+import MyOrders from './components/myorders/myorders';
+import shakepage from './components/shakepage/shakepage';
 
 class App extends Component {
   constructor(props) {
@@ -30,6 +38,14 @@ class App extends Component {
           <Route path="/listing" component={ProductList} />
           <Route path="/product_desc" component={ProductDescription}/>
           <Route path="/thanks" component={ThankYouComponent}/>
+          <Route path="/forgot_pwd" component={Otp}/>
+          <Route path="/reset_pwd" component={Forgetpwd}/>
+          <Route path="/change_pwd" component={ChangePassword}/>
+          <Route path="/shake_shake" component={ShakeShake}/>
+          <Route path="/myAddress" component={MyAddress}/>
+          <Route path="/order-payment" component={Order_Status}/>
+          <Route path="/myorders" component={MyOrders}/>
+          <Route path="/shakePage" component={shakepage}/>
           {/* <Route path="/deals_listing" component={ProductList} />
           <Route path="/deals_product_desc" component={ProductDescription}/> */}
         </div>

@@ -1,0 +1,17 @@
+.logininp {
+    border: 2px solid #eaeaea!important;
+    background-color: #fbfafa!important;
+    padding: 10px;
+}
+
+.login .form-control{
+	padding: 10px !important;
+}
+
+.login.input-group {
+    padding: 10px 0!important;
+}
+.change_psw_container{
+    width: 90%;
+    margin: 0 auto;
+}
