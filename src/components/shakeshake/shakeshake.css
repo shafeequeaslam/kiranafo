@@ -105,7 +105,7 @@
     overflow: hidden;
 }
 
-.login_wrpr {
+/* .login_wrpr {
     display: flex;
     align-items: center;
     height: 93vh;
@@ -113,7 +113,7 @@
     justify-content: center;
     width: 100%;
     padding: 25px 0 0;
-}
+} */
 
 .terms_condn {
     width: 100%;

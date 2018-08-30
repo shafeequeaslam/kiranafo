@@ -218,6 +218,9 @@
     height: 50px;
     border-radius: 50%;
     background-color: rgb(176, 176, 176);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 .order_status_markers div{
     display: flex;
@@ -251,6 +254,10 @@ table.card_orders_table,table.card_details_table{
     color: rgb(102, 102, 102);
     overflow-y: scroll;
 }
+.order_details_container{
+    padding: 25px 10px 10px;
+    position: relative;
+}
 
 .invoice{
     font-weight: 600;
@@ -276,4 +283,46 @@ table.card_orders_table,table.card_details_table{
     width: 100%;
     padding: 10px 50px 0 0;
     display: flex;
+}
+
+.card_details_table{
+    border: 1px solid #f7f7f7;
+}
+.order_details_header{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.order_det_close{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #cf2717;
+    font-size: 15px;
+    border: 1px solid #cf2717;
+    padding: 2px;
+    height: 20px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.order_det_header{
+    font-size: 18px;
+    font-weight: 600;
+}
+.order_det_desc{
+    margin-top: 10px;
+}
+.order_ex_data{
+    padding: 10px 0;
+}
+.order_ex_data._flex{
+    display: flex;
+    align-items: center;
+}
+
+.order_ex_data._flex .order_det_desc{
+    margin-top:0
 }

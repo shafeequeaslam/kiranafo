@@ -19,15 +19,15 @@ class ListItem extends Component {
                   <div className="list_container" onClick={()=>this.redirectTo(this.props.itemData._source.nid)}>
                         <div className="list_data">
                               <div className="list_img">
-                                    <img src={this.props.itemData._source.products[0].image_url} height='100%' width='100%' />
+                                    <img src={this.props.itemData.inner_hits.products.hits.hits[0]._source.image_url} height='100%' width='100%' />
                               </div>
                               <div className="list_desc">
-                                    {this.props.itemData._source.products[0].title} [{this.props.itemData._source.products[0].variant_type}]
+                                    {this.props.itemData.inner_hits.products.hits.hits[0]._source.title} [{this.props.itemData.inner_hits.products.hits.hits[0]._source.variant_type}]
                               </div>
                         </div>
                         <div className="list_price">
-                              <div>MRP: ₹{this.props.itemData._source.products[0].mrp/100}</div>
-                              <div>SP: ₹{this.props.itemData._source.products[0].on_sale === true ? this.props.itemData._source.products[0].saleprice / 100 : this.props.itemData._source.products[0].mrp / 100 }</div>
+                              <div>MRP: ₹{this.props.itemData.inner_hits.products.hits.hits[0]._source.mrp/100}</div>
+                              <div>SP: ₹{this.props.itemData.inner_hits.products.hits.hits[0]._source.on_sale === true ? this.props.itemData.inner_hits.products.hits.hits[0]._source.saleprice / 100 : this.props.itemData.inner_hits.products.hits.hits[0]._source.mrp / 100 }</div>
                         </div>
                   </div>
             );

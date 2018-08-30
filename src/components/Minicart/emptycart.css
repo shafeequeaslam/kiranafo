@@ -1,0 +1,21 @@
+.empty-cart{
+	
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.empty-text{
+
+	color: #666666;
+	font-weight: bold;
+	width: 50%
+}
+
+.button_white:hover
+{
+	color: white;
+background-color:#c11a20;
+}

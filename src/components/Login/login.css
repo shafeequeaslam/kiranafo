@@ -109,7 +109,7 @@
 .login_wrpr {
     display: flex;
     align-items: center;
-    height: 73vh;
+    height: 73vh !important;
     flex-direction: column;
     justify-content: center;
     width: 100%;

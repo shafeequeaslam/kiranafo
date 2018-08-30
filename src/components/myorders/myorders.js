@@ -7,6 +7,8 @@ import Header from '../Header/header';
 import Sidebar from '../Sidebar/sidebar';
 import Axios from 'axios';
 import AccSidebar from '../Sidebar/acc_sidebar';
+import { Z_FILTERED } from 'zlib';
+import checked from '../../assets/check.png'
 
 
 
@@ -124,7 +126,8 @@ class MyOrders extends Component {
     }
     download(id) {
         console.log(id, typeof (id))
-        window.open("https://d2.kirana11.com/invoice-pdf/" + id, 'Download')
+       let url="https://d2.kirana11.com/invoice-pdf/" + id;
+        window.open(url, 'Download')
     }
 
     modalOpen() {
@@ -149,13 +152,32 @@ class MyOrders extends Component {
                 this.setState({
                     orderDetails: undefined
                 })
-                console.log(data.data),
+                console.log(data.data);
+                let str = data.data.order_details.address;
+                let indices = [];
+                let string=[]
+                for (let i = 0; i < str.length; i++) {
+                    if (str[i] === ",") 
+                    indices.push(i);
+                }
+                for(let i=0;i<indices.length;i++){
+                    if(i == 0){
+                        string.push(str.slice(0,indices[i]))
+                    }
+                    else{
+                        string.push(str.slice(indices[i-1] + 1,indices[i]))
+                    }
+                }
+                setTimeout(()=>{
                     this.setState({
-                        orderDetails: data.data.order_details
+                        orderDetails: data.data.order_details,
+                        address:string
                     })
+                },100)
+                
             })
             .catch((err) => {
-                console.log(err.response)
+                console.log(err.response,err)
             })
     }
 
@@ -201,7 +223,9 @@ class MyOrders extends Component {
                                     </NavItem>
 
                                 </Nav>
-                                <div className="tab_content_container" style={{ display: this.state.modal === false ? 'none' : '' }}>
+                                <div className="tab_content_container order_details_container" style={{ display: this.state.modal === false ? 'none' : '' }}>
+                                    <div className="order_details_header">Order {this.state.orderDetails ? this.state.orderDetails.order_number : ""}</div>
+                                    <div className="order_det_close" onClick={() => this.modalOpen()}>X</div>
                                     <table className="table table-fixed card_details_table" >
 
                                         <thead>
@@ -249,17 +273,33 @@ class MyOrders extends Component {
                                     <div className="subTotal_details">
                                         <div style={{ width: "40%" }}>
                                             <div className="subTotal_details_wrpr">
-                                            <div>Subtotal</div>
-                                            <div>{this.state.orderDetails?this.state.orderDetails.subtotal:''}</div>
+                                                <div>Subtotal</div>
+                                                <div>{this.state.orderDetails ? this.state.orderDetails.subtotal : ''}</div>
                                             </div>
                                             <div className="subTotal_details_wrpr">
-                                            <div>Delivery Charges</div>
-                                            <div>{this.state.orderDetails?this.state.orderDetails.delivery_charges:''}</div>
+                                                <div>Delivery Charges</div>
+                                                <div>{this.state.orderDetails ? this.state.orderDetails.delivery_charges : ''}</div>
                                             </div>
                                             <div className="subTotal_details_wrpr">
-                                            <div style={{fontWeight:600}}>Order total</div>
-                                            <div>{this.state.orderDetails?this.state.orderDetails.total_order_amount:''}</div>
+                                                <div style={{ fontWeight: 600 }}>Order total</div>
+                                                <div>{this.state.orderDetails ? this.state.orderDetails.total_order_amount : ''}</div>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div className="order_ex_data">
+                                        <div className="order_det_header">Shipping Address</div>
+                                        <div className="order_det_desc">
+                                            {this.state.address?this.state.address.map((addr,id)=>{
+                                                return(
+                                                <div key={id}>{addr}</div>
+                                                )
+                                            }):''}
+                                        </div>
+                                    </div>
+                                    <div className="order_ex_data _flex">
+                                        <div className="order_det_header">Delivery Date and Time :</div>
+                                        <div className="order_det_desc" style={{marginLeft:10}}>
+                                            {this.state.orderDetails?this.state.orderDetails.delivery_date_timings:''}
                                         </div>
                                     </div>
                                 </div>
@@ -317,11 +357,11 @@ class MyOrders extends Component {
                                                         </table>
                                                         <div className="order_status_markers">
                                                             <div>
-                                                                <div className="marker"></div>
+                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Pending'||'Processing')?'url('+checked+')':''}}></div>
                                                                 <div className="text_marker">Order Placed</div>
                                                             </div>
                                                             <div>
-                                                                <div className="marker"></div>
+                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Processing')?'url('+checked+')':''}}></div>
                                                                 <div className="text_marker">Order out for delivery</div>
                                                             </div>
                                                             <div>
@@ -373,7 +413,7 @@ class MyOrders extends Component {
                                                                     <div>{order.total_order_amount}</div>
                                                                 </td>
                                                                 <td className="col-sm-2">
-                                                                    <div className="invoice" onClick={() => this.download(order.order_number)}>{order.order_number}</div>
+                                                                    <a className="invoice" href={'https://d2.kirana11.com/invoice-pdf/'+order.order_number} download>{order.order_number}</a>
                                                                 </td>
 
                                                             </tr>

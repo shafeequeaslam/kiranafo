@@ -33,7 +33,7 @@ class Timer extends Component {
                   let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
                   let seconds = Math.floor((t % (1000 * 60)) / 1000);
 
-                  console.log(timer = hours + 'hr : ' + minutes + 'm : ' + seconds + 's')
+                  // console.log(timer = hours + 'hr : ' + minutes + 'm : ' + seconds + 's')
                   if (minutes < 10) {
                         minutes = '0' + minutes
                   }

@@ -1,0 +1,43 @@
+.benefits{padding: 10px 0; border-top:1px solid #f1f1f1; border-bottom:1px solid #f1f1f1;}
+.benefits img{ float: left !important; margin-right: 10px;}
+.benefits span{ display: inline; color: #959494; text-transform: uppercase; font-size: 20px; font-weight: 700; line-height: 1;}
+.footer-list-container{ border-bottom: 1px solid #f1f1f1; }
+.footer-list-container h2, .footer-list-container h2 a{ color: #000; font-size:16px; font-weight: 400; text-align: left;}
+.footer-list-container h2{  padding: 20px 0 5px;}
+.footer-list-container ul{ margin:0 0 10px; padding: 0;}
+.footer-list-container ul li{ list-style: none; text-align: left;}
+.footer-list-container ul li a{ color: #000; font-size:13px; text-align: left }
+.footer-menu{ border-right:1px solid #f1f1f1;}
+.footer-social-media-buttons li{ width: auto; float: left;}
+.payment-option-list li{ padding: 4px 0;}
+.subscribe input{width: 150px; font-size: 12px; float: left; border-radius: 0; background:#f1f1f1; border-top-left-radius: 3px; border-bottom-left-radius: 3px; }
+.subscribe-button{ background:#cf2127; color: #fff; font-size:11px;padding:10px 20px; border-radius: 0; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-color: 0; box-shadow: none !important; }
+.footer-content{ margin:20px 0 10px;}
+.footer-content h2{ text-align: left; font-size: 16px; font-weight:600;}
+.footer-content p{ text-align: left; font-size: 13px;}
+.copy-rights{ border-top:1px solid #f1f1f1; text-align: center;}
+.copy-rights p{ padding:20px 0; margin:0; font-size: 12px;}
+
+@media (max-width:1999px){
+    .benefits span{font-size:16px;}
+    .subscribe input{ width:110px;}
+}
+
+@media (max-width:991px){
+    .benefits span{font-size:11px;}
+    .payment-option-list li img{ max-width:80% !important;}
+    .footer-list-container h2, .footer-list-container h2 a, .footer-list-container ul li a{ font-size: 12px;}
+}
+
+@media (max-width:767px){
+    .benefits span{font-size:11px;}
+    .benefits .col-6{ margin-bottom: 5px;}
+   .footer-list-container{ padding-bottom: 20px;}
+    
+}
+
+@media (max-width:575px){
+    .benefits img{ max-width: 32px; padding: 10px 0px;}
+    .footer-social-media-buttons li{ width: 25%;}
+    .footer-social-media-buttons li img{ max-width:90%;}
+}

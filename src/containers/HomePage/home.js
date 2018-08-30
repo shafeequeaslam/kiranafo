@@ -23,7 +23,7 @@ import Slider from "react-slick";
 import { Link } from 'react-router-dom'
 import Header from '../../components/Header/header';
 import { PRODUCT_DEALS_FETCH, HOMEPAGE_CAT_DEALS, HOMEPAGE_CAT_DEALS_PRODUCTS, HOMEPAGE_BANNERS, HOMEPAGE_EXCITING_DEALS_BANNER, HOMEPAGE_EXCITING_CAT_BANNERS } from "../../utis/API";
-import FooterComponent from '../../components/Footer/footer';
+import FooterComponent from '../../components/footer-components/Footer/containers/footer';
 import CardComponent from '../../components/card';
 import Axios from 'axios';
 import HomePageBanners from './banners';
@@ -32,8 +32,8 @@ import Timer from './Timer';
 class HomePage extends Component {
     constructor(props) {
         super(props);
-        this.app = firebase.initializeApp(config);
-        this.database = this.app.database().ref('stock/277046/stock');
+        // this.app = firebase.initializeApp(config);
+        // this.database = this.app.database().ref('stock/277046/stock');
         this.state = {
             activeTab: 0,
             productDeals: undefined,
@@ -72,9 +72,9 @@ class HomePage extends Component {
 
         // let self = this;
         // let firebaseRef = firebase.database().ref('');
-        this.database.on('value',snap=>{
-            console.log(snap.val())
-        })
+        // this.database.on('value',snap=>{
+        //     //console.log(snap.val())
+        // })
                
                 // self.setState({
                 //     messages: messages
@@ -93,13 +93,13 @@ getBanners() {
         }
     })
         .then((data) => {
-            console.log(data.data);
+            //console.log(data.data);
             this.setState({
                 bannerData: data.data
             })
         })
         .catch((err) => {
-            console.log(err)
+            //console.log(err)
         })
 }
 
@@ -112,13 +112,13 @@ getExcitingBanners() {
         }
     })
         .then((data) => {
-            console.log(data.data);
+            //console.log(data.data);
             this.setState({
                 exciting_bannerData: data.data
             })
         })
         .catch((err) => {
-            console.log(err.response)
+            //console.log(err.response)
         })
 }
 getCategoryBanners() {
@@ -130,13 +130,13 @@ getCategoryBanners() {
         }
     })
         .then((data) => {
-            console.log(data.data);
+            //console.log(data.data);
             this.setState({
                 exciting_cat_bannerData: data.data
             })
         })
         .catch((err) => {
-            console.log(err)
+            //console.log(err)
         })
 }
 
@@ -150,7 +150,7 @@ getProductShockingDeals = () => {
     })
         .then(res => res.json())
         .then((deals) => {
-            console.log("Deal2212122s", deals);
+            //console.log("Deal2212122s", deals);
             this.setState({
                 productDeals: deals
             });
@@ -170,7 +170,7 @@ getProductCategoriesList = () => {
         }
     })
         .then((deals) => {
-            console.log(deals, "1111");
+            //console.log(deals, "1111");
 
             for (let i = 0; i < deals.data.length; i++) {
 
@@ -184,27 +184,27 @@ getProductCategoriesList = () => {
                 })
                     .then((data) => {
                         // dealData=data;
-                        console.log(data.data, "121");
+                        //console.log(data.data, "121");
                         dealData[i] = [];
                         dealData[i] = data.data
-                        console.log(dealData[i])
-                        //  console.log(dealData, '12qwq1');
-                        // console.log(dealData, "11")
+                        //console.log(dealData[i])
+                        //  //console.log(dealData, '12qwq1');
+                        // //console.log(dealData, "11")
                     })
                     .catch((err) => {
-                        console.log(err)
+                        //console.log(err)
                     })
             }
 
         })
         .catch((err) => {
-            console.log(err)
+            //console.log(err)
         })
 
     setTimeout(() => {
-        console.log(dealData, '12qwq1');
+        //console.log(dealData, '12qwq1');
 
-        // console.log((dealData), "data fro deals")
+        // //console.log((dealData), "data fro deals")
         this.setState({
             categorisedProducts: deal_names,
             cat_deals_products: dealData
@@ -223,10 +223,21 @@ setChange() {
     })
 }
 
+setrevChange(){
+    console.log('here')
+    this.setState({
+        revchange: undefined
+    })
+    this.setState({
+        revchange: true
+    }) 
+
+}
+
 
 renderNavItems = () => {
     const navItems = this.state.categorisedProducts;
-    console.log("NavItems", navItems);
+    //console.log("NavItems", navItems);
 
     if (navItems.length > 0) {
         return navItems.map((navItem, index) => {
@@ -248,7 +259,7 @@ renderNavItems = () => {
 
 
 toggle(tab) {
-    console.log(tab);
+    //console.log(tab);
     let cat_deals = this.state.cat_deals_products
     this.setState({
         cat_deals_products: undefined,
@@ -311,7 +322,7 @@ render() {
     return (
         <main style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
             <div>
-                <Header change={this.state.change} />
+                <Header change={this.state.change} revChange={() => this.setrevChange()} />
             </div>
             {/* <div style={{ width: '100%', alignItems: 'center', position: "relative" }}> */}
             <Slider ref={c => (this.Slider = c)} {...settings} style={{}}>
@@ -337,10 +348,10 @@ render() {
                     <Slider ref={e => (this.Slider = e)} {...deals_sett}>
                         {
                             this.state.productDeals ? this.state.productDeals.map((item, index) => {
-                                console.log(this.state.productDeals, "bannerData")
+                                //console.log(this.state.productDeals, "bannerData")
                                 return (
                                     <div>
-                                        <CardComponent type="deals" productDeals={item} change={() => this.setChange()} />
+                                        <CardComponent type="deals" productDeals={item} change={() => this.setChange()} rev_change={this.state.revchange} />
                                     </div>
                                 )
                             }) : ''
@@ -358,7 +369,7 @@ render() {
                 <Row style={{ width: '80%', margin: '0 auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', position: 'relative' }}>
                     {
                         this.state.exciting_bannerData ? this.state.exciting_bannerData.map((item, index) => {
-                            console.log(this.state.exciting_bannerData)
+                            //console.log(this.state.exciting_bannerData)
                             return (
                                 <Col className='cardBanner' sm='6' style={{ height: 250, padding: '0px !important' }}>
                                     <img src={item._source.banners.web_banner_path} width="100%" height='100%' />
@@ -385,12 +396,12 @@ render() {
                         <Row style={{ width: '85%', margin: '0 auto' }}>
 
                             {this.state.cat_deals_products ? this.state.cat_deals_products.length > 0 ? (
-                                console.log('here'),
+                                //console.log('here'),
 
                                 this.state.cat_deals_products[this.state.activeTab].map((pr_deal, index) => {
-                                    console.log(pr_deal)
+                                    //console.log(pr_deal)
                                     return (
-                                        <CardComponent type="cat_deals" productDeals={pr_deal} change={() => this.setChange()} />
+                                        <CardComponent type="cat_deals" productDeals={pr_deal} change={() => this.setChange()} rev_change={this.state.revchange} />
                                     )
                                 })
 

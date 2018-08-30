@@ -17,10 +17,17 @@ import MyAddress from './components/myAddress/myAddress';
 import Order_Status from './components/order_status';
 import MyOrders from './components/myorders/myorders';
 import shakepage from './components/shakepage/shakepage';
+import AboutUs from './components/footer-components/AboutUs';
+import Privacy from './components/footer-components/Privacy';
+import Terms from './components/footer-components/Terms';
+import Refund from './components/footer-components/Refund';
+import ServiceArea from './components/footer-components/ServiceArea';
+import Faq from './components/footer-components/Faq';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       auth: true
     }
@@ -46,6 +53,14 @@ class App extends Component {
           <Route path="/order-payment" component={Order_Status}/>
           <Route path="/myorders" component={MyOrders}/>
           <Route path="/shakePage" component={shakepage}/>
+          <Route path="/about_us" component={AboutUs}/>
+          <Route path="/privacy_policy" component={Privacy}/>
+          <Route path="/our_terms_and_conditions" component={Terms}/>
+          <Route path="/refund_return_policies" component={Refund}/>
+          <Route path="/service_areas" component={ServiceArea}/>
+          <Route path="/faqs" component={Faq}/>
+          
+          
           {/* <Route path="/deals_listing" component={ProductList} />
           <Route path="/deals_product_desc" component={ProductDescription}/> */}
         </div>

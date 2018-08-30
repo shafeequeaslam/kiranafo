@@ -1,0 +1,87 @@
+.table thead th, .table td, .table th {
+    border: 0px transparent !important;
+}
+
+.table-fixed thead {
+    width: 97%;
+}
+
+.table-fixed tbody {
+    /* height: 300px;
+    overflow-y: scroll; */
+    width: 100%;
+}
+
+.table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
+    display: block;
+}
+
+.table-fixed tbody td, .table-fixed thead>tr>th {
+    font-weight: 400 !important;
+    border-bottom-width: 0;
+}
+
+.checkout_card {
+    border: 1px solid #d4d4d4 !important;
+    border-radius: 0 !important;
+}
+
+.card_header_wrpr {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 50px;
+    width: 100%;
+    background-color: #f7f7f7
+}
+
+.card_number {
+    width: 25px;
+    align-items: center;
+    justify-content: center;
+    height: 100%
+}
+
+.change_btn {
+    background-color: transparent;
+    border: 1px solid #cf2717;
+    color: #cf2717;
+    padding: 0px 10px;
+    margin: auto 0;
+    border-radius: 5px;
+}
+.bread_crum_red{
+    color: #cf2717 !important;
+}
+
+.minicart{
+
+    background-color: white;
+    width: 45%;
+    position: absolute;
+    right: 0px;
+    z-index: 1;
+    overflow-x: hidden;
+
+}
+
+.empty-cart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    height: 100%;
+    margin: auto;
+    height: 300px;
+}
+
+.mini_cart_btn{
+    width: 100%;
+    background-color: rgb(207, 54, 51);
+    color: white;
+    border: 1px;
+    margin-top: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+}

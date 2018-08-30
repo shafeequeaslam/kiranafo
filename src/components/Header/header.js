@@ -30,7 +30,10 @@ import Autocomplete from 'react-google-autocomplete';
 import Geocode from "react-geocode";
 import Axios from 'axios'
 import SearchResults from './search';
-import Geolocation from 'react-geolocation'
+import Geolocation from 'react-geolocation';
+import Minicart from '../../components/Minicart/minicart';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+
 
 
 class Header extends Component {
@@ -38,6 +41,7 @@ class Header extends Component {
         super(props);
         console.log(this.props)
         this.state = {
+            miniOpen: false,
             isOpen: false,
             tooltip: false,
             modalOpen: false,
@@ -49,10 +53,10 @@ class Header extends Component {
         Geocode.setApiKey("AIzaSyDrX--l_ZLlQIZirllVuvpCqqTk8jbB4RE");
     }
     componentWillMount() {
-        let cartObj= JSON.parse(localStorage.getItem('cartObj'));
-        if(cartObj != null){
+        let cartObj = JSON.parse(localStorage.getItem('cartObj'));
+        if (cartObj != null) {
             this.setState({
-                cartObj:cartObj
+                cartObj: cartObj
             })
         }
         let location = JSON.parse(localStorage.getItem("location"))
@@ -97,6 +101,15 @@ class Header extends Component {
 
 
     }
+
+    cartToggle() {
+        console.log('here')
+        this.setState({
+            miniOpen: !this.state.miniOpen,
+        })
+
+    }
+
     modalOpens() {
         this.setState({
             modalOpen: !this.state.modalOpen,
@@ -104,30 +117,34 @@ class Header extends Component {
         })
     }
     redirectTo(id) {
-        if (id == "cart") {
+        if (id == "minicart") {
             const userToken = JSON.parse(localStorage.getItem("userToken"));
             if (!userToken || userToken["access_token"] === "" || userToken["refresh_token"] === "") {
                 window.location.href = "/login";
             }
             else {
-                window.location.href = "/cart"
+                window.location.href = "/minicart"
             }
         }
         else if (id == "/login") {
             window.location.href = '/login'
         }
-        else if(id == 'plp'){
-            window.location = '/listing?search='+this.state.searchParam
+        else if (id == 'plp') {
+            window.location = '/listing?search=' + this.state.searchParam
         }
     }
     componentWillReceiveProps(nextProps, prevState) {
         // this.setState({
         //     cartObj:undefined
         // })
-        let cartObj = JSON.parse(localStorage.getItem('cartObj'));
-        
         this.setState({
-            cartObj:cartObj
+            change: undefined
+        })
+        let cartObj = JSON.parse(localStorage.getItem('cartObj'));
+
+        this.setState({
+            cartObj: cartObj,
+            change: true
         })
     }
 
@@ -148,52 +165,37 @@ class Header extends Component {
         localStorage.removeItem('cartObj');
         window.location.replace("/login");
     }
-    handleSearch(e){
-        if(e.target.value.length > 2){
+    handleSearch(e) {
+        if (e.target.value.length > 2) {
             this.setState({
-                searchParam:e.target.value
+                searchParam: e.target.value
             })
             console.log(e.target.value.toLowerCase())
             let search = e.target.value.toLowerCase();
-            let query =
-            {
-                "query": {
-                    "bool": {
-                        "must": [
-                            { "prefix": { "title": { "value": search } } }
-                        ]
-                    }
-                },
-                "sort": [
-                    { "category_weight": { "order": "asc" } }
-                ],
-                "from": 0,
-                "size": 5
-            }
+           
 
             Axios({
-                method: 'post',
+                method: 'GET',
                 header: {
                     'Content-type': 'application/json',
                 },
-                url: 'https://search-dev-es-copy-gwr5oh7fnmcdbbajt2t5iyfyf4.ap-south-1.es.amazonaws.com/kirana11/product_display/_search?pretty=true&filter_path=hits.hits',
-                data: query
+                url: 'http://dev-esexpress.kirana11.com/v2/search?q='+search+'&sort=asc&mode=min&from=0&size=5',
 
             })
                 // .then(res => res)
                 .then((data) => {
-                    console.log(data.data.hits.hits,'data');
-                    if(data.data.hits.hits.length > 0){
+                    console.log(data.data, 'data');
+                    if (data.data.length > 0) {
                         this.setState({
-                            searchArray:data.data.hits.hits
+                            searchArray: data.data
                         })
                     }
-                    else{
+                    else {
                         this.setState({
-                            searchArray:data.data.hits.hits
+                            searchArray: data.data
                         })
                     }
-                   
+
                     // })
                     // this.setState({
                     //     searchResults: data.data.hits.hits
@@ -203,36 +205,36 @@ class Header extends Component {
                     console.log(err)
                 })
         }
-        else{
+        else {
             this.setState({
-                searchArray:undefined
+                searchArray: undefined
             })
         }
-        
+
     }
-    getCurrentPosition(lat,long){
-        let selectedLocation={};
-            Geocode.fromLatLng(lat,long).then(
-                response => {
-                    console.log(response.results[0],response.results[0].address_components)
-                    selectedLocation.name= response.results[0].address_components[0].long_name,
-                    selectedLocation.formattedAddress=response.results[0].formatted_address,
-                    selectedLocation.lat= lat,
-                    selectedLocation.lng=long,
+    getCurrentPosition(lat, long) {
+        let selectedLocation = {};
+        Geocode.fromLatLng(lat, long).then(
+            response => {
+                console.log(response.results[0], response.results[0].address_components)
+                selectedLocation.name = response.results[0].address_components[0].long_name,
+                    selectedLocation.formattedAddress = response.results[0].formatted_address,
+                    selectedLocation.lat = lat,
+                    selectedLocation.lng = long,
                     selectedLocation.postalCode = this.getPostalCodeFromAddress(response.results[0].address_components);
-                    console.log('1212 . 1')
-                    localStorage.setItem("location", JSON.stringify(selectedLocation));
-                }
-            )
-            error => {
-                console.error(error);
+                console.log('1212 . 1')
+                localStorage.setItem("location", JSON.stringify(selectedLocation));
             }
-        
-       
+        )
+        error => {
+            console.error(error);
+        }
+
+
         // localStorage.setItem("location", JSON.stringify(selectedLocation));
 
 
-        
+
 
 
         let locationOne = JSON.parse(localStorage.getItem("location"))
@@ -266,7 +268,7 @@ class Header extends Component {
 
                     if (value.data.serving_area.length > 0) {
                         console.log(value, 'data11');
-                        
+
                         localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
                         //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
                         //   this.props.getFooterActive(0);
@@ -287,20 +289,46 @@ class Header extends Component {
                 })
             // window.location.href = '/'
         }
-       setTimeout(()=>{
-        let loc = JSON.parse(localStorage.getItem('location'))
-        console.log(loc,'1111')
-        if (loc != null) {
+        setTimeout(() => {
+            let loc = JSON.parse(localStorage.getItem('location'))
+            console.log(loc, '1111')
+            if (loc != null) {
+                this.setState({
+                    location: loc,
+                    modalOpen: !this.state.modalOpen
+                })
+            }
+        }, 100)
+
+    }
+    setrevChange() {
+        console.log('here')
+        this.setState({
+            revChange: undefined
+        })
+        this.setState({
+            revChange: true
+        })
+        this.setState({
+            cartObj: undefined,
+        })
+        let cartObj
+
+        setTimeout(() => {
+            cartObj = JSON.parse(localStorage.getItem('cartObj'));
+            console.log(cartObj);
             this.setState({
-                location: loc,
-                modalOpen: !this.state.modalOpen
+                cartObj: cartObj,
             })
-        }
-       },100) 
-    
+        }, 500)
+
+        this.props.revChange()
+
     }
 
     render() {
+        const catMenuShow = this.state.one_level || this.state.two_level;
+
         return (
             <div>
                 <div className="location_modal" style={{ display: this.state.modalOpen ? '' : 'none', overflow: 'none' }}>
@@ -373,7 +401,7 @@ class Header extends Component {
 
                                             if (value.data.serving_area.length > 0) {
                                                 console.log(value, 'data11');
-                                                
+
                                                 localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
                                                 //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
                                                 //   this.props.getFooterActive(0);
@@ -394,16 +422,16 @@ class Header extends Component {
                                         })
                                     // window.location.href = '/'
                                 }
-                               setTimeout(()=>{
-                                let loc = JSON.parse(localStorage.getItem('location'))
-                                console.log(loc,'1111')
-                                if (loc != null) {
-                                    this.setState({
-                                        location: loc,
-                                        modalOpen: !this.state.modalOpen
-                                    })
-                                }
-                               },100) 
+                                setTimeout(() => {
+                                    let loc = JSON.parse(localStorage.getItem('location'))
+                                    console.log(loc, '1111')
+                                    if (loc != null) {
+                                        this.setState({
+                                            location: loc,
+                                            modalOpen: !this.state.modalOpen
+                                        })
+                                    }
+                                }, 100)
                             }}
                             types={'(geocode)'}
                             componentRestrictions={{ country: "in" }}
@@ -411,25 +439,25 @@ class Header extends Component {
                     </div>
                     <p>OR</p>
                     <div className="get_loc">
-                    <Geolocation
-  render={({
-    fetchingPosition,
-    position: { coords: { latitude, longitude } = {} } = {},
-    error,
-    getCurrentPosition
-  }) =>
-    <div>
-      {/* <button onClick={()=>this.getCurrentPosition(latitude, longitude)}>Get Position</button> */}
-      <button className="button_white" onClick={()=>this.getCurrentPosition(latitude, longitude)}>Deliver to my Current Location </button>
-     
-       
-      
-    </div>}
-/>
+                        <Geolocation
+                            render={({
+                                fetchingPosition,
+                                position: { coords: { latitude, longitude } = {} } = {},
+                                error,
+                                getCurrentPosition
+                            }) =>
+                                <div>
+                                    {/* <button onClick={()=>this.getCurrentPosition(latitude, longitude)}>Get Position</button> */}
+                                    <button className="button_white" onClick={() => this.getCurrentPosition(latitude, longitude)}>Deliver to my Current Location </button>
+
+
+
+                                </div>}
+                        />
                         {/* <button className="button_white">Deliver to my Current Location </button> */}
                     </div>
                 </div>
-                <Navbar style={{ backgroundColor: '#c01a20', width: '100%' }}>
+                <Navbar style={{ backgroundColor: '#c01a20', width: '100%' }} >
                     <Nav className="ml-left" navbar style={{ marginLeft: '15%' }}>
                         <NavItem style={{ position: 'relative' }}>
                             <NavLink >
@@ -465,17 +493,19 @@ class Header extends Component {
                         </NavItem>
                     </Nav>
                 </Navbar>
-                <Navbar light expand="md" style={{ backgroundColor: '#d12129' }}>
+                <Navbar light expand="md" style={{ backgroundColor: '#d12129' }} className="main_header">
 
                     <NavbarBrand href="/" style={{ borderRightWidth: 2, borderRightStyle: 'solid', borderColor: '#c11a21', paddingRight: 20 }}><img src={logo} height='50' /></NavbarBrand>
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-left" navbar>
-                            <NavItem >
-                                <NavLink
-                                    onClick={() => this.setState({
-                                        cat_menu: !this.state.cat_menu
-                                    })}>
+                            <NavItem onMouseEnter={() => this.setState({
+                                menu: true,
+                            })}
+                                onMouseLeave={() => this.setState({
+                                    menu: false
+                                })}>
+                                <NavLink >
 
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                                         <div>
@@ -485,14 +515,16 @@ class Header extends Component {
                                             style={{ fontSize: 16, color: '#fff', fontWeight: '500', marginLeft: 20 }}>Shop
 
                                         </div>
-                                        <div className="cat_menu" style={{ display: this.state.cat_menu == true ? 'block' : 'none' }}>
+                                        <div className="cat_menu" style={{ display: this.state.menu == true ? 'block' : 'none' }}>
                                             {
                                                 this.state.categorisedProducts ? this.state.categorisedProducts.map((item, id) => {
+                                                    console.log(id)
                                                     return (
-                                                        <Link to={{ pathname: '/listing', search: '?categoryId=' + item.tid, state: { 'item': item } }} key={id}  >
-                                                            <div className="cat_sub_menu">
+                                                        <Link to={{ pathname: '/listing', search: '?categoryId=' + item.tid, state: { 'item': item,level:1 } }} key={id} onMouseEnter={() => { this.setState({ menu_level_one: id+1 }) }}>
+                                                            <div className="cat_sub_menu" style={{ backgroundColor: this.state.menu_level_one === id+1 ? '#cf2717' : '#fff', color: this.state.menu_level_one === id+1 ? '#fff' : '' }}>
 
-                                                                {item.name}
+                                                               <div><img src={item.mobile_icon_path} width="50" /></div> 
+                                                               <div>{item.name}</div>
 
                                                             </div>
                                                         </Link>
@@ -501,25 +533,62 @@ class Header extends Component {
                                                 }) : ""
                                             }
                                         </div>
+                                        <div className="cat_menu_second_wrpr" style={{ display: this.state.menu ? 'block' : 'none' }}> 
+                                        <img className="abs_img_menu" src={this.state.categorisedProducts && this.state.menu_level_one ?this.state.categorisedProducts[this.state.menu_level_one - 1].image_path:""} />
+                                            <div className="cat_menu_second"  onMouseLeave={() => this.setState({ second_level_menu: undefined })}>
+                                                {
+                                                    this.state.categorisedProducts && this.state.menu_level_one ? this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree.map((sub_item, id) => {
+                                                        console.log(this.state.menu_level_one)
+                                                        return (
+                                                            <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: { 'item': sub_item,level:2,fullData:this.state.categorisedProducts[this.state.menu_level_one - 1] } }} key={id} onMouseEnter={() => { this.setState({ second_level_menu: id+1 }) }}>
+                                                                <div className="cat_sub_menu">
+
+                                                                    {sub_item.name}
+
+                                                                </div>
+                                                            </Link>
+                                                        )
+
+                                                    }) : ""
+                                                }
+                                                <div className="cat_menu_third" style={{ display: this.state.menu && this.state.second_level_menu ? 'block' : 'none' }} >
+                                                    {
+                                                        this.state.categorisedProducts && this.state.second_level_menu ? this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree[this.state.second_level_menu - 1].variant_category_tree.map((sub_item, id) => {
+                                                            return (
+                                                                <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: { 'item': sub_item,level:3,fullData:this.state.categorisedProducts[this.state.menu_level_one - 1],secondLevelData:this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree[this.state.second_level_menu - 1]} }} key={id}>
+                                                                    <div className="cat_sub_menu">
+
+                                                                       {ReactHtmlParser(sub_item.name)} 
+
+                                                                    </div>
+                                                                </Link>
+                                                            )
+
+                                                        }) : ""
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </NavLink>
                             </NavItem>
                             <NavItem style={{ marginLeft: 20, display: 'flex', flexDirection: 'row' }}>
                                 <div className="input-group" style={{ width: '50vw' }}>
-                                    <div className="input-group-prepend" style={{position:'relative'}}>
+                                    <div className="input-group-prepend" style={{ position: 'relative' }}>
                                         <span className="input-group-text" style={{ backgroundColor: '#fff', border: 'none' }}><div><img style={{ margin: 'auto' }} src={searchicon}></img></div></span>
                                     </div>
-                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} onChange={(e)=>this.handleSearch(e)} />
-                                    {this.state.searchArray?
-                                    <div className="search_dropdown">
-                                         <SearchResults dataArray={this.state.searchArray}/>
-                                        {this.state.searchArray.length > 0 ? 
-                                         <div><button className="button_red full_width" onClick={()=>this.redirectTo('plp')}>View All Results</button></div>
-                                        :
-                                        <div className="search_no_items">There are no items related to the search .. Please try a different search</div>
-                                        }
-                                    </div>
-                                    :''}
+                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} onChange={(e) => this.handleSearch(e)} />
+                                    {this.state.searchArray ?
+                                        <div className="search_dropdown">
+                                            <SearchResults dataArray={this.state.searchArray} />
+                                            {this.state.searchArray.length > 0 ?
+                                                <div><button className="button_red full_width" onClick={() => this.redirectTo('plp')}>View All Results</button></div>
+                                                :
+                                                <div className="search_no_items">There are no items related to the search .. Please try a different search</div>
+                                            }
+                                        </div>
+                                        : ''}
                                 </div>
                                 <div>
                                     <button className='search_btn' >Search</button>
@@ -565,15 +634,19 @@ class Header extends Component {
                                     </div>
                                 </NavLink>
                             </NavItem>
-                            <NavItem className="header_cart">
-                                <Link to="" onClick={() => this.redirectTo("cart")} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center',position:'relative' }}>
-                                    <img src="https://www.kirana11.com/sites/all/themes/kirana11_v3/images/cart.png" alt="cart" />
-                                    <div style={{display:this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex':'none'):'none'}} className="cart_tip">{this.state.cartObj?this.state.cartObj.length:''}</div>
+                            <NavItem className="header_cart" onClick={() => this.cartToggle()}>
+                                <Link to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative' }} >
+                                    <img alt="cart" />
+                                    <div style={{ display: this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex' : 'none') : 'none' }} className="cart_tip">{this.state.cartObj ? this.state.cartObj.length : ''}</div>
                                 </Link>
                             </NavItem>
                         </Nav>
                     </Collapse>
                 </Navbar>
+                <div style={{ display: this.state.miniOpen === true ? '' : 'none' }} className='minicart'>
+                    <Minicart change={this.state.change} revChange={() => this.setrevChange()} />
+
+                </div>
             </div>
         );
     }
