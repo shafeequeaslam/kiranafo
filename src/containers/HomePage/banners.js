@@ -13,7 +13,7 @@ class HomePageBanners extends Component {
       }
       render() {
             return (
-                              <div className="heroContainer">
+                              <div className="heroContainer" onClick={()=>this.props.bannerData(this.props.data._source.banners)}>
                                     <img src={this.props.data._source.banners.web_banner_path} max-width="100%" width='100%' height='100%' />
                                    
                               </div>

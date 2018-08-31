@@ -16,13 +16,13 @@ import ShakeShake from './components/shakeshake/shakeshake';
 import MyAddress from './components/myAddress/myAddress';
 import Order_Status from './components/order_status';
 import MyOrders from './components/myorders/myorders';
-import shakepage from './components/shakepage/shakepage';
 import AboutUs from './components/footer-components/AboutUs';
 import Privacy from './components/footer-components/Privacy';
 import Terms from './components/footer-components/Terms';
 import Refund from './components/footer-components/Refund';
 import ServiceArea from './components/footer-components/ServiceArea';
-import Faq from './components/footer-components/Faq';
+import shakepage from './components/shake_main/shakepage';
+import Faq from './components/footer-components/Faq/Faq';
 
 class App extends Component {
   constructor(props) {

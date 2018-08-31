@@ -10,7 +10,8 @@ import prodspeciality from '../../assets/speciality@2x.png';
 import produsage from '../../assets/usage@2x.png';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 import addtocart from '../../assets/cart-icon.png';
-import './pdp.css'
+import './pdp.css';
+import { Link } from 'react-router-dom'
 
 const baseUrl = "https://img1.kirana11.com/files/public/styles/pdp_page/public/690225101127.jpg?QVNo3W2uiXKqvOOp0dIb7vJKAs8HRIwb&itok=S4L6DAC0";
 this.im_arr = undefined;
@@ -60,10 +61,10 @@ class ProductDescription extends Component {
         }
         else if (!this.props.location.state) {
             let urlHere = window.location.href;
-        let url_string = urlHere;
-        let urlStr = new URL(url_string);
-        url = "nid"
-        id = urlStr.searchParams.get("product");
+            let url_string = urlHere;
+            let urlStr = new URL(url_string);
+            url = "nid"
+            id = urlStr.searchParams.get("product");
         }
 
         if (url == "nid") {
@@ -443,13 +444,17 @@ class ProductDescription extends Component {
                 <div>
                     <Header change={this.state.change} />
                 </div>
-               
+
                 <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
+
+                    
                     {/* <div className="col-sm-3" style={{ padding: 0 }}>
                         <Sidebar />
                     </div> */}
                     {
                         this.state.productDetails ? (
+
+                            
                             <div className="col-sm-12">
                                 <Row>
                                     <Col sm="5" style={{ border: "1px solid #f7f7f7" }} >

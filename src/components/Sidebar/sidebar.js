@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Nav, NavItem, NavLink,Label,Input } from 'reactstrap';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
+const brand_arr=[];
 
 class Sidebar extends Component {
     constructor(props) {
@@ -9,7 +10,7 @@ class Sidebar extends Component {
         this.state = {
             check_id:[]
         }
-        console.log(this.props)
+        console.log(this.props);
     }
     componentWillMount() {
         console.log(this.props);
@@ -51,18 +52,13 @@ class Sidebar extends Component {
     }
     filterData(i, id) {
         this.setState({ active: i })
-        this.props.dataId(id)
+        this.props.dataId(id,i)
     }
     sendData(i, id) {
-        let chck=this.state.check_id;
-        console.log(chck)
-        this.setState({
-            check_id:[]
-        })
-        chck[i]=true;
-        this.setState({
-            check_id:chck[i]
-        })
+       this.setState({
+           checked_state:id
+       })
+      
         this.props.brandData(id)
     }
     render() {
@@ -114,7 +110,7 @@ class Sidebar extends Component {
                                 <NavItem key={i} onClick={() => this.sendData(i, data.ids.buckets[0].key)}>
                                     <NavLink href="#">
                                         <Label check>
-                                            <Input type="checkbox" id="checkbox2"  checked={this.state.check_id.length > 0 ?this.state.check_id[i]===true:''}/>{' '}
+                                            <input type="checkbox" checked={this.state.checked_state == data.ids.buckets[0].key ? true :false}/>{' '}
                                             {data.key}
                                         </Label>
                                     </NavLink>

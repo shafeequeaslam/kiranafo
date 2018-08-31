@@ -280,6 +280,28 @@ toggle(tab) {
 
     // }
 }
+checkBannerRedirect(data){
+    console.log(data);
+    if(data.content_type === "PLP"){
+        console.log('PLP,datacategory_id,category_level',data.category_id,data.category_level)
+        window.location = '/listing?categoryId=' + data.category_id+'&level='+data.category_level
+    }
+    else if(data.content_type === "PDP"){
+        window.location = '/product_desc?product=' + data.nid
+    }
+    else if(data.content_type === "Deals"){
+        console.log(data);
+        window.location='/listing?dealType='+data.deals_type
+    }
+    else if(data.content_type === "static"){
+        if(data.link_target === 'external')
+       window.open(data.link_url)
+       else
+       window.location=data.link_url
+    }
+    
+
+}
 render() {
     const settings = {
         dots: true,
@@ -328,9 +350,10 @@ render() {
             <Slider ref={c => (this.Slider = c)} {...settings} style={{}}>
                 {
                     this.state.bannerData ? this.state.bannerData.map((item, index) => {
+                        console.log(item)
 
                         return (
-                            <HomePageBanners data={item} key={index} />
+                            <HomePageBanners data={item} key={index} bannerData={(item)=>this.checkBannerRedirect(item)}/>
                         )
                     }) : ''
                 }
@@ -371,8 +394,8 @@ render() {
                         this.state.exciting_bannerData ? this.state.exciting_bannerData.map((item, index) => {
                             //console.log(this.state.exciting_bannerData)
                             return (
-                                <Col className='cardBanner' sm='6' style={{ height: 250, padding: '0px !important' }}>
-                                    <img src={item._source.banners.web_banner_path} width="100%" height='100%' />
+                                <Col className='cardBanner' sm='6' style={{ padding: '0px !important' }} onClick={()=>this.checkBannerRedirect(item._source.banners)}>
+                                    <img src={item._source.banners.web_banner_path} width="100%"  />
                                 </Col>
                             )
                         }) : ''
@@ -422,9 +445,10 @@ render() {
 
                     {
                         this.state.exciting_cat_bannerData ? this.state.exciting_cat_bannerData.map((item, index) => {
+                            console.log(item,"test")
                             return (
-                                <Col className='cardBanner' sm='12' style={{ height: 250, padding: '0px !important' }}>
-                                    <img src={item._source.banners.web_banner_path} width="100%" height='100%' />
+                                <Col className='cardBanner' sm='12' style={{  padding: '0px !important' }} onClick={()=>this.checkBannerRedirect(item._source.banners)}>
+                                    <img src={item._source.banners.web_banner_path} width="100%"  />
                                 </Col>
                             )
                         }) : ''

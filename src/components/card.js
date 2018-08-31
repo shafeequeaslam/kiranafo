@@ -440,7 +440,7 @@ class CardComponent extends Component {
                         </Col>
                   ) : (
                               this.props.type == 'deals' ? (
-                                    <div>
+                                    <div className={this.props.plp?"col-sm-3":''}>
                                           <div className="deal_cards">
                                                 <Link to={{ pathname: '/product_desc', search: '?product=' + this.state.product_deal_details ? this.state.product_deal_details.inner_hits.products.hits.hits[0]._source.pid:'', state: { 'item': this.state.product_deal_details?this.state.product_deal_details.inner_hits.products.hits.hits[0]:'', 'type': "pid" } }}>
                                                       <div className="card_img" style={{ backgroundImage: "url(" + this.state.product_deal_details ? this.state.product_deal_details.inner_hits.products.hits.hits[0]._source.image_url + ")" :'' }}></div>

@@ -31,7 +31,26 @@ class ProductList extends Component {
         let urlStr = new URL(url_string);
         let category_id = urlStr.searchParams.get("categoryId");
         let search = urlStr.searchParams.get("search");
-        if (search != null) {
+        let level = urlStr.searchParams.get("level");
+        let deal_type = urlStr.searchParams.get("dealType");
+        console.log(level)
+        if (level != null) {
+            this.setState({
+                search: true,
+                banner: true,
+                banner_id: category_id, banner_level: level
+            })
+            console.log('here', level)
+            this.loadProductDetailsTest(category_id, level)
+        }
+        else if (deal_type != null) {
+            this.setState({
+                search: true,
+                deal_type: deal_type
+            })
+            this.loadProductDetailsDeals(deal_type)
+        }
+        else if (search != null) {
             this.setState({
                 search: true
             })
@@ -82,6 +101,7 @@ class ProductList extends Component {
             cartObj = undefined
 
     }
+
     // componentDidMount() {
     //     //console.log(this.props)
     // }
@@ -91,11 +111,29 @@ class ProductList extends Component {
         let urlStr = new URL(url_string);
         let category_id = urlStr.searchParams.get("categoryId");
         let search = urlStr.searchParams.get("search");
+        let level = urlStr.searchParams.get("level");
+        let deal_type = urlStr.searchParams.get("dealType");
+        console.log(level)
+
         this.setState({
             activePage: 0
         })
         setTimeout(() => {
-            if (search != null) {
+            if (level != null) {
+                this.setState({
+                    search: true, banner: true, banner_id: category_id, banner_level: level
+                })
+                console.log('here', level)
+                this.loadProductDetailsTest(category_id, level)
+            }
+            else if (deal_type != null) {
+                this.setState({
+                    search: true,
+                    deal_type: deal_type
+                })
+                this.loadProductDetailsDeals(deal_type)
+            }
+            else if (search != null) {
                 this.setState({
                     search: true
                 })
@@ -177,11 +215,11 @@ class ProductList extends Component {
 
             })
             .catch((err) => {
-                console.log(err.response())
+                console.log(err.response)
             })
     }
 
-    refreshBrandItems(id,level) {
+    refreshBrandItems(id, level) {
         let url;
         console.log(id)
         if (level === 1) {
@@ -213,14 +251,15 @@ class ProductList extends Component {
 
             })
             .catch((err) => {
-                console.log(err.response())
+                console.log(err.response)
             })
     }
-    loadProductDetails = (data) => {
-        // //console.log("Category Listing", LISTING_BY_ID_CATEGORY + this.props.location.state.item.tid);
+    loadProductDetails = (data, level) => {
         let id;
         let type;
         let data_type;
+
+
         if (!data) {
             id = this.props.location.state.item.tid;
         }
@@ -279,7 +318,95 @@ class ProductList extends Component {
                 console.error(error)
             });
         this.getBrandItems();
+
     }
+    loadProductDetailsTest(id, level) {
+        let type;
+        let data_type;
+        if (level = "First Level") {
+            type = 'category';
+            data_type = 'parent_cat'
+        }
+        else if (level = "Second Level") {
+            type = 'category/second';
+            data_type = 'parent_cat'
+        }
+        else {
+            type = 'category/third';
+            data_type = 'cat_id'
+        }
+
+
+
+        //console.log(id)
+        let from = this.state.activePage * 12;
+
+        console.log(from, LISTING_BY_ID_CATEGORY + type, data_type)
+        Axios(LISTING_BY_ID_CATEGORY + type, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify({
+                [data_type]: id,
+                "sort": "asc",
+                "mode": "min",
+                "from": from,
+                "size": 12
+            })
+        })
+            .then((listingDetails) => {
+                this.setState({
+                    listItems: undefined,
+                })
+                console.log(listingDetails.data, "121")
+                let activeBtn = []
+
+                for (let i = 0; i < listingDetails.data.length; i++) {
+                    activeBtn[i] = 0;
+                }
+                //console.log(listingDetails,"121212")
+                setTimeout(() => {
+                    this.setState({
+                        listItems: listingDetails.data,
+                        activeButton: activeBtn
+                    })
+                }, 100)
+            })
+            .catch((err) => {
+                console.log(err.response)
+            })
+    }
+    loadProductDetailsDeals(type) {
+        Axios({
+            url: 'https://dev-esexpressv1.kirana11.com/deals_product?type=' + type,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((listingDetails) => {
+                this.setState({
+                    listItems: undefined,
+                })
+                console.log(listingDetails, "121")
+                let activeBtn = []
+
+                for (let i = 0; i < listingDetails.data.length; i++) {
+                    activeBtn[i] = 0;
+                }
+                //console.log(listingDetails,"121212")
+                setTimeout(() => {
+                    this.setState({
+                        listItems: listingDetails.data,
+                        activeButton: activeBtn
+                    })
+                }, 100)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    }
+
     storeCart(type, prIndex, i) {
         //console.log(i, prIndex, this.state.listItems[prIndex].inner_hits.products.hits.hits[this.state.activeButton[prIndex]]._source)
         if (cartObj) {
@@ -397,8 +524,11 @@ class ProductList extends Component {
         })
     }
 
-    filterData(id) {
-        console.log(id)
+    filterData(id, index) {
+        console.log(id);
+        this.setState({
+            indexedFilter: index
+        })
         this.filterListData(id, "level_filter")
     }
     brandfilter(id) {
@@ -415,11 +545,12 @@ class ProductList extends Component {
 
         if (search_type == 'brands') {
             brand = [search_id];
-            if(this.state.updatedId){
-                id= this.state.updatedId
+            console.log(brand)
+            if (this.state.updatedId) {
+                id = this.state.updatedId
             }
             else
-            id = this.props.location.state.item.tid;
+                id = this.props.location.state.item.tid;
             if (this.state.updatedLevel) {
                 if (this.state.updatedLevel === 1) {
                     type = 'category';
@@ -451,22 +582,25 @@ class ProductList extends Component {
         }
         else {
             id = search_id.tid;
+            console.log(id)
             if (search_id.variant_category_tree) {
                 level = 2;
                 this.setState({
-                    updatedLevel: 2,updatedId:id
+                    updatedLevel: 2, updatedId: id
                 })
-               
+
             }
             else {
                 level = 3;
                 this.setState({
                     updatedLevel: 3,
-                    updatedId:id
+                    updatedId: id
                 })
             }
-            this.refreshBrandItems(search_id.tid,level);
-            this.renderBreadCrumbs(level);
+            this.refreshBrandItems(search_id.tid, level);
+            console.log(level)
+            this.renderBreadCrumbs(level, id);
+
             if (level === 1) {
 
                 type = 'category';
@@ -524,7 +658,7 @@ class ProductList extends Component {
                 }, 100)
             })
             .catch((error) => {
-                console.error(error.response)
+                console.log(error.response)
             });
     }
 
@@ -548,7 +682,11 @@ class ProductList extends Component {
         let category_id = urlStr.searchParams.get("categoryId");
         let search = urlStr.searchParams.get("search");
         setTimeout(() => {
-            if (search != null) {
+            if (this.state.banner == true) {
+                this.loadProductDetailsTest(this.state.banner_id, this.state.banner_level);
+            }
+
+            else if (search != null) {
                 this.setState({
                     search: true
                 })
@@ -606,84 +744,114 @@ class ProductList extends Component {
 
     }
 
-    renderBreadCrumbs(level){
-        if(level){
-            if(level === 1){
-                return(
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
+    renderBreadCrumbs(level, updatedId) {
+        if (level && updatedId) {
+            console.log(this.props.location.state)
+            if (level === 1) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                        <div><Link to="/">Home</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
+                    </div>
+                )
+            }
+            else if (level === 2) {
+                console.log(level)
+                if (this.props.location.state.level < level) {
+                    let data = this.props.location.state.item.sub_category_tree;
+                    let sub_tree;
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].tid == updatedId) {
+                            sub_tree = data[i]
+                            console.log(sub_tree.name)
+                            return(
+                                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
                                         <div><Link to="/">Home</Link></div>
                                         <div style={{ margin: '0 5px' }}>/</div>
-                                        <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div>
-                                    </div> 
-                    )
+            
+                                        <div> <div> {this.props.location.state.item.name}11</div></div>
+            
+                                        <div style={{ margin: '0 5px' }}>/</div>
+                                        <div className="bread_crum_red" >{sub_tree.name}</div>
+                                    </div>
+                                    )
+                            
+                        }
+                    }
+                        
+                }
+                else {
+                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                        <div><Link to="/">Home</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+
+                        <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
+
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="bread_crum_red" >{this.props.location.state.secondLevelData.name}</div>
+                    </div>
+                }
             }
-            else if(level === 2){
-                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                <div><Link to="/">Home</Link></div>
-                <div style={{ margin: '0 5px' }}>/</div>
-                <div><Link className="bread_crum_red"  to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData,level:1,} }}>{this.props.location.state.fullData?this.props.location.state.fullData.name:''}</Link></div>
+            else if (level === 3) {
+                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div><Link to="/">Home</Link></div>
+                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
 
-                <div style={{ margin: '0 5px' }}>/</div>
-                <div className="bread_crum_red" >{this.props.location.state.fullData && this.props.location.state.item?this.props.location.state.item.name :''}</div>
-            </div> 
-            }
-            else if(level === 3){
-                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                <div><Link to="/">Home</Link></div>
-                <div style={{ margin: '0 5px' }}>/</div>
-                <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData,level:1,} }}>{this.props.location.state.fullData.name}</Link></div>
-
-                <div style={{ margin: '0 5px' }}>/</div>
-                <div><Link  to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.secondLevelData.tid, state: { 'item': this.props.location.state.secondLevelData,level:2,fullData:this.props.location.state.fullData} }}>{this.props.location.state.secondLevelData.name}</Link></div>
+                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="bread_crum_red" >{console.log(this.props.location.state.fullData.sub_category_tree[0].name, this.state.indexedFilter)}</div>
+                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="bread_crum_red" >{this.props.location.state.item.name}</div>
 
 
-                <div style={{ margin: '0 5px' }}>/</div>
-                <div className="bread_crum_red">{this.props.location.state.item.name}</div>
-            </div> 
+                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="bread_crum_red">{this.props.location.state.item.name}</div>
+                </div>
             }
         }
-        else{
-            if(this.props.location.state.level === 1){
-                return(
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                                        <div><Link to="/">Home</Link></div>
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
-                                    </div> 
-                    )
+        else {
+            if (this.props.location.state.level === 1) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                        <div><Link to="/">Home</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
+                    </div>
+                )
             }
-            else if(this.props.location.state.level === 2){
-                return(
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                                        <div><Link to="/">Home</Link></div>
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div><Link className="bread_crum_red"  to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData,level:1,} }}>{this.props.location.state.fullData?this.props.location.state.fullData.name:''}</Link></div>
+            else if (this.props.location.state.level === 2) {
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                        <div><Link to="/">Home</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div><Link className="bread_crum_red" to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData ? this.props.location.state.fullData.name : ''}</Link></div>
 
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div className="bread_crum_red" >{this.props.location.state.fullData && this.props.location.state.item?this.props.location.state.item.name :''}</div>
-                                    </div> 
-                    )
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="bread_crum_red" >{this.props.location.state.fullData && this.props.location.state.item ? this.props.location.state.item.name : ''}</div>
+                    </div>
+                )
             }
-            else if(this.props.location.state.level === 3){
-                console.log(this.props.location.state.level,this.props.location.state)
-                return(
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                                        <div><Link to="/">Home</Link></div>
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData,level:1,} }}>{this.props.location.state.fullData.name}</Link></div>
+            else if (this.props.location.state.level === 3) {
+                console.log(this.props.location.state.level, this.props.location.state)
+                return (
+                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                        <div><Link to="/">Home</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData.name}</Link></div>
 
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div><Link  to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.secondLevelData.tid, state: { 'item': this.props.location.state.secondLevelData,level:2,fullData:this.props.location.state.fullData} }}>{this.props.location.state.secondLevelData.name}</Link></div>
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.secondLevelData.tid, state: { 'item': this.props.location.state.secondLevelData, level: 2, fullData: this.props.location.state.fullData } }}>{this.props.location.state.secondLevelData.name}</Link></div>
 
 
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div className="bread_crum_red">{this.props.location.state.item.name}</div>
-                                    </div> 
-                    )
+                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="bread_crum_red">{this.props.location.state.item.name}</div>
+                    </div>
+                )
             }
 
         }
-       
+
     }
 
     render() {
@@ -693,7 +861,10 @@ class ProductList extends Component {
                 <div>
                     <Header change={this.state.change} />
                 </div>
-                {this.renderBreadCrumbs()}
+                {this.state.search ? this.state.search === true ? (
+                    ''
+                ) : (
+                        this.renderBreadCrumbs()) : this.renderBreadCrumbs()}
                 {/* <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
                             <div><Link to="/">Home</Link></div>
                             <div style={{ margin: '0 5px' }}>/</div>
@@ -708,12 +879,12 @@ class ProductList extends Component {
                     ) : (
                             <div className="col-sm-3" style={{ padding: 0 }}>
 
-                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id) => this.filterData(id)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         ) : (
                             <div className="col-sm-3" style={{ padding: 0 }}>
 
-                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id) => this.filterData(id)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         )}
 
@@ -723,7 +894,7 @@ class ProductList extends Component {
                             {this.state.listItems ? this.state.listItems.map((item, index) => {
 
                                 return (
-                                    <CardComponent item={item} index={index} key={index} change={() => this.setChange()} />
+                                    <CardComponent item={item} index={index} key={index} change={() => this.setChange()} type={this.state.deal_type ? 'deals' : undefined} productDeals={this.state.deal_type ? item : ''} plp="1212" />
                                 )
                             }) : ""
                             }

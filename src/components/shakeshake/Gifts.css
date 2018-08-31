@@ -17,14 +17,14 @@
 
 .gift_subcontainer{
      text-align:center;
-	 width:22%;
-	 margin:0 5px;
+	 width:24%;
+	 margin:0 .5%;
 	 padding:5px
 }
 
 .cardtitle_unused{
 color:#cf2127!important;
-font-size:19px!important
+font-size:18px!important
 }
 
 .cardtitle_used{

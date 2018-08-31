@@ -1,0 +1,72 @@
+.shakepage_banners{
+
+   display: flex;
+    flex-direction:column
+}
+
+
+.shakepage_banners img{
+  max-width: 100vw;
+  width:100%;
+}
+
+
+
+.controlled_panel{
+
+  width: 94%;
+  font-weight: bold;
+  text-align: left;
+  margin: auto;
+   min-height: 100px
+}
+
+.faq{
+
+  
+    padding: 5px;
+    font-size: 25px;
+}
+
+.accordion_sub{
+
+  margin-left: 14px;
+    font-weight: normal;
+}
+
+
+.floatbutton{
+  position: absolute;
+    margin-left: 12%;
+    margin-top: 2%;
+    border-radius: 50%;
+    width: 75px;
+    height: 100px;
+}
+
+.dropmenu{
+      display: flex;
+    flex-direction: column;
+      width: 14%;
+    background-color: white;
+    display: block;
+    position: absolute;
+    margin-left: 16%;
+    margin-top: 7%;
+    border: 1px solid #666666;
+    padding: 10px;
+  }
+
+.dropmenu img
+{
+     width: 40%;
+
+}
+
+.dropsub{
+  display: flex;
+  margin: auto;
+    padding: 7px;
+padding: 10px
+}
+

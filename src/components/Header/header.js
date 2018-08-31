@@ -33,6 +33,7 @@ import SearchResults from './search';
 import Geolocation from 'react-geolocation';
 import Minicart from '../../components/Minicart/minicart';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
+import cart_icon from '../../assets/add to cart icon@2x.png'
 
 
 
@@ -636,7 +637,7 @@ class Header extends Component {
                             </NavItem>
                             <NavItem className="header_cart" onClick={() => this.cartToggle()}>
                                 <Link to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative' }} >
-                                    <img alt="cart" />
+                                    <img alt="cart" src={cart_icon} height="30" />
                                     <div style={{ display: this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex' : 'none') : 'none' }} className="cart_tip">{this.state.cartObj ? this.state.cartObj.length : ''}</div>
                                 </Link>
                             </NavItem>

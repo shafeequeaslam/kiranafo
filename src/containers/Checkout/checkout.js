@@ -346,6 +346,7 @@ class CheckoutContainer extends Component {
         let url_string = url;
         let urlStr = new URL(url_string);
         let order_id = urlStr.searchParams.get("order_id");
+        localStorage.setItem('order_id',JSON.stringify({'order_id':order_id}))
         
 
 
@@ -383,35 +384,6 @@ class CheckoutContainer extends Component {
     getCartInfo() {
         console.log('here@del_ch')
         let usr = JSON.parse(localStorage.getItem('userToken'))
-
-        // let details = {
-        //     "stores": "[" + storeId + "]"
-        // };
-        // let formBody = [];
-        // for (let property in details) {
-        //     let encodedKey = encodeURIComponent(property);
-        //     let encodedValue = encodeURIComponent(details[property]);
-        //     formBody.push(encodedKey + "=" + encodedValue);
-        // }
-        // formBody = formBody.join("&");
-        // Axios({
-        //     method: 'POST',
-        //     url: 'https://d2.kirana11.com/kirana11_api/orders/delivery_charge_by_store',
-        //     headers: {
-        //         "Content-Type": 'application/x-www-form-urlencoded',
-        //         "Authorization": 'Bearer ' + token
-        //     },
-        //     data: formBody
-        // })
-        //     .then((value) => {
-        //         console.log('12112ewew')
-        //         console.log(value, 'del_charge')
-        //         let del_charge = value.data[0].delivery_charge;
-        //         let str = del_charge.indexOf('INR');
-        //         let val = parseInt(del_charge.slice(0, str - 1))
-        //         this.setState({
-        //             delivery_fee: val
-        //         })
                 Axios({
                     method: 'GET',
                     url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',

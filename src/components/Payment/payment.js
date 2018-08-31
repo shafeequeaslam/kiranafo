@@ -9,8 +9,9 @@ class PaymentComponent extends Component {
         super(props);
         console.log(this.props, "props")
         this.state = {
+            cardcount:[],
             addCoupon: true,
-            couponAmt: false,
+            couponAmt: undefined,
             delivery_fee: this.props.cartInfo.delivery_fee,
             paymentModal: false,
             discount: this.props.cartInfo.discount,
@@ -25,7 +26,26 @@ class PaymentComponent extends Component {
         }
     }
     componentWillMount() {
-        console.log(this.props, "props, from 12121")
+        let usr=JSON.parse(localStorage.getItem('userDetails'))
+        console.log(this.props, "props, from 12121");
+        Axios({
+            method: 'get',
+            url: "http://dev.dms.avenue11.com/api/v2/coupon/user?uid="+usr.user.uid+"&agent=MOBILE&general=1",
+            headers: {
+                  'Content-Type': 'application/json'
+            },
+            
+      })
+            .then((val) => {
+                console.log(val)
+                  this.setState({
+                        couponData:val.data,
+                        cardcount:[val.data.length]
+                  })
+            })
+            .catch((err) => {
+                  console.log(err);
+            })
     }
     toggleTab(val) {
         this.setState({
@@ -37,11 +57,119 @@ class PaymentComponent extends Component {
             addCoupon: !this.state.addCoupon,
         })
     }
-    couponApplied() {
-        this.setState({
-            couponApplied: true,
-            paymentModal: false,
+    couponApplied(item) {
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let order_id = urlStr.searchParams.get("order_id");
+        let userToken = JSON.parse(localStorage.getItem('userToken'));
+        Axios({
+            url:'https://d2.kirana11.com/kirana11_api/discount_coupon_apply',
+            method:'post',
+            headers:{
+                'Authorization':'Bearer '+userToken.access_token,
+                'Content-Type':'application/json'
+            },
+            data:{
+                order_id:order_id,
+                coupon_code:item.code
+            }
         })
+        .then((data)=>{
+            console.log(data.data);
+           
+            this.getCartInfo()
+        })
+        .catch((err)=>{
+            console.log(err.response)
+            this.getRefreshToken(userToken,"couponApplied",item)
+        })
+        
+    }
+    getCartInfo() {
+        console.log('here@del_ch')
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+                Axios({
+                    method: 'GET',
+                    url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Content-Type": 'application/x-www-form-urlencoded',
+                        "Authorization": 'Bearer ' + usr.access_token
+                    }
+                })
+                    .then((data) => {
+                        console.log(data.data);
+                        let keys = Object.values(data.data.group_total.data.components);
+                        this.setState({
+                            amountToPay: data.data.group_total.amount
+                        })
+                        for (let i = 0; i < keys.length; i++) {
+                            if (keys[i].name == "base_price") {
+                                this.setState({
+                                    subTotal: undefined
+                                })
+                                setTimeout(()=>{
+                                    this.setState({
+                                        subTotal: parseInt(keys[i].price.amount)
+                                    })
+                                },100)
+                                
+                            }
+                            else if (keys[i].name == "discount") {
+                                this.setState({
+                                    discount: undefined
+                                })
+                                setTimeout(()=>{
+                                    this.setState({
+                                        discount: parseInt(keys[i].price.amount)
+                                    })
+                                },100)
+                                
+                            }
+                            else if (keys[i].name == "flat_rate_delivery_charges") {
+                                this.setState({
+                                    delivery_fee: undefined
+                                })
+                                setTimeout(()=>{
+                                    this.setState({
+                                        delivery_fee: parseInt(keys[i].price.amount)
+                                    })
+                                },100)
+                               
+                            }
+                            else if (keys[i].name == "kirana11_discount") {
+                                this.setState({
+                                    couponAmt: undefined
+                                })
+                                setTimeout(()=>{
+                                    this.setState({
+                                        couponAmt: parseInt(keys[i].price.amount)
+                                    })
+                                },100)
+                              
+                            }
+
+                            
+                        }
+                        this.setState({
+                            couponApplied: true,
+                            // appliedCouponData:item,
+                            paymentModal: false,
+                            addCoupon: !this.state.addCoupon
+                        })
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        this.getRefreshToken(usr.access_token,"getCartInfo")
+                    })
+
+
+            // })
+            // .catch((err) => {
+            //     console.log(err)
+            // })
+        
     }
     readyPayment() {
         this.setState({
@@ -171,6 +299,10 @@ class PaymentComponent extends Component {
             payment:id
         })
     }
+
+   
+
+
     render() {
         return (
             <div>
@@ -188,47 +320,21 @@ class PaymentComponent extends Component {
                         </div>
                     </div>
                     <div className="coupon-listing_wrpr">
+                    { this.state.couponData ? this.state.couponData.map((item,id) => {
+                      return (
                         <div className="coupon-list">
                             <div className="coupon-icon"></div>
                             <div className="coupon-desc-wrpr">
-                                <div className="coupon-header">Kirana 11</div>
-                                <div className="coupon-desc">Get 11% off on your order </div>
+                                <div className="coupon-header">  {item.code}</div>
+                                <div className="coupon-desc">{item.footer} </div>
                             </div>
                             <div className="coupon-apply">
-                                <button className="button_white" onClick={() => this.couponApplied()}>Apply</button>
+                                <button style={{backgroundColor: item.footer==='Expired'?'#e2e0e0':''}} className="button_white" onClick={() => {this.couponApplied(item)}} disabled={item.footer==='Expired'?true:false}>Apply</button>
                             </div>
                         </div>
 
-                        <div className="coupon-list">
-                            <div className="coupon-icon"></div>
-                            <div className="coupon-desc-wrpr">
-                                <div className="coupon-header">Kirana 11</div>
-                                <div className="coupon-desc">Get 11% off on your order </div>
-                            </div>
-                            <div className="coupon-apply">
-                                <button className="button_white">Apply</button>
-                            </div>
-                        </div>
-                        <div className="coupon-list">
-                            <div className="coupon-icon"></div>
-                            <div className="coupon-desc-wrpr">
-                                <div className="coupon-header">Kirana 11</div>
-                                <div className="coupon-desc">Get 11% off on your order </div>
-                            </div>
-                            <div className="coupon-apply">
-                                <button className="button_white" >Apply</button>
-                            </div>
-                        </div>
-                        <div className="coupon-list">
-                            <div className="coupon-icon"></div>
-                            <div className="coupon-desc-wrpr">
-                                <div className="coupon-header">Kirana 11</div>
-                                <div className="coupon-desc">Get 11% off on your order </div>
-                            </div>
-                            <div className="coupon-apply">
-                                <button className="button_white">Apply</button>
-                            </div>
-                        </div>
+                        )}):''} 
+
                     </div>
                 </div>
                 <div className="payment_info_wrpr">
@@ -240,7 +346,7 @@ class PaymentComponent extends Component {
                         </div>
                         <div className="payment_info_desc_wrpr" style={{ display: this.state.couponAmt ? '' : 'none' }}>
                             <div className="payment_info_green">Coupons Applied</div>
-                            <div className="payment_info_green">₹ {this.state.couponAmt}</div>
+                            <div className="payment_info_green">₹ {this.state.couponAmt?this.state.couponAmt:''}</div>
                         </div>
                         {/* <div className="payment_info_desc_wrpr" style={{ display: this.state.couponApplied ? '' : 'none' }}>
                             <div className="payment_info_green">Bank Offers Applied</div>
@@ -256,6 +362,7 @@ class PaymentComponent extends Component {
                         <div className="payment_info_bold payment_info_red">₹ {this.state.amountToPay}</div>
                     </div>
                     <div>
+                        {console.log(this.state.discount)}
                         <button className="button_red button_grey">Your total Savings <p>₹ {this.state.discount}</p></button>
                     </div>
                     {/* <div style={{ display: !this.state.paymentModal ? '' : 'none' }}>

@@ -1,0 +1,12 @@
+.faq_title
+    {font-size: 18px;
+    font-weight: 600;
+    flex-direction: row;
+    display: flex;
+    height: 50px;
+    background-color: rgb(255, 255, 255);
+    justify-content: space-between;
+}
+
+.faq_sub{
+border: 1px solid #ddd;}
