@@ -17,8 +17,8 @@ class MyAddress extends Component {
             let user = JSON.parse(localStorage.getItem('userToken'));
             let loc = JSON.parse(localStorage.getItem('location'))
             this.setState({
-                  areaVal: loc.name,
-                  areaPincode: loc.postalCode
+                  presentLocation:loc.formattedAddress,
+                  presentpincode:loc.postalCode
             })
             if (user != null) {
                   console.log(user)
@@ -112,33 +112,117 @@ class MyAddress extends Component {
                   })
       }
       editAddress(id) {
+            console.log(id);
             this.setState({
+
+                  blg_name: id.address_1,
+                  street_name: id.street,
+                  landmark: id.landmark,
+                  type: id.address_name,
+                  areaPincode: id.postal_code,
+                  areaVal: id.area,
+                  edit: true
+            })
+            this.setState({
+                  activeForm: !this.state.activeForm, editAddressId: id.address_id
+            })
+      }
+      openaddAddress() {
+            this.setState({
+                  edit: false,
                   activeForm: !this.state.activeForm,
-                  editAddress:id
+                  areaVal:this.state.presentLocation,
+                  areaPincode:this.state.presentpincode
+            })
+      }
+      saveAddress() {
+            console.log(this.state.edit);
+            if(this.state.edit == false){
+                        console.log(this.state.name, this.state.blg_name, this.state.areaPincode, this.state.landmark, this.state.street_name)
+                        let location = JSON.parse(localStorage.getItem('location'));
+                        let usr = JSON.parse(localStorage.getItem('userDetails'));
+                        let location_dc = JSON.parse(localStorage.getItem('location_dc'));
+                        let details = {
+                            "address_1": this.state.blg_name,
+                            "administrative_area": "KA",
+                            "area": location.formattedAddress,
+                            "street": this.state.street_name,
+                            "landmark": this.state.landmark,
+                            "locality": "Bangalore",
+                            "name": this.state.type,
+                            "name_line": this.state.name,
+                            "postal_code": this.state.areaPincode,
+                            "address_polygon": location_dc.AddressPolygon,
+                            "uid": usr.user.uid
+                        };
+                        console.log(details)
+                        let user = JSON.parse(localStorage.getItem('userToken'))
+                        let formBody = [];
+                        for (let property in details) {
+                            let encodedKey = encodeURIComponent(property);
+                            let encodedValue = encodeURIComponent(details[property]);
+                            formBody.push(encodedKey + "=" + encodedValue);
+                        }
+                        formBody = formBody.join("&");
+                
+                        Axios('https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                                "Authorization": "Bearer " + user.access_token
+                            },
+                            data: formBody
+                        })
+                
+                            .then((data) => {
+                                console.log(data, 'here')
+                                this.setState({
+                                      activeForm:!this.state.activeForm
+                                });
+                                this.getAddress();
+                                // Actions[route].call({order_id:this.props.order_id});
+                
+                            })
+                            .catch((error) => {
+                                console.log(error, '3')
+                                this.getRefreshToken(undefined, "saveAddress", 1)
+                            })
+            }
+      }
+
+      deleteAddress(id) {
+            let usr = JSON.parse(localStorage.getItem('userToken'))
+            Axios({
+                  url: 'https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/' + id + '.json',
+                  method: 'DELETE',
+                  headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Bearer ' + usr.access_token
+                  },
+                  data: {
+                        "address_id": id
+                  }
+            })
+
+                  .then((data) => {
+                        this.getAddress();
+                  })
+                  .catch((err) => {
+                        this.getRefreshToken(usr, 'deleteAddress', id)
+                  })
+      }
+      clearForm() {
+            this.setState({
+                  activeTab: '',
+                  blg_name: '',
+                  street_name: '',
+                  landmark: '',
+                  type: '',
+                  activeForm: !this.state.activeForm,
+
             })
       }
 
-      deleteAddress(id){
-            let usr=JSON.parse(localStorage.getItem('userToken'))
-            Axios({
-                  url:'https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/'+id+'.json',
-                  method:'DELETE',
-                  headers:{
-                      'Content-Type':'application/x-www-form-urlencoded',
-                      'Authorization':'Bearer '+usr.access_token
-                  },
-                  data:{
-                      "address_id":id
-                      }
-              })
-
-              .then((data)=>{
-                    this.getAddress();
-              })
-              .catch((err)=>{
-                    this.getRefreshToken(usr,'deleteAddress',id)
-              })
-      }
       render() {
             return (
                   <main>
@@ -150,95 +234,102 @@ class MyAddress extends Component {
                                     <AccSidebar activeType={2} />
                               </div>
 
-                              <div className="col-sm-9 address_listing" style={{ border: "1px solid #f7f7f7", maxHeight: 500, overflowY: 'scroll', }}>
-                                    <div style={{ flexDirection: "row", width: '100%', flexWrap: 'wrap', display: this.state.activeForm ? 'none' : 'flex' }}>
-                                          {this.state.addressData ? this.state.addressData.map((item, ind) => {
-                                                console.log(item)
-                                                return (
-                                                      <div className="addressWrpr" style={{ border: '1px solid #f1f1f1' }}>
-                                                            <div className="address_container">
-                                                                  <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.address_type}</div>
-                                                                  <div>{item.address_1}</div>
-                                                                  <div>{item.landmark}</div>
-                                                                  <div style={{ width: '60%' }}>{item.area}</div>
+                              <div className="col-sm-9 address_listing" >
+                                    <div style={{ border: "1px solid #f7f7f7", maxHeight: 500,paddingBottom:10, overflowY: 'scroll', }}>
+                                          <div style={{ flexDirection: "row", width: '100%', flexWrap: 'wrap', display: this.state.activeForm ? 'none' : 'flex' }}>
+                                                {this.state.addressData ? this.state.addressData.map((item, ind) => {
+                                                      console.log(item)
+                                                      return (
+                                                            <div className="addressWrpr" style={{ border: '1px solid #f1f1f1' }}>
+                                                                  <div className="address_container">
+                                                                        <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.address_type}</div>
+                                                                        <div>{item.address_1}</div>
+                                                                        <div>{item.landmark}</div>
+                                                                        <div style={{ width: '60%' }}>{item.area}</div>
+                                                                  </div>
+                                                                  <div className="address_btn_container"><button className="button_red" onClick={() => this.editAddress(item)}>Edit</button>
+
+                                                                        <button className="button_red" style={{ marginLeft: 10 }} onClick={() => this.deleteAddress(item.address_id)}>Delete</button></div>
                                                             </div>
-                                                            <div className="address_btn_container"><button className="button_red" onClick={() => this.editAddress(item)}>Edit</button>
-
-                                                                  <button className="button_red" style={{ marginLeft: 10 }} onClick={() => this.deleteAddress(item.address_id)}>Delete</button></div>
-                                                      </div>
-                                                )
-                                          }) : ''}
+                                                      )
+                                                }) : ''}
 
 
-                                    </div>
+                                          </div>
 
-                                    <div style={{ display: this.state.activeForm ? '' : 'none' }}>
-                                          <div>Edit Address</div>
-                                          <form style={{ marginTop: 20 }}>
-                                                {/* <FormGroup className="checkout-form">
+                                          <div style={{ display: this.state.activeForm ? '' : 'none' }}>
+                                                <div>Add Address</div>
+                                                <form style={{ marginTop: 20 }}>
+                                                      {/* <FormGroup className="checkout-form">
                                                 <Label htmlFor="building_name">Name</Label>
                                                 <Input onChange={(e) => this.setState({ name: e.target.value })} />
                                             </FormGroup> */}
-                                                <FormGroup className="checkout-form">
-                                                      <Label htmlFor="building_name">Building No./Name</Label>
-                                                      <Input onChange={(e) => { this.setState({ blg_name: e.target.value }) }} />
-                                                </FormGroup>
-                                                <FormGroup className="checkout-form">
-                                                      <Label htmlFor="street_name">Street Name</Label>
-                                                      <Input onChange={(e) => this.setState({ street_name: e.target.value })}/>
-                                                </FormGroup>
-                                                <FormGroup className="checkout-form">
-                                                      <Label htmlFor="landmark">Landmark</Label>
-                                                      <Input onChange={(e) => this.setState({ landmark: e.target.value })} />
-                                                </FormGroup>
-                                                <div className="form-area-disabled">
                                                       <FormGroup className="checkout-form">
-                                                            <Label htmlFor="area">Area</Label>
-                                                            <Input disabled value={this.state.areaVal} />
+                                                            <Label htmlFor="building_name">Building No./Name</Label>
+                                                            <Input onChange={(e) => { this.setState({ blg_name: e.target.value }) }} value={this.state.blg_name} />
                                                       </FormGroup>
                                                       <FormGroup className="checkout-form">
-                                                            <Label htmlFor="pincode">Pincode</Label>
-                                                            <Input disabled value={this.state.areaPincode} />
+                                                            <Label htmlFor="street_name">Street Name</Label>
+                                                            <Input onChange={(e) => this.setState({ street_name: e.target.value })} value={this.state.street_name} />
                                                       </FormGroup>
-                                                </div>
-                                                <div style={{ display: 'flex', flexDirection: 'row', width: '30%', justifyContent: 'space-between' }}>
-                                                      <div style={{ width: '30%' }}>
-                                                            <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} />
-                                                            <label className="add_type" htmlFor="home">
-                                                                  <div style={{ width: '30%' }}>
-
-                                                                  </div>
-                                                                  <div style={{ width: '60%' }}>Home
-                                                    </div>
-                                                            </label>
+                                                      <FormGroup className="checkout-form">
+                                                            <Label htmlFor="landmark">Landmark</Label>
+                                                            <Input onChange={(e) => this.setState({ landmark: e.target.value })} value={this.state.landmark} />
+                                                      </FormGroup>
+                                                      <div className="form-area-disabled">
+                                                            <FormGroup className="checkout-form">
+                                                                  <Label htmlFor="area">Area</Label>
+                                                                  <Input disabled value={this.state.areaVal} value={this.state.areaVal} />
+                                                            </FormGroup>
+                                                            <FormGroup className="checkout-form">
+                                                                  <Label htmlFor="pincode">Pincode</Label>
+                                                                  <Input disabled value={this.state.areaPincode} value={this.state.areaPincode} />
+                                                            </FormGroup>
                                                       </div>
-                                                      <div style={{ width: '30%' }}>
-                                                            <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} />
-                                                            <label className="add_type" htmlFor="work">
-                                                                  <div style={{ width: '30%' }}>
+                                                      <div style={{ display: 'flex', flexDirection: 'row', width: '30%', justifyContent: 'space-between' }}>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'home' ? true : false} />
+                                                                  <label className="add_type" htmlFor="home">
+                                                                        <div style={{ width: '30%' }}>
 
-                                                                  </div>
-                                                                  <div style={{ width: '60%' }}>Work
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Home
                                                     </div>
-                                                            </label>
-                                                      </div>
-                                                      <div style={{ width: '30%' }}>
-                                                            <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} />
-                                                            <label className="add_type" htmlFor="other">
-                                                                  <div style={{ width: '30%' }}>
+                                                                  </label>
+                                                            </div>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'work' ? true : false} />
+                                                                  <label className="add_type" htmlFor="work">
+                                                                        <div style={{ width: '30%' }}>
 
-                                                                  </div>
-                                                                  <div style={{ width: '60%' }}>Other
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Work
                                                     </div>
-                                                            </label>
-                                                      </div>
-                                                </div>
+                                                                  </label>
+                                                            </div>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'other' ? true : false} />
+                                                                  <label className="add_type" htmlFor="other">
+                                                                        <div style={{ width: '30%' }}>
 
-                                          </form>
-                                          <button type="button" onClick={() => this.addressFormActive()} className="button_white" style={{ marginRight: 10 }}>Clear</button>
-                                          <button onClick={() => this.saveAddress(1)} className="button_red" >Continue</button>
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Other
+                                                    </div>
+                                                                  </label>
+                                                            </div>
+                                                      </div>
+
+                                                </form>
+                                                <button type="button" onClick={() => this.clearForm()} className="button_white" style={{ marginRight: 10 }}>Cancel</button>
+                                                <button onClick={() => this.saveAddress()} className="button_red" >Continue</button>
+                                          </div>
+                                    </div>
+
+                                    <div>
+                                          <button type="button" onClick={() => this.openaddAddress()} className="button_white" style={{ marginTop: 10, display: this.state.activeForm == true ? 'none' : '' }}>Add Address</button>
                                     </div>
                               </div>
+
                         </div>
                   </main>
             );

@@ -458,12 +458,26 @@ class CheckoutContainer extends Component {
                         this.getRefreshToken(usr.access_token, "getPaymentList")
                     })
     }
+    clearForm() {
+        this.setState({
+              activeTab: '',
+              blg_name: '',
+              street_name: '',
+              landmark: '',
+              type: '',
+
+        })
+        this.addressFormActive()
+  }
+  redirect(){
+      window.location.href="/"
+  }
 
     render() {
         return (
             <div className="checkout_container">
                 <div className="headerTwo">
-                    <div style={{ display: 'flex' }}><img style={{ margin: 'auto' }} src={kiranalogo}></img></div>
+                    <div style={{ display: 'flex' }}><img style={{ margin: 'auto' }} height="60" src={kiranalogo} onClick={()=>this.redirect()}></img></div>
                     <div className="tele-wrpr">
                         <div className="tele-icon"></div>
                         <div className="tele-num">1800-120-0110</div>
@@ -568,7 +582,7 @@ class CheckoutContainer extends Component {
                                             </div>
 
                                         </form>
-                                        <button type="button" onClick={() => this.addressFormActive()} className="button_white" style={{ marginRight: 10 }}>Clear</button>
+                                        <button type="button" className="button_white" style={{ marginRight: 10 }} onClick={() => this.clearForm()}>Cancel</button>
                                         <button onClick={() => this.saveAddress(1)} className="button_red" >Continue</button>
                                     </div>
                                 </CardBody>
@@ -655,7 +669,7 @@ class CheckoutContainer extends Component {
 
                                         </TabContent>
                                         <div style={{ marginTop: 25 }}>
-                                            <button onClick={() => this.setDeliverySlots()} className="button_red" >Continue</button>
+                                            <button onClick={() => this.setDeliverySlots()} className="button_red" style={{padding:'5px 50px'}} >Confirm</button>
                                         </div>
                                     </div>
                                 </CardBody>

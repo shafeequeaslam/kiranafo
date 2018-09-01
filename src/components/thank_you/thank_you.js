@@ -31,7 +31,7 @@ class ThankYouComponent extends Component {
                     <div className="tq_bold_text">THANK YOU FOR SHOPPING</div>
                     <div className="tq_underline"></div>
                     <div className="tq_order_status">Your order number is <p>{this.state.order_id}</p></div>
-                    <div className="tq_order_status">You can <Link to="/">view your order</Link> in account page when logged in</div>
+                    <div className="tq_order_status">You can <Link to="/myorders">view your order</Link> in account page when logged in</div>
                     <div className="tq_order_status red">
                     <div style={{ display:'flex'}}><img style={{margin:'auto'}} src={linel}></img></div>
                     <Link to="/">CONTINUE SHOPPING</Link>

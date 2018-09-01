@@ -18,7 +18,7 @@ import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router'
 import './header.css';
-import { PRODUCT_WITH_CATEGORIES_FETCH } from "../../utis/API";
+import { PRODUCT_WITH_CATEGORIES_FETCH,SEARCH_RESULTS_FULL } from "../../utis/API";
 import { GET_DC_CENTER } from "../../utis/D2";
 import searchicon from '../../assets/header-search-icon@2x.png';
 import logo from '../../assets/logo.png'
@@ -166,21 +166,35 @@ class Header extends Component {
         localStorage.removeItem('cartObj');
         window.location.replace("/login");
     }
-    handleSearch(e) {
-        if (e.target.value.length > 2) {
+
+    _handleKeyPress(e){
+        if (e.key === 'Enter') {
+            console.log('here')
+            this.redirectTo('plp');
+          }
+    }
+    handleSearch(evnt,srch) {
+        let search="";
+        if (evnt != "") {
             this.setState({
-                searchParam: e.target.value
+                searchParam: evnt.target.value
             })
-            console.log(e.target.value.toLowerCase())
-            let search = e.target.value.toLowerCase();
-           
+        
+            console.log(evnt.target.value.toLowerCase())
+             search = evnt.target.value.toLowerCase();
+        }
+        else{
+            search = srch;
+        }
+        if(search.length > 2)
+           {
 
             Axios({
                 method: 'GET',
                 header: {
                     'Content-type': 'application/json',
                 },
-                url: 'http://dev-esexpress.kirana11.com/v2/search?q='+search+'&sort=asc&mode=min&from=0&size=5',
+                url: SEARCH_RESULTS_FULL +search+'&sort=asc&mode=min&from=0&size=5',
 
             })
                 // .then(res => res)
@@ -302,6 +316,7 @@ class Header extends Component {
         }, 100)
 
     }
+    
     setrevChange() {
         console.log('here')
         this.setState({
@@ -328,7 +343,6 @@ class Header extends Component {
     }
 
     render() {
-        const catMenuShow = this.state.one_level || this.state.two_level;
 
         return (
             <div>
@@ -579,7 +593,7 @@ class Header extends Component {
                                     <div className="input-group-prepend" style={{ position: 'relative' }}>
                                         <span className="input-group-text" style={{ backgroundColor: '#fff', border: 'none' }}><div><img style={{ margin: 'auto' }} src={searchicon}></img></div></span>
                                     </div>
-                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} onChange={(e) => this.handleSearch(e)} />
+                                    <input placeholder="Search Products" type="text" className="header_search form-control" style={{ borderRadius: 0 }} onChange={(e) => this.handleSearch(e)}  onKeyPress={(e)=>this._handleKeyPress(e)}/>
                                     {this.state.searchArray ?
                                         <div className="search_dropdown">
                                             <SearchResults dataArray={this.state.searchArray} />
@@ -592,14 +606,14 @@ class Header extends Component {
                                         : ''}
                                 </div>
                                 <div>
-                                    <button className='search_btn' >Search</button>
+                                    <button className='search_btn' type="submit" >Search</button>
                                 </div>
                             </NavItem>
                         </Nav>
                         <Nav className="ml-auto" navbar style={{ height: 60, alignItems: 'center' }}>
 
-                            <NavItem >
-                                <NavLink style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} onClick={() => this.setState({ user_menu: !this.state.user_menu })}>
+                            <NavItem onMouseEnter={() => this.setState({ user_menu: !this.state.user_menu })} onMouseLeave={() => this.setState({ user_menu: !this.state.user_menu })}>
+                                <NavLink style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                                     <div style={{ background: "url('https://web-img.kirana11.com/kirana11_V3/header-icons.png') #a51319 -136px -2px no-repeat", width: 35, height: 35 }}></div>
                                     <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ? (this.state.userData.user ? 'none' : '') : '' }} onClick={() => this.redirectTo('/login')}>Login / Sign Up</div>
                                     <div style={{ color: '#fff', fontSize: 14, marginLeft: 10, display: this.state.userData ? (this.state.userData.user ? '' : 'none') : 'none' }} >
@@ -616,16 +630,17 @@ class Header extends Component {
                                                     My Orders
                                                             </div>
                                             </Link>
+                                            <Link to={{ pathname: '/my_rewards' }}   >
+                                                <div className="cat_sub_menu">
+                                                    My Rewards
+                                                            </div>
+                                            </Link>
                                             <Link to={{ pathname: '/change_pwd' }}   >
                                                 <div className="cat_sub_menu">
                                                     Change Password
                                                             </div>
                                             </Link>
-                                            <Link to={{ pathname: '/shake_shake' }}   >
-                                                <div className="cat_sub_menu">
-                                                    Shake Shake
-                                                            </div>
-                                            </Link>
+                                           
                                             <Link to='' onClick={() => this.signout()} >
                                                 <div className="cat_sub_menu">
                                                     Signout
@@ -635,8 +650,8 @@ class Header extends Component {
                                     </div>
                                 </NavLink>
                             </NavItem>
-                            <NavItem className="header_cart" onClick={() => this.cartToggle()}>
-                                <Link to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative' }} >
+                            <NavItem className="header_cart" onClick={() => this.cartToggle()} >
+                                <Link to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', position: 'relative' }} style={{display:this.props.cartIcon === false ? 'none':''}}>
                                     <img alt="cart" src={cart_icon} height="30" />
                                     <div style={{ display: this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex' : 'none') : 'none' }} className="cart_tip">{this.state.cartObj ? this.state.cartObj.length : ''}</div>
                                 </Link>

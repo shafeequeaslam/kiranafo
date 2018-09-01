@@ -1,65 +1,73 @@
 import React, { Component } from 'react';
-import { Nav, NavItem, NavLink,Label,Input } from 'reactstrap';
+import { Nav, NavItem, NavLink, Label, Input } from 'reactstrap';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
-const brand_arr=[];
+const brand_arr = [];
 
 class Sidebar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            check_id:[]
+            check_id: []
         }
         console.log(this.props);
     }
     componentWillMount() {
         console.log(this.props);
-        let chck=[];
-        if(this.props.brandItems){
+        let chck = [];
+        if (this.props.brandItems) {
             console.log('here1')
-            for(let i=0;i<this.props.brandItems.length;i++){
-                
-                chck[i]=false
+            for (let i = 0; i < this.props.brandItems.length; i++) {
+
+                chck[i] = false
             }
             this.setState({
-                check_id:[]
+                check_id: []
             })
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.setState({
-                    check_id:chck
+                    check_id: chck
                 })
-            },100)
+            }, 100)
         }
     }
     componentWillReceiveProps(nextProps) {
-        console.log(this.props);
-        let chck=[];
-        if(nextProps.brandItems){
+        console.log(nextProps);
+        let chck = [];
+        if (nextProps.brandItems) {
             console.log('here')
-        for(let i=0;i<this.props.brandItems.length;i++){
-            
-            chck[i]=false
-        }
-        this.setState({
-            check_id:[]
-        })
-        setTimeout(()=>{
+            for (let i = 0; i < this.props.brandItems.length; i++) {
+
+                chck[i] = false
+            }
             this.setState({
-                check_id:chck
+                check_id: []
             })
-        },100)
-    }
+            setTimeout(() => {
+                this.setState({
+                    check_id: chck
+                })
+            }, 100)
+        }
     }
     filterData(i, id) {
         this.setState({ active: i })
-        this.props.dataId(id,i)
+        this.props.dataId(id, i)
     }
     sendData(i, id) {
-       this.setState({
-           checked_state:id
-       })
-      
-        this.props.brandData(id)
+        if (this.state.checked_state != id) {
+            this.setState({
+                checked_state: id
+            })
+            this.props.brandData(id)
+
+        }
+        else{
+            this.setState({
+                checked_state: undefined
+            })
+        this.props.brandData(undefined)
+        }
     }
     render() {
         return (
@@ -110,7 +118,7 @@ class Sidebar extends Component {
                                 <NavItem key={i} onClick={() => this.sendData(i, data.ids.buckets[0].key)}>
                                     <NavLink href="#">
                                         <Label check>
-                                            <input type="checkbox" checked={this.state.checked_state == data.ids.buckets[0].key ? true :false}/>{' '}
+                                            <input type="checkbox" checked={this.state.checked_state == data.ids.buckets[0].key ? true : false} />{' '}
                                             {data.key}
                                         </Label>
                                     </NavLink>

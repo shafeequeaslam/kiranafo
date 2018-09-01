@@ -125,8 +125,8 @@ class MyOrders extends Component {
         }
     }
     download(id) {
-        console.log(id, typeof (id))
-       let url="https://d2.kirana11.com/invoice-pdf/" + id;
+        let usr = JSON.parse(localStorage.getItem('userToken'))
+       let url="https://d2.kirana11.com/k11-pdf-redirect?refresh_token="+usr.refresh_token+"&order_id=" + id;
         window.open(url, 'Download')
     }
 

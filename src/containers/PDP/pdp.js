@@ -10,6 +10,7 @@ import prodspeciality from '../../assets/speciality@2x.png';
 import produsage from '../../assets/usage@2x.png';
 import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 import addtocart from '../../assets/cart-icon.png';
+import { PRODUCT_WITH_CATEGORIES_FETCH, SEARCH_RESULTS_FULL } from "../../utis/API";
 import './pdp.css';
 import { Link } from 'react-router-dom'
 
@@ -29,7 +30,7 @@ class ProductDescription extends Component {
     }
 
     componentDidMount = () => {
-        console.log(this.props)
+        //console.log(this.props)
         // this.setState({
         //     productId: parseInt(this.props.location.state.item._source.nid),
         //     type_fetch: this.props.location.state.type,
@@ -41,19 +42,19 @@ class ProductDescription extends Component {
     }
 
     loadProductDetails = (data) => {
-        // console.log("LogProductDetails", parseInt(this.props.location.state.item._source.nid));
+        // //console.log("LogProductDetails", parseInt(this.props.location.state.item._source.nid));
         let url = undefined;
         let id;
         if (data) {
             id = data;
 
         }
-        // console.log(this.props.location.state.type)
+        // //console.log(this.props.location.state.type)
         if (this.props.location.state) {
             if (this.props.location.state.type == 'nid') {
                 url = "nid"
                 id = this.props.location.state.item._source.nid
-                console.log('here1')
+                //console.log('here1')
             }
             else if (this.props.location.state.type == 'pid') {
                 url = "pid"
@@ -68,6 +69,7 @@ class ProductDescription extends Component {
         }
 
         if (url == "nid") {
+            console.log('here')
             fetch(PRODUCT_BY_NID_FETCH + id, {
                 method: 'GET',
                 headers: {
@@ -82,37 +84,90 @@ class ProductDescription extends Component {
                     im_arr.push(productDetails[0]._source.products[this.state.activeButton].image_url);
                     if (productDetails[0]._source.products[this.state.activeButton].sub_images) {
                         for (let j = 0; j < productDetails[0]._source.products[this.state.activeButton].sub_images.length; j++) {
-                            // console.log(productDetails[0]._source.products[i].sub_images[j].image_url)
+                            // //console.log(productDetails[0]._source.products[i].sub_images[j].image_url)
                             im_arr.push(productDetails[0]._source.products[this.state.activeButton].sub_images[j].image_url)
                         }
 
                         // im_arr=[...im_arr,...Object.values(productDetails[0]._source.products[i].sub_images)];
                     }
 
-                    console.log(im_arr);
+                    //console.log(im_arr);
                     this.im_arr = im_arr
                     this.setState({
+                        product_data: productDetails[0]._source,
                         productDetails: productDetails,
-                        im_arr: im_arr
+                        im_arr: im_arr,
+                        sidebarState: true
                     })
 
                     let val = localStorage.getItem('cartObj');
                     this.mapToCart(JSON.parse(val))
 
-                    console.log("Product Details", productDetails[0], this.state.productDetails);
+                    setTimeout(() => {
+                        if (this.state.product_data) {
+                            console.log(this.state.product_data);
+                            fetch(PRODUCT_WITH_CATEGORIES_FETCH, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                                .then(res => res.json())
+                                .then((deals) => {
+                                    console.log("Deals", deals);
+                                    let dat = deals[0]._source.main_category_tree
+                                    for (let i = 0; i < dat.length; i++) {
+                                        if (dat[i].tid == this.state.product_data.parent_parent_category) {
+                                            localStorage.setItem('pdpMenuLevel1', JSON.stringify(dat[i]));
+                                            for (let j = 0; j < dat[i].sub_category_tree.length; j++) {
+                                                if (dat[i].sub_category_tree[j].tid == this.state.product_data.parent_category) {
+                                                    localStorage.setItem('pdpMenuLevel2', JSON.stringify(dat[i].sub_category_tree[j]));
+                                                    for (let k = 0; k < dat[i].sub_category_tree[j].variant_category_tree.length; k++) {
+                                                        if (dat[i].sub_category_tree[j].variant_category_tree[k].tid == this.state.product_data.category_id) {
+                                                            localStorage.setItem('pdpMenuLevel3', JSON.stringify([dat[i].sub_category_tree[j].variant_category_tree[k]]));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    console.log('here')
+                                    let levelOne = JSON.parse(localStorage.getItem('pdpMenuLevel1'));
+                                    let levelTwo = JSON.parse(localStorage.getItem('pdpMenuLevel2'));
+                                    let levelThree = JSON.parse(localStorage.getItem('pdpMenuLevel3'));
+
+                                    setTimeout(() => {
+                                        if (levelOne && levelTwo && levelThree != null)
+                                            this.setState({
+                                                levelOne: levelOne,
+                                                levelTwo: levelTwo,
+                                                levelThree: levelThree
+                                            })
+                                    }, 500)
+                                }, (error) => {
+                                    console.error(error)
+                                });
+                        }
+                    }, 500)
 
                 }, (error) => {
                     console.error(error)
                 });
         }
+
+
+
+
+
         else if (url == "pid") {
-            console.log(this.props.location.state.item, "item");
+            //console.log(this.props.location.state.item, "item");
             let im_arr = [];
             // for (let i = 0; i < productDetails.length; i++) {
             im_arr.push(this.props.location.state.item._source.image_url);
             if (this.props.location.state.item._source.sub_images) {
                 for (let j = 0; j < this.props.location.state.item._source.sub_images.length; j++) {
-                    // console.log(this.state.productDetails[0]._source.products[i].sub_images[j].image_url)
+                    // //console.log(this.state.productDetails[0]._source.products[i].sub_images[j].image_url)
                     im_arr.push(this.props.location.state.item._source.sub_images[j].image_url)
                 }
 
@@ -125,23 +180,25 @@ class ProductDescription extends Component {
             let val = localStorage.getItem('cartObj');
             this.mapToCart_deals(JSON.parse(val))
         }
+
+
     }
     mapToCart_deals(val) {
-        console.log(val, this.props.location.state.item._source, "after items click")
+        //console.log(val, this.props.location.state.item._source, "after items click")
         if (val != null) {
 
             if (this.props.location.state.item._source) {
-                console.log('121')
+                //console.log('121')
                 let a = val.length;
                 // let b = this.state.productDetails[0]._source.products.length;
 
                 for (let i = 0; i < a; i++) {
-                    console.log(this.props.location.state.item._source.pid)
+                    //console.log(this.props.location.state.item._source.pid)
                     if (val[i].productData.pid == this.props.location.state.item._source.pid) {
                         let pr_q = this.state.product_deal_quantity;
-                        console.log(val[i].product_quantity);
+                        //console.log(val[i].product_quantity);
                         pr_q = val[i].product_quantity
-                        console.log(pr_q, 'pr')
+                        //console.log(pr_q, 'pr')
                         this.setState({
                             product_deal_quantity: pr_q
                         })
@@ -165,22 +222,22 @@ class ProductDescription extends Component {
         this.setState({
             change: undefined
         })
-        console.log(this.state.product_deal_details, type);
+        //console.log(this.state.product_deal_details, type);
         // this.setState({
         //       unchangeState: false
         // })
         if (cartObj) {
-            console.log(cartObj)
+            //console.log(cartObj)
             let pid = this.state.product_deal_details.pid;
-            console.log(this.state.product_deal_details, pid, 'pid')
+            //console.log(this.state.product_deal_details, pid, 'pid')
 
             let found = cartObj.filter(function (el) {
-                console.log(el, 'el')
+                //console.log(el, 'el')
                 return el.productData.pid === pid
             })[0];
             if (found) {
                 if (type === 'incr') {
-                    console.log('1')
+                    //console.log('1')
                     found.product_quantity = found.product_quantity + 1;
                     let pr_q = this.state.product_deal_quantity;
                     if (pr_q) {
@@ -193,7 +250,7 @@ class ProductDescription extends Component {
                     })
                 }
                 if (type === 'decr') {
-                    console.log('11', found.product_quantity)
+                    //console.log('11', found.product_quantity)
                     if (found.product_quantity > 1) {
                         found.product_quantity = found.product_quantity - 1;
                         let pr_q = this.state.product_deal_quantity;
@@ -205,7 +262,7 @@ class ProductDescription extends Component {
                     }
 
                     else {
-                        console.log('here 0')
+                        //console.log('here 0')
                         for (let j = 0; j < cartObj.length; j++) {
                             if (cartObj[j].productData.pid === found.productData.pid) {
                                 cartObj.splice(j, 1);
@@ -238,20 +295,20 @@ class ProductDescription extends Component {
                     product_deal_quantity: 1
                 });
             }
-            console.log(cartObj)
+            //console.log(cartObj)
 
             localStorage.setItem('cartObj', JSON.stringify(cartObj));
         }
 
         else {
-            console.log('ewew')
+            //console.log('ewew')
             let obj = [
                 {
                     productData: this.state.product_deal_details,
                     product_quantity: 1
                 }
             ]
-            console.log(obj)
+            //console.log(obj)
             cartObj = obj;
             localStorage.setItem('cartObj', JSON.stringify(obj));
 
@@ -263,21 +320,21 @@ class ProductDescription extends Component {
     }
 
     mapToCart(val) {
-        console.log(val, this.state.productDetails[0]._source.products, "after items click")
+        //console.log(val, this.state.productDetails[0]._source.products, "after items click")
         if (val != null) {
 
             if (this.state.productDetails[0]._source.products) {
-                console.log('121')
+                //console.log('121')
                 let a = val.length;
                 let b = this.state.productDetails[0]._source.products.length;
 
                 for (let i = 0; i < a; i++) {
                     for (let j = 0; j < b; j++) {
-                        console.log(this.state.productDetails[0]._source.products[j].pid)
+                        //console.log(this.state.productDetails[0]._source.products[j].pid)
                         if (val[i].productData.pid == this.state.productDetails[0]._source.products[j].pid) {
                             let pr_q = this.state.product_quantity;
                             pr_q[j] = val[i].product_quantity
-                            console.log(pr_q, 'pr')
+                            //console.log(pr_q, 'pr')
                             this.setState({
                                 product_quantity: pr_q
                             })
@@ -305,22 +362,22 @@ class ProductDescription extends Component {
         this.setState({
             change: undefined
         })
-        console.log(this.state.productDetails[0]._source.products[this.state.activeButton], type);
+        //console.log(this.state.productDetails[0]._source.products[this.state.activeButton], type);
         // this.setState({
         //       unchangeState: false
         // })
         if (cartObj) {
-            console.log(cartObj)
+            //console.log(cartObj)
             let pid = this.state.productDetails[0]._source.products[this.state.activeButton].pid;
-            console.log(this.state.productDetails[0], pid, 'pid')
+            //console.log(this.state.productDetails[0], pid, 'pid')
 
             let found = cartObj.filter(function (el) {
-                console.log(el, 'el')
+                //console.log(el, 'el')
                 return el.productData.pid === pid
             })[0];
             if (found) {
                 if (type === 'incr') {
-                    console.log('1')
+                    //console.log('1')
                     found.product_quantity = found.product_quantity + 1;
                     let pr_q = this.state.product_quantity;
                     if (pr_q[this.state.activeButton]) {
@@ -333,7 +390,7 @@ class ProductDescription extends Component {
                     })
                 }
                 if (type === 'decr') {
-                    console.log('11', found.product_quantity)
+                    //console.log('11', found.product_quantity)
                     if (found.product_quantity > 1) {
                         found.product_quantity = found.product_quantity - 1;
                         let pr_q = this.state.product_quantity;
@@ -345,7 +402,7 @@ class ProductDescription extends Component {
                     }
 
                     else {
-                        console.log('here 0')
+                        //console.log('here 0')
                         for (let j = 0; j < cartObj.length; j++) {
                             if (cartObj[j].productData.pid === found.productData.pid) {
                                 cartObj.splice(j, 1);
@@ -378,20 +435,20 @@ class ProductDescription extends Component {
                     product_quantity: 1
                 });
             }
-            console.log(cartObj)
+            //console.log(cartObj)
 
             localStorage.setItem('cartObj', JSON.stringify(cartObj));
         }
 
         else {
-            console.log('ewew')
+            //console.log('ewew')
             let obj = [
                 {
                     productData: this.state.productDetails[0]._source.products[this.state.activeButton],
                     product_quantity: 1
                 }
             ]
-            console.log(obj)
+            //console.log(obj)
             cartObj = obj;
             localStorage.setItem('cartObj', JSON.stringify(obj));
 
@@ -403,20 +460,24 @@ class ProductDescription extends Component {
 
     }
     setActiveBtn(i) {
-        console.log(i.target.value)
+        //console.log(i.target.value)
         this.setState({ activeButton: i.target.value, im_arr: [] })
         let im_arr = [];
         // for (let i = 0; i < productDetails.length; i++) {
         im_arr.push(this.state.productDetails[0]._source.products[i.target.value].image_url);
         if (this.state.productDetails[0]._source.products[i.target.value].sub_images) {
             for (let j = 0; j < this.state.productDetails[0]._source.products[i.target.value].sub_images.length; j++) {
-                // console.log(this.state.productDetails[0]._source.products[i].sub_images[j].image_url)
+                // //console.log(this.state.productDetails[0]._source.products[i].sub_images[j].image_url)
                 im_arr.push(this.state.productDetails[0]._source.products[i.target.value].sub_images[j].image_url)
             }
 
             // im_arr=[...im_arr,...Object.values(productDetails[0]._source.products[i].sub_images)];
         }
         this.setState({ im_arr: im_arr })
+    }
+    filterData(a, b) {
+        console.log(a, b);
+
     }
 
     render() {
@@ -447,142 +508,159 @@ class ProductDescription extends Component {
 
                 <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
 
-                    
+
                     {/* <div className="col-sm-3" style={{ padding: 0 }}>
                         <Sidebar />
                     </div> */}
                     {
                         this.state.productDetails ? (
+                            <Row>
+                                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0',width:'100%' }}>
+                                    <div ><Link to="/" className="bread_crum_red">Home</Link></div>
+                                    <div style={{ margin: '0 5px' }}>/</div>
 
-                            
-                            <div className="col-sm-12">
-                                <Row>
-                                    <Col sm="5" style={{ border: "1px solid #f7f7f7" }} >
-                                        <Slider {...settings} >
-                                            {this.state.im_arr ? (
-                                                this.state.im_arr.map((img, id) => {
-                                                    console.log(img, "img");
-                                                    return (
-                                                        <div>
-                                                            <img src={img} />
-                                                        </div>
-                                                    )
-                                                })) : ''}
+                                    <div> {this.state.levelOne?this.state.levelOne.name:''}</div>
 
-
-                                        </Slider>
-                                    </Col>
-                                    <Col sm="7">
-                                        <div style={{ fontSize: 20, color: '#787878' }}>
-                                            {this.state.productDetails ? this.state.productDetails[0]._source.brand_name : ''}
-                                        </div>
-                                        <div style={{ fontSize: 20, color: '#cf2717' }}>
-                                            {this.state.productDetails ? this.state.productDetails[0]._source.title : ''}
-                                        </div>
-                                        <div className="card_qty_container">
-                                            {this.state.productDetails ? this.state.productDetails[0]._source.products.length > 1 ?
-                                                (<FormGroup>
-                                                    <Input type="select" name="select" id="exampleSelect" onChange={(e) => this.setActiveBtn(e)}>
-
-                                                        {this.state.productDetails[0]._source.products.map((select, ind) => {
-                                                            console.log(select, 'select')
-                                                            return (
-                                                                <option key={ind} value={ind}>{select.variant_type}</option>
-                                                            )
-
-                                                        })
-                                                        }
-
-                                                    </Input>
-                                                </FormGroup>) :
-                                                (
-                                                    <div style={{ width: '100%', fontSize: 16 }}>{this.state.productDetails[0]._source.products[this.state.activeButton].variant_type}</div>
-                                                ) : (
-                                                    ""
-                                                )
-                                            }
-                                        </div>
-                                        <div style={{ backgroundColor: '#e4e2e5', height: 25, width: '100%', textIndent: 10, fontWeight: '700' }}>
-                                            Sold by
+                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div>{this.state.levelTwo?this.state.levelTwo.name:""}</div>
+                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div>{this.state.levelThree ? this.state.levelThree[0].name:''}</div>
+                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div >{this.state.product_data?this.state.product_data.title:''}</div>
+                                    
                                 </div>
-                                        <div className="mrp_container">
-                                            <div><p style={{ fontWeight: '700', fontSize: 14, display: 'inline' }}>MRP</p>
-
-                                                <p style={{ display: 'inline', textDecoration: 'line-through', marginLeft: 10 }}>₹{this.state.productDetails ? this.state.productDetails[0]._source.products[this.state.activeButton].mrp / 100 : ''}</p>
-
-                                            </div>
-                                            <div>₹{this.state.productDetails ? this.state.productDetails[0]._source.products[this.state.activeButton].on_sale === true ? this.state.productDetails[0]._source.products[this.state.activeButton].saleprice / 100 : this.state.productDetails[0]._source.products[this.state.activeButton].mrp / 100 : ''}</div>
-                                        </div>
-
-
-                                        <div className="card_button_container">
-                                            {
-
-                                                this.state.product_quantity ?
-                                                    (
-                                                        this.state.product_quantity[this.state.activeButton] ? (
-                                                            <div className="card_button_container">
-                                                                <button className="card_button card_btn_plus" onClick={() => this.storeCart('decr')}>-
-                                                                  </button>
-                                                                <div className="card_btn_num"> {this.state.product_quantity[this.state.activeButton]}</div>
-                                                                <button className="card_button card_btn_plus" onClick={() => this.storeCart('incr')}>+
-                                                                  </button>
+                                <div className="col-sm-3" style={{ padding: 0 }}>
+                                    <Sidebar menuItems={this.state.levelThree ? this.state.levelThree : ''} category_name={this.state.levelTwo ? this.state.levelTwo.name : ''} dataId={(id, index) => this.filterData(id, index)} />
+                                </div>
+                                <div className="col-sm-9">
+                                    <Row>
+                                        <Col sm="5" style={{ border: "1px solid #f7f7f7" }} >
+                                            <Slider {...settings} >
+                                                {this.state.im_arr ? (
+                                                    this.state.im_arr.map((img, id) => {
+                                                        //console.log(img, "img");
+                                                        return (
+                                                            <div>
+                                                                <img src={img} />
                                                             </div>
-                                                        ) : (
-                                                                <div className="card_button_container" style={{ display: 'flex' }} onClick={() => this.storeCart('incr')}>
-                                                                    <button className="card_button">Add to<img style={{ border: 'none', display: 'inline' }} src={addtocart} height="20" /></button>
-                                                                </div>
-                                                            )
-                                                    )
-                                                    :
+                                                        )
+                                                    })) : ''}
+
+
+                                            </Slider>
+                                        </Col>
+                                        <Col sm="7">
+                                            <div style={{ fontSize: 20, color: '#787878' }}>
+                                                {this.state.productDetails ? this.state.productDetails[0]._source.brand_name : ''}
+                                            </div>
+                                            <div style={{ fontSize: 20, color: '#cf2717' }}>
+                                                {this.state.productDetails ? this.state.productDetails[0]._source.title : ''}
+                                            </div>
+                                            <div className="card_qty_container">
+                                                {this.state.productDetails ? this.state.productDetails[0]._source.products.length > 1 ?
+                                                    (<FormGroup>
+                                                        <Input type="select" name="select" id="exampleSelect" onChange={(e) => this.setActiveBtn(e)}>
+
+                                                            {this.state.productDetails[0]._source.products.map((select, ind) => {
+                                                                //console.log(select, 'select')
+                                                                return (
+                                                                    <option key={ind} value={ind}>{select.variant_type}</option>
+                                                                )
+
+                                                            })
+                                                            }
+
+                                                        </Input>
+                                                    </FormGroup>) :
                                                     (
-                                                        <div className="card_button_container" style={{ display: 'flex' }} onClick={() => this.storeCart('incr')}>
-                                                            <button className="card_button">Add to<img style={{ border: 'none', display: 'inline' }} src={addtocart} height="20" /></button>
-                                                        </div>
+                                                        <div style={{ width: '100%', fontSize: 16 }}>{this.state.productDetails[0]._source.products[this.state.activeButton].variant_type}</div>
+                                                    ) : (
+                                                        ""
                                                     )
-                                            }
-                                        </div>
-                                        <div style={{ display: 'flex', flexDirection: 'row' }}>
-                                            <Col sm="3" style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.shelf_life ? "" : 'none' : 'none', borderRight: '1px solid #ccc' }}>
-                                                <div style={{ color: '#427846' }}> *Shelf Life</div>
-                                                <div style={{ color: '#898989' }}> {this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.shelf_life) : ''}</div>
-                                            </Col>
-                                            <Col sm="9" style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.shelf_life ? "" : 'none' : 'none', marginLeft: 10 }}>
-
-                                                <div style={{ color: '#427846' }}> *Storage Recommendations</div>
-                                                <div style={{ color: '#898989' }}>  {this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.storage_recommendations) : ''}</div>
-                                            </Col>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <div style={{ padding: 10, marginTop: 75, }}>
-                                    <div style={{ height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', display: this.state.productDetails ? this.state.productDetails[0]._source.product_description ? "flex" : 'none' : 'none', }}>
-                                        <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={desription}></img></div>
-                                        <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}>Product Description</div>
-                                    </div>
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_description ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.product_description) : ''}</div>
-
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.speciality ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
-                                        <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={prodspeciality}></img></div>
-                                        <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Speciality</div>
-                                    </div>
-
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.speciality ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.speciality) : ''}</div>
-
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.usage ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
-                                        <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={produsage}></img></div>
-                                        <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Usage</div>
-                                    </div>
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.usage ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{ReactHtmlParser(this.state.productDetails ? this.state.productDetails[0]._source.usage : "")}</div>
-
-
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_source ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
-                                        <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={source}></img></div>
-                                        <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Product Source</div>
-                                    </div>
-                                    <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_source ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{ReactHtmlParser(this.state.productDetails ? this.state.productDetails[0]._source.product_source : "")}</div>
+                                                }
+                                            </div>
+                                            <div style={{ backgroundColor: '#e4e2e5', height: 25, width: '100%', textIndent: 10, fontWeight: '700' }}>
+                                                Sold by
                                 </div>
-                            </div>
+                                            <div className="mrp_container">
+                                                <div><p style={{ fontWeight: '700', fontSize: 14, display: 'inline' }}>MRP</p>
+
+                                                    <p style={{ display: 'inline', textDecoration: 'line-through', marginLeft: 10 }}>₹{this.state.productDetails ? this.state.productDetails[0]._source.products[this.state.activeButton].mrp / 100 : ''}</p>
+
+                                                </div>
+                                                <div>₹{this.state.productDetails ? this.state.productDetails[0]._source.products[this.state.activeButton].on_sale === true ? this.state.productDetails[0]._source.products[this.state.activeButton].saleprice / 100 : this.state.productDetails[0]._source.products[this.state.activeButton].mrp / 100 : ''}</div>
+                                            </div>
+
+
+                                            <div className="card_button_container">
+                                                {
+
+                                                    this.state.product_quantity ?
+                                                        (
+                                                            this.state.product_quantity[this.state.activeButton] ? (
+                                                                <div className="card_button_container">
+                                                                    <button className="card_button card_btn_plus" onClick={() => this.storeCart('decr')}>-
+                                                                  </button>
+                                                                    <div className="card_btn_num"> {this.state.product_quantity[this.state.activeButton]}</div>
+                                                                    <button className="card_button card_btn_plus" onClick={() => this.storeCart('incr')}>+
+                                                                  </button>
+                                                                </div>
+                                                            ) : (
+                                                                    <div className="card_button_container" style={{ display: 'flex' }} onClick={() => this.storeCart('incr')}>
+                                                                        <button className="card_button">Add to<img style={{ border: 'none', display: 'inline' }} src={addtocart} height="20" /></button>
+                                                                    </div>
+                                                                )
+                                                        )
+                                                        :
+                                                        (
+                                                            <div className="card_button_container" style={{ display: 'flex' }} onClick={() => this.storeCart('incr')}>
+                                                                <button className="card_button">Add to<img style={{ border: 'none', display: 'inline' }} src={addtocart} height="20" /></button>
+                                                            </div>
+                                                        )
+                                                }
+                                            </div>
+                                            <div style={{ display: 'flex', flexDirection: 'row' }}>
+                                                <Col sm="3" style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.shelf_life ? "" : 'none' : 'none', borderRight: '1px solid #ccc' }}>
+                                                    <div style={{ color: '#427846' }}> *Shelf Life</div>
+                                                    <div style={{ color: '#898989' }}> {this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.shelf_life) : ''}</div>
+                                                </Col>
+                                                <Col sm="9" style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.shelf_life ? "" : 'none' : 'none', marginLeft: 10 }}>
+
+                                                    <div style={{ color: '#427846' }}> *Storage Recommendations</div>
+                                                    <div style={{ color: '#898989' }}>  {this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.storage_recommendations) : ''}</div>
+                                                </Col>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <div style={{ padding: 10, marginTop: 75, }}>
+                                        <div style={{ height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', display: this.state.productDetails ? this.state.productDetails[0]._source.product_description ? "flex" : 'none' : 'none', }}>
+                                            <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={desription}></img></div>
+                                            <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}>Product Description</div>
+                                        </div>
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_description ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.product_description) : ''}</div>
+
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.speciality ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
+                                            <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={prodspeciality}></img></div>
+                                            <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Speciality</div>
+                                        </div>
+
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.speciality ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{this.state.productDetails ? ReactHtmlParser(this.state.productDetails[0]._source.speciality) : ''}</div>
+
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.usage ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
+                                            <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={produsage}></img></div>
+                                            <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Usage</div>
+                                        </div>
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.usage ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{ReactHtmlParser(this.state.productDetails ? this.state.productDetails[0]._source.usage : "")}</div>
+
+
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_source ? "flex" : 'none' : 'none', height: 50, backgroundColor: '#e4e2e5', alignItems: 'center', }}>
+                                            <div style={{ display: 'flex' }}><img style={{ marginLeft: 5, height: 25 }} src={source}></img></div>
+                                            <div style={{ padding: 10, fontSize: 16, fontWeight: 'bold' }}> Product Source</div>
+                                        </div>
+                                        <div style={{ display: this.state.productDetails ? this.state.productDetails[0]._source.product_source ? "" : 'none' : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{ReactHtmlParser(this.state.productDetails ? this.state.productDetails[0]._source.product_source : "")}</div>
+                                    </div>
+                                </div>
+                            </Row>
                         ) :
                             (
                                 this.state.product_deal_details ? (
@@ -592,7 +670,7 @@ class ProductDescription extends Component {
                                                 <Slider {...settings} >
                                                     {this.state.im_arr ? (
                                                         this.state.im_arr.map((img, id) => {
-                                                            console.log(img, "img");
+                                                            //console.log(img, "img");
                                                             return (
                                                                 <div>
                                                                     <img src={img} />
@@ -688,6 +766,7 @@ class ProductDescription extends Component {
                                             <div style={{ display: this.state.product_deal_details.product_source ? "" : 'none', padding: '10px 10px 25px', fontSize: 14 }}>{ReactHtmlParser(this.state.productDetails ? this.state.productDetails[0]._source.product_source : "")}</div>
                                         </div>
                                     </div>
+
                                 ) : ""
 
                             )

@@ -247,8 +247,10 @@ constructor(props) {
 
     redirectTo(data) {
         if(data){
+            console.log(data)
             window.location.href = "/"
         }
+        else
         window.location.href = "/cart"
     }
 
@@ -342,7 +344,7 @@ constructor(props) {
             <img src={emptycart} height='200px'></img>
             <div>
             <div className='empty-text'>YOUR GROCERY BAG IS EMPTY</div>
-            <div><button className="button_white">Fill it with something</button></div>
+            <div><button className="button_white" onClick={()=>this.redirectTo('home')}>Fill it with something</button></div>
          </div>
        
        </div> )}

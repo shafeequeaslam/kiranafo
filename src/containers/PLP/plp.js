@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/sidebar';
 
 import Header from '../../components/Header/header';
-import { LISTING_BY_ID_CATEGORY } from '../../utis/API';
+import { LISTING_BY_ID_CATEGORY, SEARCH_RESULTS_FULL, DOMAIN } from '../../utis/API';
 import LinesEllipsis from 'react-lines-ellipsis';
 import CardComponent from '../../components/card';
 import Axios from 'axios';
@@ -61,7 +61,7 @@ class ProductList extends Component {
                 header: {
                     'Content-type': 'application/json',
                 },
-                url: 'http://dev-esexpress.kirana11.com/v2/search?q=' + searchq + '&sort=asc&mode=min&from=0&size=12',
+                url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=12',
                 // data: query
 
             })
@@ -144,7 +144,7 @@ class ProductList extends Component {
                     header: {
                         'Content-type': 'application/json',
                     },
-                    url: 'http://dev-esexpress.kirana11.com/v2/search?q=' + searchq + '&sort=asc&mode=min&from=0&size=16',
+                    url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=16',
                     // data: query
 
                 })
@@ -196,7 +196,7 @@ class ProductList extends Component {
             url = 'brand_filter_third?cat_id=' + id
         }
         Axios({
-            url: 'http://dev-esexpress.kirana11.com/' + url,
+            url: DOMAIN + url,
             method: 'get',
             headers: {
                 'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ class ProductList extends Component {
             url = 'brand_filter_third?cat_id=' + id
         }
         Axios({
-            url: 'http://dev-esexpress.kirana11.com/' + url,
+            url: DOMAIN + url,
             method: 'get',
             headers: {
                 'Content-Type': 'application/json'
@@ -544,7 +544,12 @@ class ProductList extends Component {
         let level;
 
         if (search_type == 'brands') {
-            brand = [search_id];
+            console.log(search_id)
+            if(!search_id){
+                brand=[];  
+            }
+           else
+             brand = [search_id];
             console.log(brand)
             if (this.state.updatedId) {
                 id = this.state.updatedId
@@ -698,7 +703,7 @@ class ProductList extends Component {
                     header: {
                         'Content-type': 'application/json',
                     },
-                    url: 'http://dev-esexpress.kirana11.com/v2/search?q=' + searchq + '&sort=asc&mode=min&from=' + from + '&size=12',
+                    url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=' + from + '&size=12',
                     // data: query
 
                 })

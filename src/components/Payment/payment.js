@@ -57,7 +57,18 @@ class PaymentComponent extends Component {
             addCoupon: !this.state.addCoupon,
         })
     }
+    _handleKeyPress(e){
+        if (e.key === 'Enter') {
+            this.couponApplied();
+          }
+    }
     couponApplied(item) {
+        let code;
+        if(!item){
+            code = this.state.coupon_q
+        }
+        else
+        code = item.code
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -72,7 +83,7 @@ class PaymentComponent extends Component {
             },
             data:{
                 order_id:order_id,
-                coupon_code:item.code
+                coupon_code:code
             }
         })
         .then((data)=>{
@@ -313,10 +324,10 @@ class PaymentComponent extends Component {
                     <div onClick={() => this.addCoupon()} className="coupon_wrpr_close">x</div>
                     <div className="flex_row">
                         <div className="input-group" style={{ width: '50%' }}>
-                            <input placeholder="Search Products" type="text" className="coupon_input form-control" style={{ borderRadius: 0 }} />
+                            <input placeholder="Search Products" type="text" className="coupon_input form-control" style={{ borderRadius: 0 }} onChange={(e)=>this.setState({coupon_q:e.target.value})}  onKeyPress={(e)=>this._handleKeyPress(e)}/>
                         </div>
                         <div>
-                            <button className='search_btn'>Apply</button>
+                            <button className='search_btn' onClick={() => {this.couponApplied()}}>Apply</button>
                         </div>
                     </div>
                     <div className="coupon-listing_wrpr">

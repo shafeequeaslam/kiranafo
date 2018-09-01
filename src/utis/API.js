@@ -9,3 +9,4 @@ export const HOMEPAGE_CAT_DEALS_PRODUCTS = DOMAIN +'category_deals_products?cat_
 export const HOMEPAGE_BANNERS = DOMAIN+'banners?type=home_page_top_banners';
 export const HOMEPAGE_EXCITING_DEALS_BANNER = DOMAIN +'banners?type=exciting_deals_banners';
 export const HOMEPAGE_EXCITING_CAT_BANNERS = DOMAIN +"banners?type=category_deals_banners";
+export const SEARCH_RESULTS_FULL = DOMAIN+"v2/search?q="

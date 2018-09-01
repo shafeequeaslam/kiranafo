@@ -59,7 +59,7 @@ class shakeshake extends Component {
                       </div>
 
                             <Nav>
-                                <NavItem style={{ width: 175, marginBottom: 5 }}>
+                                <NavItem style={{ width: 175,}}>
                                     <NavLink style={{ textAlign: 'center' }}
                                         active={this.state.activeTab === '1'}
                                         className="login"
@@ -67,7 +67,7 @@ class shakeshake extends Component {
                                         Coupon
                                     </NavLink>
                                 </NavItem>
-                                <NavItem style={{ width: 175, marginLeft: 5, marginBottom: 5 }}>
+                                <NavItem style={{ width: 175, marginLeft: 5,}}>
                                     <NavLink style={{ textAlign: 'center' }}
                                         className={classnames(["login", { active: this.state.activeTab === '2' }])}
                                         onClick={() => { this.toggle('2'); }}
