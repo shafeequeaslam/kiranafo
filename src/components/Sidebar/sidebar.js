@@ -69,6 +69,25 @@ class Sidebar extends Component {
         this.props.brandData(undefined)
         }
     }
+    search(e){
+        let searchText=e.target.value;
+        console.log(searchText)
+        let suggestions = [];
+        let choices= this.props.brandItems;
+        console.log(this.props.brandItems)
+        for (let i=0;i<choices.length;i++){
+            if (choices[i].key.toUpperCase().indexOf(searchText.toUpperCase())!= -1 ) 
+            suggestions.push(choices[i]);
+        }
+        console.log(suggestions);
+        setTimeout(()=>{
+                this.setState({
+                    searchItems:suggestions
+                })
+        },200)
+    }
+
+    
     render() {
         return (
             <div style={{ border: '1px solid #dedede' }}>
@@ -86,6 +105,7 @@ class Sidebar extends Component {
                         <li>Health & Energy Drinks</li>
                         <li>Fruit Drinks & Juices</li>
                     </ul> */}
+                    
                     <Nav vertical className="sidebarList">
                         {this.props.menuItems ? this.props.menuItems.map((data, i) => {
                             console.log(data);
@@ -100,7 +120,7 @@ class Sidebar extends Component {
                 </div>
 
                 <div className="sidebarMenu">
-                    <div className="headerOne">Brands</div>
+                    <div className="headerOne" style={{display:this.props.brandItems ? '':'none'}}>Brands</div>
                     {/* <ul className="sidebarList">
                         <li>Health & Energy Drinks</li>
                         <li>Fruit Drinks & Juices</li>
@@ -111,9 +131,27 @@ class Sidebar extends Component {
                         <li>Health & Energy Drinks</li>
                         <li>Fruit Drinks & Juices</li>
                     </ul> */}
-                    <Nav vertical className="sidebarList">
-                        {this.props.brandItems ? this.props.brandItems.map((data, i) => {
+                    <div style={{display:this.props.brandItems ? '':'none'}}>
+                        <input type="text" onChange={(e)=>this.search(e)} />
+                    </div>
+                    <Nav vertical className="sidebarList" style={{display:this.state.searchItems ? '':'none'}}>
+                        {this.state.searchItems ? this.state.searchItems.map((data, i) => {
                             console.log(data);
+                            return (
+                                <NavItem key={i} onClick={() => this.sendData(i, data.ids.buckets[0].key)}>
+                                    <NavLink href="#">
+                                        <Label check>
+                                            <input type="checkbox" checked={this.state.checked_state == data.ids.buckets[0].key ? true : false} />{' '}
+                                            {data.key}
+                                        </Label>
+                                    </NavLink>
+                                </NavItem>
+                            )
+                        }) : ''}
+
+                    </Nav>
+                    <Nav vertical className="sidebarList" style={{display:this.state.searchItems ? 'none':''}}>
+                        {this.props.brandItems ? this.props.brandItems.map((data, i) => {
                             return (
                                 <NavItem key={i} onClick={() => this.sendData(i, data.ids.buckets[0].key)}>
                                     <NavLink href="#">

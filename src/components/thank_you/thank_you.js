@@ -27,7 +27,7 @@ class ThankYouComponent extends Component {
             <div>
                 <Header change={this.state.change}/>
                 <div className="thank_u_container">
-                    <div className="tq_logo"><div style={{ display:'flex'}}><img style={{margin:'auto'}} src={kiranalogo}></img></div></div>
+                    <div className="tq_logo"><div style={{ display:'flex'}}><img style={{margin:'auto'}} src={kiranalogo} onClick={()=>{window.location.href = '/'}}></img></div></div>
                     <div className="tq_bold_text">THANK YOU FOR SHOPPING</div>
                     <div className="tq_underline"></div>
                     <div className="tq_order_status">Your order number is <p>{this.state.order_id}</p></div>

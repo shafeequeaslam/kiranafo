@@ -10,6 +10,7 @@ import { LISTING_BY_ID_CATEGORY, SEARCH_RESULTS_FULL, DOMAIN } from '../../utis/
 import LinesEllipsis from 'react-lines-ellipsis';
 import CardComponent from '../../components/card';
 import Axios from 'axios';
+import FooterComponent from '../../components/footer-components/Footer/containers/footer';
 
 let cartObj = undefined;
 
@@ -58,7 +59,7 @@ class ProductList extends Component {
 
             Axios({
                 method: 'GET',
-                header: {
+                headers: {
                     'Content-type': 'application/json',
                 },
                 url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=12',
@@ -86,7 +87,7 @@ class ProductList extends Component {
         }
         else if (category_id != null) {
             this.setState({
-                productId: category_id
+                productId: category_id, search: false
             });
             this.loadProductDetails(category_id);
         }
@@ -141,7 +142,7 @@ class ProductList extends Component {
 
                 Axios({
                     method: 'GET',
-                    header: {
+                    headers: {
                         'Content-type': 'application/json',
                     },
                     url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=16',
@@ -174,7 +175,7 @@ class ProductList extends Component {
             }
             else if (category_id != null) {
                 this.setState({
-                    productId: category_id
+                    productId: category_id, search: false
                 });
                 this.loadProductDetails(category_id);
             }
@@ -182,6 +183,81 @@ class ProductList extends Component {
 
 
 
+    }
+    refreshItems(){
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let category_id = urlStr.searchParams.get("categoryId");
+        let search = urlStr.searchParams.get("search");
+        let level = urlStr.searchParams.get("level");
+        let deal_type = urlStr.searchParams.get("dealType");
+        console.log(level)
+
+        this.setState({
+            activePage: 0
+        })
+        setTimeout(() => {
+            if (level != null) {
+                this.setState({
+                    search: true, banner: true, banner_id: category_id, banner_level: level
+                })
+                console.log('here', level)
+                this.loadProductDetailsTest(category_id, level)
+            }
+            else if (deal_type != null) {
+                this.setState({
+                    search: true,
+                    deal_type: deal_type
+                })
+                this.loadProductDetailsDeals(deal_type)
+            }
+            else if (search != null) {
+                this.setState({
+                    search: true
+                })
+                let searchq = search.toLowerCase();
+
+                Axios({
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=16',
+                    // data: query
+
+                })
+                    // .then(res => res)
+                    .then((data) => {
+                        this.setState({
+                            listItems: undefined
+                        })
+                        //console.log(data,'data');
+
+                        // for(let i=0;i<listingDetails.length;i++){
+                        //     activeBtn[i]=0; 
+                        //  }
+                        this.setState({
+                            listItems: data.data
+                        })
+
+
+                        // })
+                        // this.setState({
+                        //     searchResults: data.data.hits.hits
+                        // })
+                    })
+                    .catch((err) => {
+                        //console.log(err)
+                    })
+            }
+            else if (category_id != null) {
+                this.setState({
+                    productId: category_id, search: false
+                });
+                this.loadProductDetails(category_id);
+            }
+        }, 100)
     }
     getBrandItems() {
         let url;
@@ -254,28 +330,63 @@ class ProductList extends Component {
                 console.log(err.response)
             })
     }
-    loadProductDetails = (data, level) => {
+    loadProductDetails = (data, sort, mode) => {
+        console.log(sort, mode)
+        let sortValue;
+        let modeValue
+        if (!sort) {
+            sortValue = "asc"
+        }
+        else if (sort) {
+            sortValue = sort
+        }
+        if (!mode) {
+            modeValue = "min"
+        }
+        else if (mode) {
+            modeValue = mode
+        }
         let id;
         let type;
         let data_type;
 
-
-        if (!data) {
+        if (this.state.updatedId) {
+            id = this.state.updatedId
+        }
+        else
             id = this.props.location.state.item.tid;
+        if (this.state.updatedLevel) {
+            if (this.state.updatedLevel === 1) {
+                type = 'category';
+                data_type = 'parent_cat'
+            }
+            else if (this.state.updatedLevel === 2) {
+                type = 'category/second';
+                data_type = 'parent_cat'
+            }
+            else if (this.state.updatedLevel === 3) {
+                type = 'category/third';
+                data_type = 'cat_id'
+            }
         }
-        else id = data;
+        else {
+            if (!data) {
+                id = this.props.location.state.item.tid;
+            }
+            else id = data;
 
-        if (this.props.location.state.level === 1) {
-            type = 'category';
-            data_type = 'parent_cat'
-        }
-        else if (this.props.location.state.level === 2) {
-            type = 'category/second';
-            data_type = 'parent_cat'
-        }
-        else if (this.props.location.state.level === 3) {
-            type = 'category/third';
-            data_type = 'cat_id'
+            if (this.props.location.state.level === 1) {
+                type = 'category';
+                data_type = 'parent_cat'
+            }
+            else if (this.props.location.state.level === 2) {
+                type = 'category/second';
+                data_type = 'parent_cat'
+            }
+            else if (this.props.location.state.level === 3) {
+                type = 'category/third';
+                data_type = 'cat_id'
+            }
         }
 
 
@@ -291,8 +402,8 @@ class ProductList extends Component {
             },
             data: JSON.stringify({
                 [data_type]: id,
-                "sort": "asc",
-                "mode": "min",
+                "sort": sortValue,
+                "mode": modeValue,
                 "from": from,
                 "size": 12
             })
@@ -313,14 +424,30 @@ class ProductList extends Component {
                         listItems: listingDetails.data,
                         activeButton: activeBtn
                     })
-                }, 100)
-            }, (error) => {
-                console.error(error)
+                }, 200)
+            }).catch((error) => {
+                console.error(error.response)
             });
         this.getBrandItems();
 
     }
-    loadProductDetailsTest(id, level) {
+    loadProductDetailsTest(id, level, sort, mode) {
+        let sortValue;
+        let modeValue;
+
+        if (!sort) {
+            sortValue = "asc"
+        }
+        else {
+            sortValue = sort
+        }
+        if (!mode) {
+            modeValue = "min"
+        }
+        else {
+            modeValue = mode
+        }
+
         let type;
         let data_type;
         if (level = "First Level") {
@@ -349,8 +476,8 @@ class ProductList extends Component {
             },
             data: JSON.stringify({
                 [data_type]: id,
-                "sort": "asc",
-                "mode": "min",
+                "sort": sortValue,
+                "mode": modeValue,
                 "from": from,
                 "size": 12
             })
@@ -371,7 +498,7 @@ class ProductList extends Component {
                         listItems: listingDetails.data,
                         activeButton: activeBtn
                     })
-                }, 100)
+                }, 200)
             })
             .catch((err) => {
                 console.log(err.response)
@@ -545,11 +672,11 @@ class ProductList extends Component {
 
         if (search_type == 'brands') {
             console.log(search_id)
-            if(!search_id){
-                brand=[];  
+            if (!search_id) {
+                brand = [];
             }
-           else
-             brand = [search_id];
+            else
+                brand = [search_id];
             console.log(brand)
             if (this.state.updatedId) {
                 id = this.state.updatedId
@@ -636,7 +763,7 @@ class ProductList extends Component {
                 'Content-Type': 'application/json',
             },
             data: JSON.stringify({
-                [data_type]: id,
+                [data_type]: parseInt(id),
                 "sort": "asc",
                 'brand': brand,
                 "mode": "min",
@@ -700,7 +827,7 @@ class ProductList extends Component {
 
                 Axios({
                     method: 'GET',
-                    header: {
+                    headers: {
                         'Content-type': 'application/json',
                     },
                     url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=' + from + '&size=12',
@@ -737,7 +864,7 @@ class ProductList extends Component {
                 this.loadProductDetails(category_id);
             }
 
-        }, 100)
+        }, 200)
 
 
         let val = localStorage.getItem('cartObj')
@@ -749,6 +876,90 @@ class ProductList extends Component {
 
     }
 
+    sortData(type) {
+        console.log(type)
+        //console.log(this.props);
+        let sort;
+        let mode;
+        if (type === 'asc') {
+            console.log('1')
+            sort = "asc";
+            mode = "min";
+        }
+        if (type === 'desc') {
+            console.log('2')
+            sort = "desc";
+            mode = "max";
+        }
+
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let category_id = urlStr.searchParams.get("categoryId");
+        let search = urlStr.searchParams.get("search");
+        setTimeout(() => {
+            if (this.state.banner == true) {
+                this.loadProductDetailsTest(this.state.banner_id, this.state.banner_level, sort, mode);
+            }
+
+            else if (search != null) {
+                this.setState({
+                    search: true
+                })
+                let searchq = search.toLowerCase();
+                let from = this.state.activePage * 12;
+
+                Axios({
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                    },
+                    url: SEARCH_RESULTS_FULL + searchq + '&sort=' + sort + '&mode=' + mode + '&from=' + from + '&size=12',
+                    // data: query
+
+                })
+                    // .then(res => res)
+                    .then((data) => {
+                        this.setState({
+                            listItems: undefined,
+                        })
+
+                        //console.log(data.data,'data,paginate');
+
+
+                        this.setState({
+                            listItems: data.data,
+                        })
+
+
+                        // })
+                        // this.setState({
+                        //     searchResults: data.data.hits.hits
+                        // })
+                    })
+                    .catch((err) => {
+                        //console.log(err)
+                    })
+            }
+            else if (category_id != null) {
+                this.setState({
+                    productId: category_id
+                });
+                this.loadProductDetails(category_id, sort, mode);
+            }
+
+        }, 200)
+
+
+        let val = localStorage.getItem('cartObj')
+        if (val != null) {
+            cartObj = JSON.parse(val);
+        }
+        else
+            cartObj = undefined
+
+
+    }
     renderBreadCrumbs(level, updatedId) {
         if (level && updatedId) {
             console.log(this.props.location.state)
@@ -770,21 +981,21 @@ class ProductList extends Component {
                         if (data[i].tid == updatedId) {
                             sub_tree = data[i]
                             console.log(sub_tree.name)
-                            return(
-                                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
-                                        <div><Link to="/">Home</Link></div>
-                                        <div style={{ margin: '0 5px' }}>/</div>
-            
-                                        <div> <div> {this.props.location.state.item.name}11</div></div>
-            
-                                        <div style={{ margin: '0 5px' }}>/</div>
-                                        <div className="bread_crum_red" >{sub_tree.name}</div>
-                                    </div>
-                                    )
-                            
+                            return (
+                                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                                    <div><Link to="/">Home</Link></div>
+                                    <div style={{ margin: '0 5px' }}>/</div>
+
+                                    <div> <div> {this.props.location.state.item.name}11</div></div>
+
+                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div className="bread_crum_red" >{sub_tree.name}</div>
+                                </div>
+                            )
+
                         }
                     }
-                        
+
                 }
                 else {
                     <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
@@ -859,12 +1070,24 @@ class ProductList extends Component {
 
     }
 
+    setrevChange(){
+        alert('change')
+        this.setState({
+            revchange: undefined
+        })
+        this.setState({
+            revchange: true
+        }) 
+        this.refreshItems();
+    
+    }
+
     render() {
         return (
-            <main>
+            <main style={{ maxHeight: this.state.overflowState === '0' ? 'auto' : '100vh' }}>
 
                 <div>
-                    <Header change={this.state.change} />
+                    <Header change={this.state.change} revChange={() => this.setrevChange()}  location_header={(data) => { this.setState({ overflowState: undefined }), setTimeout(() => { this.setState({ overflowState: data }) }, 100) }} />
                 </div>
                 {this.state.search ? this.state.search === true ? (
                     ''
@@ -882,34 +1105,48 @@ class ProductList extends Component {
                     {this.state.search ? this.state.search === true ? (
                         ''
                     ) : (
-                            <div className="col-sm-3" style={{ padding: 0 }}>
+                            <div className="col-md-3 hidden-xs" style={{ padding: 0 }}>
 
                                 <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         ) : (
-                            <div className="col-sm-3" style={{ padding: 0 }}>
+                            <div className="col-md-3 hidden-sm" style={{ padding: 0 }}>
 
                                 <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         )}
 
 
-                    <div className={this.state.search ? this.state.search === true ? "col-sm-12" : "col-sm-9" : "col-sm-9"}>
+                    <div className={this.state.search ? this.state.search === true ? "col-md-12 col-sm-12" : "col-md-9 col-sm-12" : "col-md-9 col-sm-12"}>
+                        <div className="plp_sort_wrpr">
+                            <div className="plp_header">{this.props.location.state ? this.props.location.state.item.name : ''}</div>
+                            <div>
+                                Sort By <select onChange={(e) => this.sortData(e.target.value)}>
+                                    <option value="asc">Price - Low to High</option>
+                                    <option value="desc">Price - High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <Row>
                             {this.state.listItems ? this.state.listItems.map((item, index) => {
 
                                 return (
-                                    <CardComponent item={item} index={index} key={index} change={() => this.setChange()} type={this.state.deal_type ? 'deals' : undefined} productDeals={this.state.deal_type ? item : ''} plp="1212" />
+                                    <CardComponent item={item} index={index} key={index} change={() => this.setChange()} type={this.state.deal_type ? 'deals' : undefined} productDeals={this.state.deal_type ? item : ''} plp="1212" rev_change={this.state.revchange} />
                                 )
                             }) : ""
                             }
 
                         </Row>
-                        <div onClick={() => this.paginate('next')} style={{ display: this.state.listItems ? this.state.listItems.length < 12 ? 'none' : '' : 'none' }}>NEXT</div>
-                        <div style={{ display: this.state.activePage == 0 ? 'none' : '' }} onClick={() => this.paginate('prev')}>PREV</div>
+                        <div style={{display:'flex'}}>
+                        <div style={{ display: this.state.activePage == 0 ? 'none' : '' }} className="pag_arrow prev" onClick={() => this.paginate('prev')}>‹‹</div>
+                        <div>Page {this.state.activePage + 1}</div>
+                        
+                        <div onClick={() => this.paginate('next')} style={{ display: this.state.listItems ? this.state.listItems.length < 12 ? 'none' : '' : 'none', }} className="pag_arrow next">››</div>
+                        </div>
                     </div>
                 </div>
-
+                <FooterComponent />
             </main>
         );
     }

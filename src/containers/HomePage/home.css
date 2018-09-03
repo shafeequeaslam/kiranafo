@@ -92,7 +92,6 @@ h3 {
   }
 
   .heroContainer{
-    height: 350px;
     width: 100%;
     margin: 0 auto;
     background-position: center;
@@ -296,4 +295,48 @@ h3 {
 }
 .timer_desc{
   font-size: 20px
+}
+.homepage_ex_banner{
+  padding: 25px 10px;
+  width: 100%;
+}
+.homepage_ex_banner .moduleHeader{
+  display: flex;
+   justify-content: center;
+    align-items: center 
+}
+.banners_wrpr{
+  width: 80%;
+   margin: 0 auto;
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   position: relative
+}
+
+
+
+@media only screen and (max-width:600px) {
+.arrow_prev {
+  left: -10%;
+}
+.arrow_next {
+  right: -10%;
+}
+}
+
+@media only screen and (max-width:480px) {
+  .arrow_next {
+    right: -14%;
+}
+.arrow_prev {
+  left: -14%;
+}
+
+.banners_wrpr{
+  width: 100%;
+}
+.homepage_ex_banner {
+  padding: 20px 0px;
+}
 }

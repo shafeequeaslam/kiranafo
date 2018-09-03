@@ -7,7 +7,8 @@ class Timer extends Component {
             this.state = {
                   hr: '',
                   min: '',
-                  secs: ''
+                  secs: '',
+                  visible:'1'
             };
       }
 
@@ -46,12 +47,25 @@ class Timer extends Component {
                   if (seconds < 10) {
                         seconds = '0' + seconds
                   }
+
+
+                  if(t > 0){
+                       console.log('here')
                   this.setState({
                         days: days,
                         hr: hours,
                         min: minutes,
                         secs: seconds
                   })
+                  
+             } 
+             else if(t < 0){
+                  this.props.shockingDeals("0")
+                  this.setState({
+                        visible: 0,
+                  })
+                   
+             }    
 
 
 
@@ -59,7 +73,7 @@ class Timer extends Component {
       }
       render() {
             return (
-                  <div className="timer_container">
+                  <div className="timer_container" style={{display:this.state.visible === '1' ?'' :'none'}}>
                         <div className="timer_wrpr">
                               <div className="timer_data"> {this.state.days}</div>
                               <div className="timer_desc">DAYS</div>

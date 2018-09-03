@@ -14,8 +14,6 @@ import {
     TabContent, TabPane, Card, Button, CardTitle, CardText, Row, Col
 } from 'reactstrap';
 import LinesEllipsis from 'react-lines-ellipsis';
-import { config } from '../../firebase/firebase';
-import  firebase from 'firebase';
 import classnames from 'classnames'
 import './home.css';
 import '../../App.css';
@@ -38,7 +36,7 @@ class HomePage extends Component {
             activeTab: 0,
             productDeals: undefined,
             categorisedProducts: [],
-            cat_deals_products: undefined
+            cat_deals_products: undefined,shockingDealsActive:"1"
         };
         this.toggle = this.toggle.bind(this);
 
@@ -231,6 +229,9 @@ setrevChange(){
     this.setState({
         revchange: true
     }) 
+    this.getProductShockingDeals();
+    this.getProductCategoriesList();
+
 
 }
 
@@ -323,7 +324,7 @@ render() {
                 }
             },
             {
-                breakpoint: 800,
+                breakpoint: 768,
                 settings: {
                     slidesToShow: 3,
                     // slidesToScroll: 3,
@@ -336,18 +337,25 @@ render() {
                     // slidesToScroll: 2,
                 }
             },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 2,
+                    // slidesToScroll: 2,
+                }
+            },
         ]
     };
 
 
 
     return (
-        <main style={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+        <main style={{ width: '100%', overflowX: 'hidden',maxHeight:this.state.overflowState === '0' ? 'auto':'100vh' }}>
             <div>
-                <Header change={this.state.change} revChange={() => this.setrevChange()} />
+                <Header change={this.state.change} revChange={() => this.setrevChange()} location_header={(data)=>this.setState({overflowState:data})}/>
             </div>
             {/* <div style={{ width: '100%', alignItems: 'center', position: "relative" }}> */}
-            <Slider ref={c => (this.Slider = c)} {...settings} style={{}}>
+            <Slider ref={c => (this.Slider = c)} {...settings} >
                 {
                     this.state.bannerData ? this.state.bannerData.map((item, index) => {
                         console.log(item)
@@ -363,11 +371,11 @@ render() {
 
 
             {/* </div> */}
-            <div className="module_container" style={{ minHeight: 400 }}>
+            <div className="module_container" style={{ minHeight: 300,display: this.state.shockingDealsActive === "0" ? 'none' : ''  }}>
                 <div className="moduleHeader"> Shocking Deals</div>
                 {/* Timer Component */}
-                <Timer />
-                <div style={{ width: '80%', margin: '0 auto', position: 'relative' }}>
+                <Timer shockingDeals={(data)=>{this.setState({shockingDealsActive:data}),console.log(data)}}/>
+                <div style={{ width: '80%', margin: '0 auto', position: 'relative'}} >
                     <Slider ref={e => (this.Slider = e)} {...deals_sett}>
                         {
                             this.state.productDeals ? this.state.productDeals.map((item, index) => {
@@ -387,9 +395,9 @@ render() {
                     {/* <div style={{ width: '100%', textAlign: 'center', marginTop: 25 }}><Link to="/listing">View All Deals</Link></div> */}
                 </div>
             </div>
-            <div style={{ width: '100%', padding: '25px 10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }} className="moduleHeader">Exciting Deals</div>
-                <Row style={{ width: '80%', margin: '0 auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', position: 'relative' }}>
+            <div className="homepage_ex_banner">
+                <div className="moduleHeader">Exciting Deals</div>
+                <Row className="banners_wrpr">
                     {
                         this.state.exciting_bannerData ? this.state.exciting_bannerData.map((item, index) => {
                             //console.log(this.state.exciting_bannerData)
@@ -400,13 +408,6 @@ render() {
                             )
                         }) : ''
                     }
-
-                    {/* <Col className='card1xy' sm='3' style={{ backgroundImage: "url('https://img1.kirana11.com/files/public/featured_snacks_20-april.jpg?uExO3rUG5ZdPIdyz4z6cJqzmPTtlWKpG)'" }}>
-                        </Col>
-                        <Col className='card1xy' sm='3'>
-                        </Col>
-                        <Col className='card2x' sm='6' style={{ position: 'absolute', right: 0, top: 150 }}>
-                        </Col> */}
                 </Row>
             </div>
             <div style={{ width: '100%', }}>
@@ -439,9 +440,9 @@ render() {
                     </TabPane>
                 </TabContent>
             </div>
-            <div style={{ width: '100%', padding: '25px 10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }} className="moduleHeader">Exciting Deals</div>
-                <Row style={{ width: '80%', margin: '0 auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', position: 'relative' }}>
+            <div className="homepage_ex_banner">
+                <div className="moduleHeader">Exciting Deals</div>
+                <Row className="banners_wrpr">
 
                     {
                         this.state.exciting_cat_bannerData ? this.state.exciting_cat_bannerData.map((item, index) => {
@@ -465,7 +466,7 @@ render() {
                 </div>
             </div>
             <div style={{ width: '80%', margin: '0 auto' }}>
-                <FooterComponent listreq={true} />
+                <FooterComponent/>
             </div>
         </main >
     );

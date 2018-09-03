@@ -15,10 +15,14 @@ import yt from '../../assets/YT.png';
 class LoginComponent extends Component {
     constructor(props) {
         super(props);
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let type = urlStr.searchParams.get("_");
 
         this.toggle = this.toggle.bind(this);
         this.state = {
-            activeTab: '1',
+            activeTab: type!=null? type.toString() : '1',
             OtpBtnActive: false,
             isLoggedIn: true
         };
@@ -38,7 +42,8 @@ class LoginComponent extends Component {
         }
     }
     componentWillMount() {
-
+        
+        
     }
     render() {
         // if(this.state.isLoggedIn){
@@ -51,7 +56,7 @@ class LoginComponent extends Component {
                 <div className="login_wrpr">
                     <div style={{ width: '60%', margin: '0 auto' }}>
                         <div className="headerLogin">
-                        <div style={{ display:'flex',height:50}}><img style={{margin:'auto'}} height="100%" src={kiranalogo}></img></div>
+                        <div style={{ display:'flex',height:50}}><img style={{margin:'auto'}} height="100%" src={kiranalogo} onClick={()=>{window.location.href = '/'}}></img></div>
                         </div>
                         <div className="red_line"></div>
                         <div style={{ border: '1px solid #d4d4d4', padding: '10px 5px' }}>
@@ -89,7 +94,7 @@ class LoginComponent extends Component {
 
                     </div>
                 </div>
-                <div className="terms_condn">By signing up you agree to our <p>Terms and Conditions</p></div>
+                {/* <div className="terms_condn">By signing up you agree to our <p>Terms and Conditions</p></div> */}
                 <div className="social_wrpr">
                 <div><img src={yt}></img></div>
                 <div><img src={twitter}></img></div>

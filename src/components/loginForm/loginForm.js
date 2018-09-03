@@ -124,7 +124,8 @@ class LoginForm extends Component {
 
                           if (value.data.serving_area.length > 0) {
                               console.log(value, 'data11');
-                              localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
+                              localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]));
+                              window.location.href = '/'
                               //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
                               //   this.props.getFooterActive(0);
                               //   Actions.home();
@@ -140,7 +141,7 @@ class LoginForm extends Component {
                       .catch((err) => {
                           console.log(err.response, 'err')
                       })
-                  window.location.href = '/'
+                 
                   }
             })
       }

@@ -4,8 +4,9 @@
     z-index: 1;
     width: 100%;
     color: #cf2717;
-    font-size: 10px;
+    font-size: 12px;
     padding: 10px;
+    top: 100%;
 }
 .arrow_box div p{
     color:#fff;
@@ -150,7 +151,7 @@
     height: 20px;
     font-size: 13px;
     top: 5px;
-    right: -5px;
+    right: 5px;
     color: #cf2717;
     background-color: #fff;
     font-weight: 800;

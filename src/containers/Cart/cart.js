@@ -12,7 +12,9 @@ import withRouter from 'react-router-dom/withRouter';
 import { DELIVERY_CHARGE, CREATE_NEW_CART } from '../../utis/D2';
 import axios from 'axios'
 import Axios from 'axios';
+import close_icon from '../../assets/close icon gary@2x.png'
 
+let confirm;
 
 class CartList extends Component {
     constructor(props) {
@@ -223,7 +225,7 @@ class CartList extends Component {
 
         })
             .then((data) => {
-                console.log(data.data, '1111');
+                console.log(data.headers, '1211');
                 window.location = '/checkout?order_id=' + data.data[0].order_id;
                 // Actions.address_time({ total: this.state.totalAmount, totalFullAmount: this.state.totalFullAmount, order_id: data.data[0].order_id, uid: uid });
                 // Actions.add_address();
@@ -234,8 +236,22 @@ class CartList extends Component {
             })
     }
 
-    redirect(){
-       window.location.href = "/"
+    redirect() {
+        window.location.href = "/"
+    }
+
+    clearCart() {
+        confirm = window.confirm("Do you want to clear the cart?");
+        if (confirm == true) {
+            localStorage.removeItem('cartObj');
+            this.setState({
+                cartObj: []
+            })
+        } else {
+           
+        }
+
+
     }
 
     render() {
@@ -273,7 +289,7 @@ class CartList extends Component {
 
             <div>
                 <div>
-                    <Header change={this.state.change} cartIcon={false}/>
+                    <Header change={this.state.change} cartIcon={false} />
                 </div>
 
                 {this.state.cartObj ? (this.state.cartObj.length > 0 ? (
@@ -290,14 +306,18 @@ class CartList extends Component {
                         {/* {this.state.data.map((data, index) => {
                         return( */}
                         <div style={{ width: '80%', margin: '0 auto 25px', border: '1px solid #dedede', marginTop: 10 }}>
-                            <div style={{ width: '100%', backgroundColor: '#f7f7f7', height: 35, display: 'flex', alignItems: 'center', borderBottom: '1px solid #dedede' }}>
-                                <div ><img src={store}></img></div>
-                                <div>
-                                    Header for the store
+                            <div style={{ width: '100%', backgroundColor: '#f7f7f7', height: 35, display: 'flex', alignItems: 'center', borderBottom: '1px solid #dedede', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex' }}><img src={store}></img>
+                                    <div>
+                                        Header for the store
                         </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', paddingRight: 10,cursor:'pointer' }} onClick={() => this.clearCart()}>
+                                    Clear Cart
+                                </div>
                             </div>
-                            <div style={{ height: '100%', paddingBottom: 10 }}>
-                                <table className="table table-fixed" style={{ margin: 10 }} >
+                            <div style={{ height: '100%', padding: 10 }}>
+                                <table className="table table-fixed"  >
 
                                     <thead>
 
@@ -313,7 +333,7 @@ class CartList extends Component {
                                         </tr>
                                     </thead>
 
-                                    <tbody>
+                                    <tbody className="cart_table_body">
                                         {
                                             this.state.cartObj ?
                                                 (this.state.cartObj.map((item, index) => {
@@ -322,14 +342,16 @@ class CartList extends Component {
 
                                                         <tr style={{ display: 'flex', alignItems: 'center', }} key={index}>
                                                             <td className="col-sm-5">
-                                                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                                                    <div style={{ border: '1px solid #f7f7f7', height: 75, width: 75 }}>
-                                                                        <img src={item.productData.image_url} width='100%' />
+                                                                <Link to={{ pathname: '/product_desc', search: '?product=' + item.productData.pid, state: { 'item': { _source: item.productData }, 'type': "pid" } }}>
+                                                                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                                                        <div style={{ border: '1px solid #f7f7f7', height: 75, width: 75 }}>
+                                                                            <img src={item.productData.image_url} width='100%' />
+                                                                        </div>
+                                                                        <div style={{ marginLeft: 10 }}>
+                                                                            <div style={{ color: '#d4d4d4' }}>{item.productData.title}</div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div style={{ marginLeft: 10 }}>
-                                                                        <div style={{ color: '#d4d4d4' }}>{item.productData.title}</div>
-                                                                    </div>
-                                                                </div>
+                                                                </Link>
                                                             </td>
                                                             <td className="col-sm-2">
                                                                 <div>₹ {item.productData.on_sale === true ? item.productData.saleprice / 100 : item.productData.mrp / 100}</div>
@@ -349,8 +371,8 @@ class CartList extends Component {
                                                                 </div>
                                                             </td>
                                                             <td className="col-sm-1">₹{item.productData.on_sale === true ? item.productData.saleprice / 100 * item.product_quantity : item.productData.mrp / 100 * item.product_quantity}</td>
-                                                            <td className="col-sm-1">₹{item.productData.on_sale === true ? item.productData.mrp / 100 - item.productData.saleprice / 100 : 0}</td>
-                                                            <td className="col-sm-1" onClick={() => this.storeCart('clear')}>x</td>
+                                                            <td className="col-sm-1">₹{item.productData.on_sale === true ? (item.productData.mrp / 100 - item.productData.saleprice / 100) * item.product_quantity : 0}</td>
+                                                            <td className="col-sm-1" onClick={() => this.storeCart('clear', index)}><img src={close_icon} height='15' /></td>
                                                         </tr>
 
 
@@ -387,7 +409,7 @@ class CartList extends Component {
                                             <div className="payment_info_bold payment_info_red">Order Total</div>
                                             <div className="payment_info_bold payment_info_red">₹ {this.state.totalAmount + this.state.delivery_fee}</div>
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'center',backgroundColor: '#f5f5f5' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
                                             <div><img style={{ margin: 'auto' }} src={save}></img></div>
                                             <div><button className="button_red button_grey">Your total Savings <p>₹ {this.state.savedAmt}</p></button></div>
                                         </div>
@@ -400,7 +422,7 @@ class CartList extends Component {
                                 {/* <div style={{ width: '100%', fontSize: 12, marginTop: 5 }}>ⓘ Coupons & Bank Offers can be applied in payment page</div> */}
                                 <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', height: 50, marginTop: 10 }}>
                                     <div style={{ width: '40%', marginRight: 10 }}>
-                                        <button onClick={()=>window.location.href="/"} className="search_btn" style={{ borderRadius: 0, backgroundColor: '#fff', color: '#cf2717', border: '1px solid #cf2717' }} >Continue Shopping </button>
+                                        <button onClick={() => window.location.href = "/"} className="search_btn" style={{ borderRadius: 0, backgroundColor: '#fff', color: '#cf2717', border: '1px solid #cf2717' }} >Continue Shopping </button>
                                     </div>
                                     <div style={{ width: 'auto' }}>
                                         <button onClick={() => this.create_cart()} className="search_btn" style={{ borderRadius: 0 }}><div >Proceed to Checkout</div> </button>
@@ -409,25 +431,25 @@ class CartList extends Component {
                             </div>
                         </div>
                     </div>
-                ) : (<div style={{ width: '100%', height: '100vh',alignContent:'center',justifyContent:'center',alignItems:'center',display:'flex',flexDirection:'column' }}>
-                <div>You have no items in the cart</div>
-                <div style={{marginTop:25}}>
-                <button className="search_btn" style={{ borderRadius: 0 }} onClick={()=>this.redirect()}>Continue Shopping </button>
-                </div>
+                ) : (<div style={{ width: '100%', height: '100vh', alignContent: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
+                    <div>You have no items in the cart</div>
+                    <div style={{ marginTop: 25 }}>
+                        <button className="search_btn" style={{ borderRadius: 0 }} onClick={() => this.redirect()}>Continue Shopping </button>
+                    </div>
                 </div>)
                 )
-                    : (<div style={{ width: '100%', height: '100vh',alignContent:'center',justifyContent:'center',alignItems:'center',display:'flex',flexDirection:'column' }}>
-                    <div>You have no items in the cart</div>
-                    <div style={{marginTop:25}}>
-                    <button className="search_btn" style={{ borderRadius: 0 }} onClick={()=>this.redirect()}>Continue Shopping </button>
-                    </div>
+                    : (<div style={{ width: '100%', height: '100vh', alignContent: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column' }}>
+                        <div>You have no items in the cart</div>
+                        <div style={{ marginTop: 25 }}>
+                            <button className="search_btn" style={{ borderRadius: 0 }} onClick={() => this.redirect()}>Continue Shopping </button>
+                        </div>
                     </div>)
                 });
-              
- 
+
+
             </div>
         )
-          
+
     }
 }
 

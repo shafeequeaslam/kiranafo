@@ -26,16 +26,16 @@ class CheckoutContainer extends Component {
             street_name: '',
             landmark: '',
             dateSelected: 0,
-            timeSelected: 0,
+            timeSelected: -1,
 
         };
 
     }
     toggleDate(id, date) {
-
         this.setState({
             dateSelected: id,
-            dateValue: date
+            dateValue: date,timeSelected:0,
+            timeValue:this.state.timeSlotArr[id][0]
         })
     }
     toggleTab(tab) {
@@ -221,7 +221,10 @@ class CheckoutContainer extends Component {
             })
     }
 
-    add_address_to_order(item) {
+    add_address_to_order(item,i) {
+        this.setState({
+            addressSelected:i
+        })
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -324,6 +327,7 @@ class CheckoutContainer extends Component {
                     dateSelected: 0,
                     timeSelected: 0,
                     dateValue: key_arr[0],
+                    timeValue: time_arr[0][0],
                     dateToSend: dateToSend
                 })
                 this.props.selectedData('date', this.state.dateArray[this.state.dateSelected], this.state.dateSelected)
@@ -511,7 +515,7 @@ class CheckoutContainer extends Component {
                                                         <div>{item.address_1}</div>
                                                         <div>{item.landmark}</div>
                                                         <div style={{ width: '60%' }}>{item.area}</div>
-                                                        <div><button className="button_red" onClick={() => this.add_address_to_order(item)}>Deliver to this Address</button></div>
+                                                        <div><button className={this.state.addressSelected === ind ? "button_red":'button_white'} onClick={() => this.add_address_to_order(item,ind)}>{this.state.addressSelected === ind ? "Selected":'Deliver to this Address'}</button></div>
                                                     </div>
                                                 )
                                             }) : ''}
@@ -628,7 +632,7 @@ class CheckoutContainer extends Component {
                                                             <div key={i} style={{ width: '30%', height: 100 }} onClick={() => this.setState({
                                                                 timeSelected: i, timeValue: time
                                                             })}>
-                                                                <input type="radio" id={i} className="address delivery" name='delivery' />
+                                                                <input type="radio" id={i} className="address delivery" name='delivery' checked={this.state.timeSelected == i ? true :false}/>
                                                                 <label className="add_type" htmlFor={i}>
                                                                     <div>{time}
                                                                     </div>
@@ -638,29 +642,6 @@ class CheckoutContainer extends Component {
                                                     }) : ''
                                                     }
 
-
-                                                    {/* <div style={{ width: '24%' }}>
-                                                            <input type="radio" id="slotTwo" className="address delivery" name="delivery" defaultChecked={true} />
-                                                            <label className="add_type" htmlFor="slotTwo">
-                                                                <div >Time Slot Two
-                                                    </div>
-                                                            </label>
-                                                        </div> */}
-                                                    {/* <div style={{ width: '24%' }}>
-                                                            <input type="radio" id="slotThree" className="address delivery" name="delivery" />
-                                                            <label className="add_type" htmlFor="slotThree">
-                                                                <div>Time Slot Three
-                                                    </div>
-                                                            </label>
-                                                        </div> */}
-                                                    {/* <div style={{ width: '24%' }}>
-                                                            <input type="radio" id="slotFour" className="address delivery" name="delivery" />
-                                                            <label className="add_type" htmlFor="slotFour">
-
-                                                                <div>Time Slot Four
-                                                    </div>
-                                                            </label>
-                                                        </div> */}
 
                                                 </div>
 

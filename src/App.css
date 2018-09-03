@@ -99,7 +99,7 @@ a {
 }
 
 .navbar {
-    padding: 0 10px !important;
+    padding: 0 0px 0 10px !important;;
 }
 
 .form-control {
@@ -127,6 +127,7 @@ a {
     display: flex;
     width: 70px;
     justify-content: center;
+    background-color: #a5131a;
 }
 
 .button_white{
@@ -167,4 +168,11 @@ button{
     height: 70px;
     width: 100%;
     padding: 0 10px;
+}
+
+@media only screen and (max-width:480px) {
+
+    .hidden-sm{
+        display: none
+    }
 }

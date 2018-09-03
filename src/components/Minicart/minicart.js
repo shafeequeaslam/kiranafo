@@ -13,12 +13,20 @@ import { DELIVERY_CHARGE, CREATE_NEW_CART } from '../../utis/D2';
 import axios from 'axios'
 import Axios from 'axios';
 import './minicart.css';
+import close_icon from '../../assets/close icon gary@2x.png';
+import { config } from '../../firebase/firebase';
+import firebase from 'firebase';
 
 
 
 class Minicart extends Component  {
 constructor(props) {
         super(props);
+        if (!firebase.apps.length) {
+            this.app = firebase.initializeApp(config);
+      }
+      else
+            this.app = firebase;
         this.state = {
             totalAmount: undefined,
             totalFullAmount: undefined,
@@ -34,6 +42,7 @@ constructor(props) {
         if (userData == null) {
             window.location.href = "/login"
         }
+        else
         this.getLocalData();
     }
     componentWillReceiveProps(){
@@ -41,6 +50,7 @@ constructor(props) {
         if (userData == null) {
             window.location.href = "/login"
         }
+        else
         this.getLocalData();
     }
 
@@ -98,7 +108,8 @@ constructor(props) {
             this.setState({
                 cartObj: cartObj,
             })
-            this.props.revChange()
+
+            if(this.props.revChange){this.props.revChange()}
         localStorage.setItem('cartObj', JSON.stringify(cartObj));
         // storeReduxData({ 'cartObj': cartObj, 'cartObjCount': cartObjCount })
         this.getLocalData();
@@ -277,7 +288,7 @@ constructor(props) {
                                     </thead>
 
 
-                                    <tbody>
+                                    <tbody className="minicart_table_body">
 
                                     {
                                             this.state.cartObj ?
@@ -314,7 +325,7 @@ constructor(props) {
                                                             </td>
                                                             <td className="col-sm-2">₹ {item.productData.on_sale === true ? item.productData.saleprice*item.product_quantity/ 100 : item.productData.mrp*item.product_quantity/ 100}</td>
                                                             
-                                                            <td className="col-sm-1" onClick={() => this.storeCart('clear')}>x</td>
+                                                            <td className="col-sm-1" onClick={() => this.storeCart('clear')}><img src={close_icon} height='15'/></td>
                                                         </tr>
                                                         )})):''}
 
@@ -333,7 +344,7 @@ constructor(props) {
                             
         (<div className="empty-cart" >
             
-              <img src={emptycart} height='200px'></img>
+              <img src={emptycart} height='150px'></img>
               <div>
               <div className='empty-text'>YOUR GROCERY BAG IS EMPTY</div>
               <div><button className="button_white" onClick={()=>this.redirectTo('home')}>Fill it with something</button></div>
@@ -341,7 +352,7 @@ constructor(props) {
          
          </div> )):(<div className="empty-cart">
             
-            <img src={emptycart} height='200px'></img>
+            <img src={emptycart} height='150px'></img>
             <div>
             <div className='empty-text'>YOUR GROCERY BAG IS EMPTY</div>
             <div><button className="button_white" onClick={()=>this.redirectTo('home')}>Fill it with something</button></div>

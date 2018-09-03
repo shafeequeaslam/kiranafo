@@ -53,3 +53,7 @@
 .bread_crum_red{
     color: #cf2717 !important;
 }
+.cart_table_body{
+    height: 350px;
+    overflow-y: scroll;
+}

@@ -324,7 +324,7 @@ class PaymentComponent extends Component {
                     <div onClick={() => this.addCoupon()} className="coupon_wrpr_close">x</div>
                     <div className="flex_row">
                         <div className="input-group" style={{ width: '50%' }}>
-                            <input placeholder="Search Products" type="text" className="coupon_input form-control" style={{ borderRadius: 0 }} onChange={(e)=>this.setState({coupon_q:e.target.value})}  onKeyPress={(e)=>this._handleKeyPress(e)}/>
+                            <input placeholder="Add Coupon" type="text" className="coupon_input form-control" style={{ borderRadius: 0 }} onChange={(e)=>this.setState({coupon_q:e.target.value})}  onKeyPress={(e)=>this._handleKeyPress(e)}/>
                         </div>
                         <div>
                             <button className='search_btn' onClick={() => {this.couponApplied()}}>Apply</button>

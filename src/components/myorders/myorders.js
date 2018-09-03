@@ -250,7 +250,7 @@ class MyOrders extends Component {
                                                             <div>{order.title}</div>
                                                         </td>
                                                         <td className="col-sm-2">
-                                                            <div>{parseInt(order.quantity) / 100}</div>
+                                                            <div>{parseInt(order.quantity) }</div>
                                                         </td>
                                                         <td className="col-sm-2">
                                                             <div>{order.total}</div>
