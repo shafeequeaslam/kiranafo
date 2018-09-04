@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-import { InputGroup, InputGroupAddon, Input } from 'reactstrap';
 import classnames from 'classnames';
 import './myorders.css';
 import Header from '../Header/header';
-import Sidebar from '../Sidebar/sidebar';
 import Axios from 'axios';
 import AccSidebar from '../Sidebar/acc_sidebar';
-import { Z_FILTERED } from 'zlib';
 import checked from '../../assets/check.png'
 
 
@@ -357,7 +354,7 @@ class MyOrders extends Component {
                                                         </table>
                                                         <div className="order_status_markers">
                                                             <div>
-                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Pending'||'Processing')?'url('+checked+')':''}}></div>
+                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Pending')?'url('+checked+')':(order.order_status === ('Processing')?'url('+checked+')':'')}}></div>
                                                                 <div className="text_marker">Order Placed</div>
                                                             </div>
                                                             <div>

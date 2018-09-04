@@ -21,12 +21,14 @@ class ProductList extends Component {
             listItems: undefined,
             product_quantity: undefined,
             activeButton: [],
-            activePage: 0
+            activePage: 0,
+            category_name:this.props.location.state ? this.props.location.state.item.name : '',
+            menuItems:this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : '',
         };
         this.loadProductDetails = this.loadProductDetails.bind(this)
     }
     componentWillMount() {
-        //console.log(this.props);
+        console.log(this.props);
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -66,20 +68,10 @@ class ProductList extends Component {
                 // data: query
 
             })
-                // .then(res => res)
                 .then((data) => {
-                    //console.log(data.data,'data');
-
-
                     this.setState({
                         listItems: data.data,
                     })
-
-
-                    // })
-                    // this.setState({
-                    //     searchResults: data.data.hits.hits
-                    // })
                 })
                 .catch((err) => {
                     //console.log(err)
@@ -107,6 +99,7 @@ class ProductList extends Component {
     //     //console.log(this.props)
     // }
     componentWillReceiveProps(nextProps, prevState) {
+        console.log(nextProps)
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -731,7 +724,7 @@ class ProductList extends Component {
             }
             this.refreshBrandItems(search_id.tid, level);
             console.log(level)
-            this.renderBreadCrumbs(level, id);
+            // this.renderBreadCrumbs(level, id);
 
             if (level === 1) {
 
@@ -774,6 +767,7 @@ class ProductList extends Component {
             .then((listingDetails) => {
                 this.setState({
                     listItems: undefined,
+                    category_name:undefined,menuItems:undefined
                 })
                 console.log(listingDetails, "121")
                 let activeBtn = []
@@ -785,7 +779,9 @@ class ProductList extends Component {
                 setTimeout(() => {
                     this.setState({
                         listItems: listingDetails.data,
-                        activeButton: activeBtn
+                        activeButton: activeBtn,
+                        category_name:search_id.name,
+                        menuItems: search_id.sub_category_tree ? search_id.sub_category_tree : search_id.variant_category_tree 
                     })
                 }, 100)
             })
@@ -965,9 +961,9 @@ class ProductList extends Component {
             console.log(this.props.location.state)
             if (level === 1) {
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
                     </div>
                 )
@@ -982,13 +978,13 @@ class ProductList extends Component {
                             sub_tree = data[i]
                             console.log(sub_tree.name)
                             return (
-                                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                                <div className="plp_nav_bar">
                                     <div><Link to="/">Home</Link></div>
-                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div className="plp_margin">/</div>
 
-                                    <div> <div> {this.props.location.state.item.name}11</div></div>
+                                    <div> <div> {this.props.location.state.item.name}</div></div>
 
-                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div className="plp_margin">/</div>
                                     <div className="bread_crum_red" >{sub_tree.name}</div>
                                 </div>
                             )
@@ -998,30 +994,31 @@ class ProductList extends Component {
 
                 }
                 else {
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
 
                         <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
 
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div className="bread_crum_red" >{this.props.location.state.secondLevelData.name}</div>
                     </div>
                 }
             }
             else if (level === 3) {
-                <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                {console.log(this.props.location.state)}
+                <div className="plp_nav_bar">
                     <div><Link to="/">Home</Link></div>
-                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="plp_margin">/</div>
                     <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
 
-                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="plp_margin">/</div>
                     <div className="bread_crum_red" >{console.log(this.props.location.state.fullData.sub_category_tree[0].name, this.state.indexedFilter)}</div>
-                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="plp_margin">/</div>
                     <div className="bread_crum_red" >{this.props.location.state.item.name}</div>
 
 
-                    <div style={{ margin: '0 5px' }}>/</div>
+                    <div className="plp_margin">/</div>
                     <div className="bread_crum_red">{this.props.location.state.item.name}</div>
                 </div>
             }
@@ -1029,21 +1026,21 @@ class ProductList extends Component {
         else {
             if (this.props.location.state.level === 1) {
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
                     </div>
                 )
             }
             else if (this.props.location.state.level === 2) {
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div><Link className="bread_crum_red" to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData ? this.props.location.state.fullData.name : ''}</Link></div>
 
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div className="bread_crum_red" >{this.props.location.state.fullData && this.props.location.state.item ? this.props.location.state.item.name : ''}</div>
                     </div>
                 )
@@ -1051,16 +1048,16 @@ class ProductList extends Component {
             else if (this.props.location.state.level === 3) {
                 console.log(this.props.location.state.level, this.props.location.state)
                 return (
-                    <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 5%' }}>
+                    <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData.name}</Link></div>
 
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.secondLevelData.tid, state: { 'item': this.props.location.state.secondLevelData, level: 2, fullData: this.props.location.state.fullData } }}>{this.props.location.state.secondLevelData.name}</Link></div>
 
 
-                        <div style={{ margin: '0 5px' }}>/</div>
+                        <div className="plp_margin">/</div>
                         <div className="bread_crum_red">{this.props.location.state.item.name}</div>
                     </div>
                 )
@@ -1092,34 +1089,27 @@ class ProductList extends Component {
                 {this.state.search ? this.state.search === true ? (
                     ''
                 ) : (
-                        this.renderBreadCrumbs()) : this.renderBreadCrumbs()}
-                {/* <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
-                            <div><Link to="/">Home</Link></div>
-                            <div style={{ margin: '0 5px' }}>/</div>
-                            <div><Link className="bread_crum_red" to="#">{this.props.location.state.item ? this.props.location.state.item.sub_category_tree?this.props.location.state.item.sub_category_tree[0].name:'':''}</Link></div>
-                            <div><Link className="bread_crum_red" to="#">{this.props.location.state.item && this.props.location.state.item.sub_category_tree &&this.props.location.state.item.sub_category_tree.variant_category_tree  ? this.props.location.state.item.sub_category_tree.variant_category_tree[0].name : ''}</Link></div>
-
-                        </div> */}
-                {/* menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree[0] ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree[0] : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} */}
-                <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
+                       '' ):''}
+               
+                <div className="plp_container">
                     {this.state.search ? this.state.search === true ? (
                         ''
                     ) : (
-                            <div className="col-md-3 hidden-xs" style={{ padding: 0 }}>
+                            <div className="col-md-3 hidden-xs">
 
-                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.state.menuItems} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         ) : (
-                            <div className="col-md-3 hidden-sm" style={{ padding: 0 }}>
+                            <div className="col-md-3 hidden-sm">
 
-                                <Sidebar menuItems={this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : ''} category_name={this.props.location.state ? this.props.location.state.item.name : ''} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.state.menuItems} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
                             </div>
                         )}
 
 
                     <div className={this.state.search ? this.state.search === true ? "col-md-12 col-sm-12" : "col-md-9 col-sm-12" : "col-md-9 col-sm-12"}>
                         <div className="plp_sort_wrpr">
-                            <div className="plp_header">{this.props.location.state ? this.props.location.state.item.name : ''}</div>
+                            <div className="plp_header">{this.state.category_name}</div>
                             <div>
                                 Sort By <select onChange={(e) => this.sortData(e.target.value)}>
                                     <option value="asc">Price - Low to High</option>

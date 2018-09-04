@@ -49,7 +49,7 @@ class CheckoutContainer extends Component {
         let user = JSON.parse(localStorage.getItem('userToken'));
         let loc = JSON.parse(localStorage.getItem('location'))
         this.setState({
-            areaVal: loc.name,
+            areaVal: loc.formattedAddress,
             areaPincode: loc.postalCode
         })
         if (user != null) {
@@ -75,8 +75,10 @@ class CheckoutContainer extends Component {
 
 
         let loc = JSON.parse(localStorage.getItem('location'))
+        let loc_dc = JSON.parse(localStorage.getItem('location_dc'))
         let lat = (loc.lat).toString()
         let lng = (loc.lng).toString()
+        let address_polygon=loc_dc.AddressPolygon
         Axios({
             method: 'POST',
             url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_k11_customer_address.json',
@@ -86,7 +88,8 @@ class CheckoutContainer extends Component {
             },
             data: {
                 "latitude": lat,
-                "longitude": lng
+                "longitude": lng,
+                address_polygon:address_polygon
             }
         })
             .then((value) => {
@@ -410,7 +413,9 @@ class CheckoutContainer extends Component {
                                 })
                             }
                             else if (keys[i].name == "discount") {
+                                console.log(keys[i].price.amount,keys[i])
                                 this.setState({
+                                   
                                     discount: parseInt(keys[i].price.amount)
                                 })
                             }
@@ -629,7 +634,7 @@ class CheckoutContainer extends Component {
                                                     {this.state.timeSlotArr ? this.state.timeSlotArr[this.state.dateSelected].map((time, i) => {
                                                         console.log(this.state.timeSlotArr[0], 'time')
                                                         return (
-                                                            <div key={i} style={{ width: '30%', height: 100 }} onClick={() => this.setState({
+                                                            <div key={i} style={{ width: '30%', height: 75 }} onClick={() => this.setState({
                                                                 timeSelected: i, timeValue: time
                                                             })}>
                                                                 <input type="radio" id={i} className="address delivery" name='delivery' checked={this.state.timeSelected == i ? true :false}/>

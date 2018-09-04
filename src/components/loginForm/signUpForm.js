@@ -85,6 +85,7 @@ class SignUpForm extends Component {
                   data: formBody
             })
                   .then((res) => {
+                        console.log(res)
                         this.setState({
                               otpSent:'1'
                         })
@@ -216,7 +217,7 @@ render() {
                                           width: '100%',
                                           border: this.state.phoneValid ? " 1px solid #cf2717" : '1px solid #d4d4d4',
                                           color: this.state.phoneValid ? '' : '#d4d4d4'
-                                    }}>{this.state.otpSent?this.state.otpSent == "1"?'OTP Sent':'Send OTP':'Send OTP'}</button></InputGroupAddon>
+                                    }} disabled={this.state.phoneValid? false:true}>{this.state.otpSent?this.state.otpSent === "1"?'OTP Sent':'Send OTP':'Send OTP'}</button></InputGroupAddon>
                         </InputGroup>
                         <InputGroup className="login" style={{ marginLeft: '5%', width: '35%' }}>
                               <Input className="login" placeholder="otp" name="otp" onChange={(e) => this.checkOtp(e)} maxLength={6} />

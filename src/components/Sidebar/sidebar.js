@@ -51,7 +51,7 @@ class Sidebar extends Component {
         }
     }
     filterData(i, id) {
-        this.setState({ active: i })
+        this.setState({ active: i,header_name:id.name })
         this.props.dataId(id, i)
     }
     sendData(i, id) {

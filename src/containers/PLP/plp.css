@@ -40,3 +40,19 @@
 .pag_arrow.prev{
     margin-right: 5px;
 }
+
+.plp_container{
+
+    display: flex;
+    width: 90%;
+    margin: 50px auto;
+}
+
+.plp_nav_bar{
+
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    margin: 25px auto;
+    
+  }

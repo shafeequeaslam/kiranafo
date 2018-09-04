@@ -84,7 +84,8 @@ class Otp extends Component {
             .then((res) => {
                 console.log(res);
                 this.setState({
-                    uid:res.data.user_details.uid
+                    uid:res.data.user_details.uid,
+                    otpSent:'1'
                 })
             })
             .catch((err) => {
@@ -178,7 +179,7 @@ class Otp extends Component {
                                             borderRadius: '5px',
                                             border: this.state.phoneValid ? " 1px solid #cf2717" : '1px solid #d4d4d4',
                                             color: this.state.phoneValid ? '' : '#d4d4d4'
-                                        }}>Send OTP</button></InputGroupAddon>
+                                        }} disabled={this.state.phoneValid? false:true}>{this.state.otpSent?this.state.otpSent === "1"?'OTP Sent':'Send OTP':'Send OTP'}</button></InputGroupAddon>
                                 </InputGroup>
                                 <InputGroup className="login" style={{ marginLeft: '5%', width: '35%' }}>
                                     <Input className="login" placeholder="Enter otp" name="otp" onChange={(e) => this.checkOtp(e)} />

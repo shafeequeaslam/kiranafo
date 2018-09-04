@@ -14,7 +14,7 @@ class PaymentComponent extends Component {
             couponAmt: undefined,
             delivery_fee: this.props.cartInfo.delivery_fee,
             paymentModal: false,
-            discount: this.props.cartInfo.discount,
+            discount: this.props.cartInfo.discount?this.props.cartInfo.discount: 0,
             activeTab: '1',
             confirmOrder: false,
             payment: null,
@@ -428,11 +428,11 @@ class PaymentComponent extends Component {
                             <div className="cod_text">
                                 Please pay ₹ {this.state.amountToPay} to delivery executive when order is delivered
                             </div>
-                            <div className="cod_text cod_relative">
+                            {/* <div className="cod_text cod_relative">
                                 or
                                         <div className="cod_abs left_abs"></div>
                                 <div className="cod_abs right_abs"></div>
-                            </div>
+                            </div> */}
                         </TabPane>
                     </TabContent>
                     <div>

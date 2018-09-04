@@ -172,7 +172,7 @@ class ChangePassword extends Component {
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'row' }}>
                                         <div style={{ display: 'flex', marginTop: 10 }}><button className="button_red" style={{ width: '10%' }} onClick={() => this.submitForm()}>Save</button></div>
-                                        <div style={{ display: 'flex', marginTop: 10, marginLeft: 5 }}><button className="button_red" style={{ width: '10%' }} onClick={() => this.clearForm()}>Cancel</button></div>
+                                        <div style={{ display: 'flex', marginTop: 10, marginLeft: 5 }}><button className="button_red" style={{ width: '10%' }} onClick={() => {window.location.href="/"}}>Cancel</button></div>
                                     </div>
                                 </div>
                             </div>

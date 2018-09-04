@@ -13,6 +13,7 @@ import { DELIVERY_CHARGE, CREATE_NEW_CART } from '../../utis/D2';
 import axios from 'axios'
 import Axios from 'axios';
 import close_icon from '../../assets/close icon gary@2x.png'
+import FooterComponent from '../../components/footer-components/Footer/containers/footer';
 
 let confirm;
 
@@ -446,7 +447,7 @@ class CartList extends Component {
                     </div>)
                 });
 
-
+                <FooterComponent/>
             </div>
         )
 

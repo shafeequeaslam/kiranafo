@@ -17,6 +17,8 @@ import close_icon from '../../assets/close icon gary@2x.png';
 import { config } from '../../firebase/firebase';
 import firebase from 'firebase';
 
+const width = window.screen.width;
+
 
 
 class Minicart extends Component  {
@@ -274,13 +276,13 @@ constructor(props) {
             <div style={{ width:'100%',height: 'auto',fontSize:12}}>
                                 <table className="table table-fixed" style={{ margin: 5 }} >
 
-                                    <thead>
+                                    <thead className="minicart_table_head">
 
                                     <tr style={{ display: 'flex',marginLeft:10 }}>
-                                            <th style={{ textAlign:'center'}} className="col-sm-3">Title</th>
-                                            <th className="col-sm-2">Store</th>
+                                            <th style={{ textAlign:'center'}} className="col-md-3 col-sm-4">Title</th>
+                                            <th className="col-md-2 hidden-sm">Store</th>
                                             <th className="col-sm-2">Unit Price</th>
-                                            <th className="col-sm-2">Quantity</th>
+                                            <th className="col-md-2 col-sm-3">Quantity</th>
                                             <th className="col-sm-2">Total</th>
                                             
                                             <th className="col-sm-1"></th>
@@ -295,31 +297,31 @@ constructor(props) {
                                                 (this.state.cartObj.map((item, index) => {
                                                     return (
                                          <tr style={{ display: 'flex', alignItems: 'center', }} key={index}>
-                                                            <td className="col-sm-3">
+                                                            <td className="col-md-3 col-sm-4">
                                                                 <div style={{ display: 'flex', justifyContent:'space-between',flexDirection: 'row', alignItems: 'center' }}>
-                                                                    <div style={{ border: '1px solid #f7f7f7', height: 50, width: 50,marginRight:5 }}>
+                                                                    <div style={{ border: '1px solid #f7f7f7', height: 50, width: 50,marginRight:5 }} className="hidden-sm">
                                                                         <img src={item.productData.image_url} width='100%' />
                                                                     </div>
-                                                                    <div style={{width:"70%",fontSize:12}}>{item.productData.title}</div>
+                                                                    <div style={{width:width>460?"70%":"100%",fontSize:width>460? 12:10}}>{item.productData.title}</div>
                                                                 </div>
                                                             </td>
-                                                            <td className="col-sm-2">
+                                                            <td className="col-md-2 hidden-sm">
                                                                 <div style={{marginTop: -10 }}>My Grocer</div>
                                                             </td>
                                                             <td className="col-sm-2">
                                                                 <div>₹ {item.productData.on_sale === true ? item.productData.saleprice / 100 : item.productData.mrp / 100}</div>
                                                                 <div style={{ textDecoration: "line-through", fontSize: 14, color: '#d4d4d4', marginLeft: 5 }}>₹{item.productData.mrp / 100}</div>
                                                             </td>
-                                                            <td className="col-sm-2">
+                                                            <td className="col-md-2 col-sm-3">
                                                                 <div style={{ display: 'flex', alignContent: 'center', flexDirection: 'row' }}>
-                                                                    <div style={{ height: 30, width: 30, alignContent: 'center', backgroundColor: '#cf2127', border: '1px solid #cf2717' }}>
-                                                                        <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#fff' }} onClick={() => this.storeCart('decr', index)}>-</div>
+                                                                    <div className="mini_add">
+                                                                        <div className="mini_add_data" onClick={() => this.storeCart('decr', index)}>-</div>
                                                                     </div>
-                                                                    <div style={{ height: 30, width: 30, alignContent: 'center', backgroundColor: '#fff', border: '1px solid #cf2717' }}>
-                                                                        <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#cf2127' }}>{item.product_quantity}</div>
+                                                                    <div className="mini_add mini_value">
+                                                                        <div className="mini_add_data mini_value_data">{item.product_quantity}</div>
                                                                     </div>
-                                                                    <div style={{ height: 30, width: 30, alignContent: 'center', backgroundColor: '#cf2127', border: '1px solid #cf2717' }}>
-                                                                        <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#fff' }} onClick={() => this.storeCart('incr', index)}>+</div>
+                                                                    <div className="mini_add">
+                                                                        <div className="mini_add_data" onClick={() => this.storeCart('incr', index)}>+</div>
                                                                     </div>
                                                                 </div>
                                                             </td>

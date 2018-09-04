@@ -54,6 +54,7 @@
     color: #cf2717 !important;
 }
 .cart_table_body{
-    height: 350px;
+    min-height: 150px;
     overflow-y: scroll;
+    max-height: 350px;
 }
