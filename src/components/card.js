@@ -20,7 +20,7 @@ class CardComponent extends Component {
                   this.app = firebase;
 
 
-            //console.log(this.props.item, "12121")
+            ////console.log(this.props.item, "12121")
             this.state = {
                   itemData: this.props.item,
                   activeButton: 0,
@@ -30,13 +30,13 @@ class CardComponent extends Component {
       }
 
       componentWillMount() {
-            //console.log(this.state.itemData);
+            ////console.log(this.state.itemData);
             this.getDatas()
 
       }
       getDatas() {
             if (this.props.type === "deals" || this.props.type === "cat_deals") {
-                  //console.log(this.props, 'Deals')
+                  ////console.log(this.props, 'Deals')
                   let val = localStorage.getItem('cartObj');
                   this.mapToCart_deals(JSON.parse(val));
                   this.setState({
@@ -45,10 +45,10 @@ class CardComponent extends Component {
                   this.setState({
                         product_deal_details: this.props.productDeals
                   })
-                  console.log(this.props.productDeals, "1212");
+                  //console.log(this.props.productDeals, "1212");
                   this.database = this.app.database().ref('stock/' + this.props.productDeals.inner_hits.products.hits.hits[0]._source.pid + '/stock');
                   this.database.on('value', snap => {
-                        console.log(snap.val());
+                        //console.log(snap.val());
                         this.setState({
                               [this.props.productDeals.inner_hits.products.hits.hits[0]._source.pid]: snap.val()
                         })
@@ -59,10 +59,10 @@ class CardComponent extends Component {
 
             }
             else {
-                  //console.log('here');
+                  ////console.log('here');
                   for (let i = 0; i < this.state.itemData.inner_hits.products.hits.hits.length; i++) {
                         let pid = this.state.itemData.inner_hits.products.hits.hits[i]._source.pid;
-                        console.log(pid);
+                        //console.log(pid);
                         this.database = this.app.database().ref('stock/' + pid + '/stock');
                         this.database.on('value', snap => {
                               this.setState({
@@ -72,7 +72,7 @@ class CardComponent extends Component {
 
                   }
 
-                  console.log(this.state[this.state.itemData.inner_hits.products.hits.hits[0]._source.pid], "1112")
+                  //console.log(this.state[this.state.itemData.inner_hits.products.hits.hits[0]._source.pid], "1112")
                   let val = localStorage.getItem('cartObj');
                   this.mapToCart(JSON.parse(val))
             }
@@ -82,25 +82,25 @@ class CardComponent extends Component {
             // this.setState({
             //       product_deal_details: undefined
             // })
-            console.log("121212", nextProps)
+            //console.log("121212", nextProps)
             this.getDatas()
             // setTimeout(()=>{this.getDatas()},10)
       }
       mapToCart_deals(val) {
-            //console.log(val, this.props.productDeals, "after items click")
+            ////console.log(val, this.props.productDeals, "after items click")
             if (val != null) {
 
                   if (this.props.productDeals.inner_hits.products.hits.hits[0]) {
-                        //console.log('121')
+                        ////console.log('121')
                         let a = val.length;
                         // let b = this.state.productDetails[0]._source.products.length;
 
                         for (let i = 0; i < a; i++) {
-                              //console.log(this.props.productDeals.inner_hits.products.hits.hits[0]._source.pid)
+                              ////console.log(this.props.productDeals.inner_hits.products.hits.hits[0]._source.pid)
                               if (val[i].productData.pid == this.props.productDeals.inner_hits.products.hits.hits[0]._source.pid) {
                                     let pr_q = this.state.product_deal_quantity;
                                     pr_q = val[i].product_quantity
-                                    //console.log(pr_q, 'pr')
+                                    ////console.log(pr_q, 'pr')
                                     this.setState({
                                           product_deal_quantity: pr_q
                                     })
@@ -121,22 +121,22 @@ class CardComponent extends Component {
             }
       }
       store_deal_Cart(type) {
-            //console.log(this.state.product_deal_details, type);
+            ////console.log(this.state.product_deal_details, type);
             // this.setState({
             //       unchangeState: false
             // })
             if (cartObj) {
-                  //console.log(cartObj)
+                  ////console.log(cartObj)
                   let pid = this.state.product_deal_details.inner_hits.products.hits.hits[0]._source.pid;
-                  //console.log(this.state.product_deal_details.inner_hits.products.hits.hits[0]._source, pid, 'pid')
+                  ////console.log(this.state.product_deal_details.inner_hits.products.hits.hits[0]._source, pid, 'pid')
 
                   let found = cartObj.filter(function (el) {
-                        //console.log(el, 'el')
+                        ////console.log(el, 'el')
                         return el.productData.pid === pid
                   })[0];
                   if (found) {
                         if (type === 'incr') {
-                              //console.log('1')
+                              ////console.log('1')
                               if(this.state[pid] > found.product_quantity) {
                               found.product_quantity = found.product_quantity + 1;
                               let pr_q = this.state.product_deal_quantity;
@@ -154,10 +154,10 @@ class CardComponent extends Component {
                               }
                         }
                         if (type === 'decr') {
-                              //console.log('11', found.product_quantity)
-                              console.log('1');
+                              ////console.log('11', found.product_quantity)
+                              //console.log('1');
                               if (found.product_quantity > 1) {
-                                    console.log('2');
+                                    //console.log('2');
                                     found.product_quantity = found.product_quantity - 1;
                                     let pr_q = this.state.product_deal_quantity;
                                     pr_q = found.product_quantity
@@ -168,9 +168,9 @@ class CardComponent extends Component {
                               }
 
                               else {
-                                    //console.log('here 0')
+                                    ////console.log('here 0')
                                     for (let j = 0; j < cartObj.length; j++) {
-                                          console.log('3');
+                                          //console.log('3');
                                           if (cartObj[j].productData.pid === found.productData.pid) {
                                                 cartObj.splice(j, 1);
                                                 let pr_q = this.state.product_deal_quantity;
@@ -202,13 +202,13 @@ class CardComponent extends Component {
                               product_quantity: pr_q
                         });
                   }
-                  //console.log(cartObj)
+                  ////console.log(cartObj)
 
                   localStorage.setItem('cartObj', JSON.stringify(cartObj));
             }
 
             else {
-                  //console.log('ewew')
+                  ////console.log('ewew')
                   let obj = [
                         {
                               productData: this.state.product_deal_details.inner_hits.products.hits.hits[0]._source,
@@ -219,7 +219,7 @@ class CardComponent extends Component {
                         product_deal_quantity: 1
                   })
                   cartObj = obj;
-                  //console.log(obj)
+                  ////console.log(obj)
                   localStorage.setItem('cartObj', JSON.stringify(obj));
 
             }
@@ -232,20 +232,20 @@ class CardComponent extends Component {
 
 
       mapToCart(val) {
-            //console.log(val, this.state.itemData.inner_hits.products.hits.hits, "after items click")
+            ////console.log(val, this.state.itemData.inner_hits.products.hits.hits, "after items click")
             if (val != null) {
                   if (this.state.itemData.inner_hits.products.hits.hits) {
-                        //console.log('121')
+                        ////console.log('121')
                         let a = val.length;
                         let b = this.state.itemData.inner_hits.products.hits.hits.length;
 
                         for (let i = 0; i < a; i++) {
                               for (let j = 0; j < b; j++) {
-                                    //console.log(this.state.itemData.inner_hits.products.hits.hits[j]._source.pid)
+                                    ////console.log(this.state.itemData.inner_hits.products.hits.hits[j]._source.pid)
                                     if (val[i].productData.pid == this.state.itemData.inner_hits.products.hits.hits[j]._source.pid) {
                                           let pr_q = this.state.product_quantity;
                                           pr_q[j] = val[i].product_quantity
-                                          //console.log(pr_q, 'pr')
+                                          ////console.log(pr_q, 'pr')
                                           this.setState({
                                                 product_quantity: pr_q
                                           })
@@ -270,7 +270,7 @@ class CardComponent extends Component {
       }
 
       storeCart(type) {
-            //console.log(this.state.itemData.inner_hits.products.hits.hits[this.state.activeButton], type);
+            ////console.log(this.state.itemData.inner_hits.products.hits.hits[this.state.activeButton], type);
             // this.setState({
             //       unchangeState: false
             // })
@@ -299,7 +299,7 @@ class CardComponent extends Component {
                         }
                         }
                         if (type === 'decr') {
-                              //console.log('11', found.product_quantity)
+                              ////console.log('11', found.product_quantity)
                               if (found.product_quantity > 1) {
                                     found.product_quantity = found.product_quantity - 1;
                                     let pr_q = this.state.product_quantity;
@@ -311,7 +311,7 @@ class CardComponent extends Component {
                               }
 
                               else {
-                                    //console.log('here 0')
+                                    ////console.log('here 0')
                                     for (let j = 0; j < cartObj.length; j++) {
                                           if (cartObj[j].productData.pid === found.productData.pid) {
                                                 cartObj.splice(j, 1);
@@ -344,13 +344,13 @@ class CardComponent extends Component {
                               product_quantity: 1
                         });
                   }
-                  //console.log(cartObj)
+                  ////console.log(cartObj)
 
                   localStorage.setItem('cartObj', JSON.stringify(cartObj));
             }
 
             else {
-                  //console.log('ewew')
+                  ////console.log('ewew')
                   let obj = [
                         {
                               productData: this.state.itemData.inner_hits.products.hits.hits[this.state.activeButton]._source,
@@ -370,7 +370,7 @@ class CardComponent extends Component {
 
 
       setActiveBtn(i) {
-            //console.log(i.target.value)
+            ////console.log(i.target.value)
             this.setState({ activeButton: i.target.value })
       }
 
@@ -403,7 +403,7 @@ class CardComponent extends Component {
                                                             <Input type="select" name="select" id="exampleSelect" onChange={(e) => this.setActiveBtn(e)}>
 
                                                                   {this.state.itemData.inner_hits.products.hits.hits.map((select, ind) => {
-                                                                        //console.log(select, 'select')
+                                                                        ////console.log(select, 'select')
                                                                         return (
                                                                               <option key={ind} value={ind}>{select._source.variant_type}</option>
                                                                         )

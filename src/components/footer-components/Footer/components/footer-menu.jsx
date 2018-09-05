@@ -6,7 +6,7 @@ class FooterMenu extends Component {
     render() {
         return (
             <Col xs="6" sm="4" md="2" className="footer-menu">
-                <h2><a href="/">Kirana11.com</a></h2>
+                <h2><a href="/">Avenue11.com</a></h2>
                 <ul>
                     <li><Link to="/about_us">About Us</Link></li>
                     <li><Link to="/privacy_policy">Privacy Policy</Link></li>

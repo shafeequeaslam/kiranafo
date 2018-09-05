@@ -11,8 +11,16 @@ import LinesEllipsis from 'react-lines-ellipsis';
 import CardComponent from '../../components/card';
 import Axios from 'axios';
 import FooterComponent from '../../components/footer-components/Footer/containers/footer';
+import ReactHtmlParser, { processNodes, convertNodeToElement, htmlparser2 } from 'react-html-parser';
 
 let cartObj = undefined;
+let url = window.location.href;
+let url_string = url;
+let urlStr = new URL(url_string);
+let category_id = urlStr.searchParams.get("categoryId");
+let search = urlStr.searchParams.get("search");
+let level = urlStr.searchParams.get("level");
+let deal_type = urlStr.searchParams.get("dealType");
 
 class ProductList extends Component {
     constructor(props) {
@@ -22,8 +30,8 @@ class ProductList extends Component {
             product_quantity: undefined,
             activeButton: [],
             activePage: 0,
-            category_name:this.props.location.state ? this.props.location.state.item.name : '',
-            menuItems:this.props.location.state ? this.props.location.state.item.sub_category_tree ? this.props.location.state.item.sub_category_tree : this.props.location.state.item.variant_category_tree : '',
+            // category_name:this.props.location.state ? this.props.location.state.item.name : '',
+            menuItems: undefined
         };
         this.loadProductDetails = this.loadProductDetails.bind(this)
     }
@@ -36,6 +44,63 @@ class ProductList extends Component {
         let search = urlStr.searchParams.get("search");
         let level = urlStr.searchParams.get("level");
         let deal_type = urlStr.searchParams.get("dealType");
+
+
+
+        if (this.props.location.state && this.props.location.state.item) {
+            localStorage.setItem('plp_category', JSON.stringify({ menuData: this.props.location.state.item, level: this.props.location.state.level }));
+
+
+            let data = JSON.parse(localStorage.getItem('plp_category'));
+            this.setState({
+                menuItems: undefined,
+                category_name: undefined,
+                menuselected_id: undefined
+            })
+            console.log(data);
+            if (data.level == 1) {
+                this.setState({
+                    menuItems: data.menuData.sub_category_tree,
+                    category_name: data.menuData.name,
+                    menuselected_id: undefined,cat_id:category_id
+                })
+            }
+            else if (data.level == 2) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    if (data.menuData.sub_category_tree[i].tid == category_id) {
+                        this.setState({
+                            menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                            category_name: data.menuData.sub_category_tree[i].name,
+                            menuselected_id: undefined,
+                            cat_id:category_id
+                        })
+                    }
+                }
+
+            }
+            else if (data.level == 3) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++) {
+                        if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == category_id) {
+                            this.setState({
+                                menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                                category_name: data.menuData.sub_category_tree[i].name,
+                                menuselected_id: j,
+                                cat_id:category_id
+
+                            })
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+
+
+
         console.log(level)
         if (level != null) {
             this.setState({
@@ -99,7 +164,7 @@ class ProductList extends Component {
     //     //console.log(this.props)
     // }
     componentWillReceiveProps(nextProps, prevState) {
-        console.log(nextProps)
+        console.log(this.props);
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -107,77 +172,124 @@ class ProductList extends Component {
         let search = urlStr.searchParams.get("search");
         let level = urlStr.searchParams.get("level");
         let deal_type = urlStr.searchParams.get("dealType");
+
+
+
+        if (nextProps.location.state.item) {
+            console.log(nextProps.location.state.item)
+            localStorage.setItem('plp_category', JSON.stringify({ menuData: nextProps.location.state.item, level: nextProps.location.state.level }));
+
+
+            let data = JSON.parse(localStorage.getItem('plp_category'));
+            this.setState({
+                menuItems: undefined,
+                category_name: undefined,
+                menuselected_id: undefined,
+                listItems:undefined
+            })
+            console.log(data);
+            if (data.level == 1) {
+                this.setState({
+                    menuItems: data.menuData.sub_category_tree,
+                    category_name: data.menuData.name,
+                    menuselected_id: undefined,cat_id:category_id
+                })
+            }
+            else if (data.level == 2) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    if (data.menuData.sub_category_tree[i].tid == category_id) {
+                        this.setState({
+                            menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                            category_name: data.menuData.sub_category_tree[i].name,
+                            menuselected_id: undefined,
+                            cat_id:category_id
+                        })
+                    }
+                }
+
+            }
+            else if (data.level == 3) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++) {
+                        if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == category_id) {
+                            this.setState({
+                                menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                                category_name: data.menuData.sub_category_tree[i].name,
+                                menuselected_id: j,
+                                cat_id:category_id
+
+                            })
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+
+
+
         console.log(level)
+        if (level != null) {
+            this.setState({
+                search: true,
+                banner: true,
+                banner_id: category_id, banner_level: level
+            })
+            console.log('here', level)
+            this.loadProductDetailsTest(category_id, level)
+        }
+        else if (deal_type != null) {
+            this.setState({
+                search: true,
+                deal_type: deal_type
+            })
+            this.loadProductDetailsDeals(deal_type)
+        }
+        else if (search != null) {
+            this.setState({
+                search: true
+            })
+            let searchq = search.toLowerCase();
 
-        this.setState({
-            activePage: 0
-        })
-        setTimeout(() => {
-            if (level != null) {
-                this.setState({
-                    search: true, banner: true, banner_id: category_id, banner_level: level
-                })
-                console.log('here', level)
-                this.loadProductDetailsTest(category_id, level)
-            }
-            else if (deal_type != null) {
-                this.setState({
-                    search: true,
-                    deal_type: deal_type
-                })
-                this.loadProductDetailsDeals(deal_type)
-            }
-            else if (search != null) {
-                this.setState({
-                    search: true
-                })
-                let searchq = search.toLowerCase();
+            Axios({
+                method: 'GET',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=12',
+                // data: query
 
-                Axios({
-                    method: 'GET',
-                    headers: {
-                        'Content-type': 'application/json',
-                    },
-                    url: SEARCH_RESULTS_FULL + searchq + '&sort=asc&mode=min&from=0&size=16',
-                    // data: query
-
-                })
-                    // .then(res => res)
-                    .then((data) => {
-                        this.setState({
-                            listItems: undefined
-                        })
-                        //console.log(data,'data');
-
-                        // for(let i=0;i<listingDetails.length;i++){
-                        //     activeBtn[i]=0; 
-                        //  }
-                        this.setState({
-                            listItems: data.data
-                        })
-
-
-                        // })
-                        // this.setState({
-                        //     searchResults: data.data.hits.hits
-                        // })
+            })
+                .then((data) => {
+                    this.setState({
+                        listItems: data.data,
                     })
-                    .catch((err) => {
-                        //console.log(err)
-                    })
-            }
-            else if (category_id != null) {
-                this.setState({
-                    productId: category_id, search: false
-                });
-                this.loadProductDetails(category_id);
-            }
-        }, 100)
+                })
+                .catch((err) => {
+                    //console.log(err)
+                })
+        }
+        else if (category_id != null) {
+            this.setState({
+                productId: category_id, search: false
+            });
+            this.loadProductDetails(category_id);
+        }
 
 
+
+        let val = localStorage.getItem('cartObj')
+        if (val != null) {
+            cartObj = JSON.parse(val);
+        }
+        else
+            cartObj = undefined
 
     }
-    refreshItems(){
+    refreshItems() {
         let url = window.location.href;
         let url_string = url;
         let urlStr = new URL(url_string);
@@ -645,7 +757,7 @@ class ProductList extends Component {
     }
 
     filterData(id, index) {
-        console.log(id);
+        console.log(id, index);
         this.setState({
             indexedFilter: index
         })
@@ -653,6 +765,103 @@ class ProductList extends Component {
     }
     brandfilter(id) {
         this.filterListData(id, 'brands')
+    }
+
+    getSidebarDetails(id) {
+        if (this.state.updatedLevel) {
+            let dat = JSON.parse(localStorage.getItem('plp_category')).menuData;
+            localStorage.setItem('plp_category', JSON.stringify({ menuData: dat, level: this.state.updatedLevel }));
+
+            setTimeout(() => {
+                let data = JSON.parse(localStorage.getItem('plp_category'));
+                this.setState({
+                    menuItems: undefined,
+                    category_name: undefined,
+                    menuselected_id: undefined
+                })
+                if (data.level == 1) {
+                    this.setState({
+                        menuItems: data.menuData.sub_category_tree,
+                        category_name: data.menuData.name,
+                        menuselected_id: undefined
+                    })
+
+                }
+                else if (data.level == 2) {
+                    for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                        console.log(id, data.menuData.sub_category_tree[i].tid)
+                        if (data.menuData.sub_category_tree[i].tid === id) {
+                            this.setState({
+                                menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                                category_name: data.menuData.sub_category_tree[i].name,
+                                menuselected_id: undefined
+                            })
+                        }
+                    }
+
+                }
+                else if (data.level == 3) {
+                    for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                        for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++)
+                            if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == id) {
+
+                                this.setState({
+                                    menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                                    category_name: data.menuData.sub_category_tree[i].name,
+                                    menuselected_id: j
+
+                                })
+                            }
+                    }
+                }
+            }, 200)
+
+        }
+        else {
+            localStorage.setItem('plp_category', JSON.stringify({ menuData: this.props.location.state.item, level: this.props.location.state.level }));
+            let data = JSON.parse(localStorage.getItem('plp_category'));
+            console.log(data);
+            this.setState({
+                menuItems: undefined,
+                category_name: undefined,
+                menuselected_id: undefined
+            })
+            if (data.level == 1) {
+                setTimeout(() => {
+                    this.setState({
+                        menuItems: data.menuData.sub_category_tree,
+                        category_name: data.menuData.name,
+                        menuselected_id: undefined
+                    })
+                }, 100)
+
+            }
+            else if (data.level == 2) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    if (data.menuData.sub_category_tree[i].tid == category_id) {
+                        this.setState({
+                            menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                            category_name: data.menuData.sub_category_tree[i].name,
+                            menuselected_id: undefined
+                        })
+                    }
+                }
+
+            }
+            else if (data.level == 3) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++)
+                        if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == category_id) {
+                            this.setState({
+                                menuItems: data.menuData.sub_category_tree[i].variant_category_tree,
+                                category_name: data.menuData.sub_category_tree[i].name,
+                                menuselected_id: j
+
+                            })
+                        }
+                }
+            }
+        }
     }
 
     filterListData(search_id, search_type) {
@@ -715,16 +924,23 @@ class ProductList extends Component {
                 })
 
             }
-            else {
+            else if(search_id.sub_category_tree) {
+                level = 1;
+                this.setState({
+                    updatedLevel: 1,
+                    updatedId: id
+                })
+            }
+            else{
                 level = 3;
                 this.setState({
                     updatedLevel: 3,
                     updatedId: id
-                })
+                }) 
             }
             this.refreshBrandItems(search_id.tid, level);
             console.log(level)
-            // this.renderBreadCrumbs(level, id);
+            
 
             if (level === 1) {
 
@@ -767,7 +983,7 @@ class ProductList extends Component {
             .then((listingDetails) => {
                 this.setState({
                     listItems: undefined,
-                    category_name:undefined,menuItems:undefined
+                    category_name: undefined, menuItems: undefined
                 })
                 console.log(listingDetails, "121")
                 let activeBtn = []
@@ -775,13 +991,16 @@ class ProductList extends Component {
                 for (let i = 0; i < listingDetails.data.length; i++) {
                     activeBtn[i] = 0;
                 }
+                this.getSidebarDetails(search_id.tid);
+               setTimeout(()=>{
+                this.renderBreadCrumbs(search_id.tid);
+               },200) 
                 //console.log(listingDetails,"121212")
                 setTimeout(() => {
                     this.setState({
                         listItems: listingDetails.data,
                         activeButton: activeBtn,
-                        category_name:search_id.name,
-                        menuItems: search_id.sub_category_tree ? search_id.sub_category_tree : search_id.variant_category_tree 
+
                     })
                 }, 100)
             })
@@ -956,127 +1175,119 @@ class ProductList extends Component {
 
 
     }
-    renderBreadCrumbs(level, updatedId) {
-        if (level && updatedId) {
-            console.log(this.props.location.state)
-            if (level === 1) {
+    renderBreadCrumbs(id) {
+        console.log(id)
+       
+        let data = JSON.parse(localStorage.getItem('plp_category'))
+
+        if (this.state.updatedLevel) {
+            if (this.state.updatedLevel == 1) {
                 return (
                     <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
                         <div className="plp_margin">/</div>
-                        <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
+                        <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
                     </div>
                 )
             }
-            else if (level === 2) {
-                console.log(level)
-                if (this.props.location.state.level < level) {
-                    let data = this.props.location.state.item.sub_category_tree;
-                    let sub_tree;
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[i].tid == updatedId) {
-                            sub_tree = data[i]
-                            console.log(sub_tree.name)
+
+
+
+            else if (this.state.updatedLevel == 2) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    if (data.menuData.sub_category_tree[i].tid == id) {
+                        return (
+                            <div className="plp_nav_bar">
+                                <div><Link to="/">Home</Link></div>
+                                <div className="plp_margin">/</div>
+                                <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
+                                <div className="plp_margin">/</div>
+                                <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
+                            </div>
+                        )
+                    }
+                }
+            }
+            else if (this.state.updatedLevel == 3) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++) {
+                        if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == id) {
                             return (
                                 <div className="plp_nav_bar">
                                     <div><Link to="/">Home</Link></div>
                                     <div className="plp_margin">/</div>
-
-                                    <div> <div> {this.props.location.state.item.name}</div></div>
-
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
                                     <div className="plp_margin">/</div>
-                                    <div className="bread_crum_red" >{sub_tree.name}</div>
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
+                                    <div className="plp_margin">/</div>
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i].variant_category_tree[j])}> {ReactHtmlParser(data.menuData.sub_category_tree[i].variant_category_tree[j].name)}</div>
                                 </div>
                             )
-
                         }
                     }
-
                 }
-                else {
-                    <div className="plp_nav_bar">
-                        <div><Link to="/">Home</Link></div>
-                        <div className="plp_margin">/</div>
-
-                        <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
-
-                        <div className="plp_margin">/</div>
-                        <div className="bread_crum_red" >{this.props.location.state.secondLevelData.name}</div>
-                    </div>
-                }
-            }
-            else if (level === 3) {
-                {console.log(this.props.location.state)}
-                <div className="plp_nav_bar">
-                    <div><Link to="/">Home</Link></div>
-                    <div className="plp_margin">/</div>
-                    <div> <div className="bread_crum_red"> {this.props.location.state.fullData.name}</div></div>
-
-                    <div className="plp_margin">/</div>
-                    <div className="bread_crum_red" >{console.log(this.props.location.state.fullData.sub_category_tree[0].name, this.state.indexedFilter)}</div>
-                    <div className="plp_margin">/</div>
-                    <div className="bread_crum_red" >{this.props.location.state.item.name}</div>
-
-
-                    <div className="plp_margin">/</div>
-                    <div className="bread_crum_red">{this.props.location.state.item.name}</div>
-                </div>
             }
         }
         else {
-            if (this.props.location.state.level === 1) {
+            if (this.props.location.state.level == 1) {
                 return (
                     <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
                         <div className="plp_margin">/</div>
-                        <div className="bread_crum_red"> {this.props.location.state.item.name}</div>
-                    </div>
-                )
-            }
-            else if (this.props.location.state.level === 2) {
-                return (
-                    <div className="plp_nav_bar">
-                        <div><Link to="/">Home</Link></div>
-                        <div className="plp_margin">/</div>
-                        <div><Link className="bread_crum_red" to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData ? this.props.location.state.fullData.name : ''}</Link></div>
-
-                        <div className="plp_margin">/</div>
-                        <div className="bread_crum_red" >{this.props.location.state.fullData && this.props.location.state.item ? this.props.location.state.item.name : ''}</div>
-                    </div>
-                )
-            }
-            else if (this.props.location.state.level === 3) {
-                console.log(this.props.location.state.level, this.props.location.state)
-                return (
-                    <div className="plp_nav_bar">
-                        <div><Link to="/">Home</Link></div>
-                        <div className="plp_margin">/</div>
-                        <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.fullData.tid, state: { 'item': this.props.location.state.fullData, level: 1, } }}>{this.props.location.state.fullData.name}</Link></div>
-
-                        <div className="plp_margin">/</div>
-                        <div><Link to={{ pathname: '/listing', search: '?categoryId=' + this.props.location.state.secondLevelData.tid, state: { 'item': this.props.location.state.secondLevelData, level: 2, fullData: this.props.location.state.fullData } }}>{this.props.location.state.secondLevelData.name}</Link></div>
-
-
-                        <div className="plp_margin">/</div>
-                        <div className="bread_crum_red">{this.props.location.state.item.name}</div>
+                        <div className="bread_crum_red"  onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
                     </div>
                 )
             }
 
+
+
+            else if (this.props.location.state.level == 2) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    if (data.menuData.sub_category_tree[i].tid == id) {
+                        return (
+                            <div className="plp_nav_bar">
+                                <div><Link to="/">Home</Link></div>
+                                <div className="plp_margin">/</div>
+                                <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
+                                <div className="plp_margin">/</div>
+                                <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
+                            </div>
+                        )
+                    }
+                }
+            }
+            else if (this.props.location.state.level == 3) {
+                for (let i = 0; i < data.menuData.sub_category_tree.length; i++) {
+                    for (let j = 0; j < data.menuData.sub_category_tree[i].variant_category_tree.length; j++) {
+                        if (data.menuData.sub_category_tree[i].variant_category_tree[j].tid == id) {
+                            return (
+                                <div className="plp_nav_bar">
+                                    <div><Link to="/">Home</Link></div>
+                                    <div className="plp_margin">/</div>
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
+                                    <div className="plp_margin">/</div>
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
+                                    <div className="plp_margin">/</div>
+                                    <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i].variant_category_tree[j])}> {ReactHtmlParser(data.menuData.sub_category_tree[i].variant_category_tree[j].name)}</div>
+                                </div>
+                            )
+                        }
+                    }
+                }
+            }
         }
 
     }
 
-    setrevChange(){
-        alert('change')
+    setrevChange() {
         this.setState({
             revchange: undefined
         })
         this.setState({
             revchange: true
-        }) 
+        })
         this.refreshItems();
-    
+
     }
 
     render() {
@@ -1084,25 +1295,30 @@ class ProductList extends Component {
             <main style={{ maxHeight: this.state.overflowState === '0' ? 'auto' : '100vh' }}>
 
                 <div>
-                    <Header change={this.state.change} revChange={() => this.setrevChange()}  location_header={(data) => { this.setState({ overflowState: undefined }), setTimeout(() => { this.setState({ overflowState: data }) }, 100) }} />
+                    <Header change={this.state.change} revChange={() => this.setrevChange()} location_header={(data) => { this.setState({ overflowState: undefined }), setTimeout(() => { this.setState({ overflowState: data }) }, 100) }} />
                 </div>
                 {this.state.search ? this.state.search === true ? (
                     ''
                 ) : (
-                       '' ):''}
-               
+                    <div>
+                        {this.renderBreadCrumbs(this.state.updatedId?this.state.updatedId:this.state.cat_id)}
+                        </div>) : (
+                    <div>
+                        {this.renderBreadCrumbs(this.state.updatedId?this.state.updatedId:this.state.cat_id)}
+                        </div>)}
+
                 <div className="plp_container">
                     {this.state.search ? this.state.search === true ? (
                         ''
                     ) : (
                             <div className="col-md-3 hidden-xs">
 
-                                <Sidebar menuItems={this.state.menuItems} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.state.menuItems ? this.state.menuItems : ""} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} menuselected_id={this.state.menuselected_id} />
                             </div>
                         ) : (
                             <div className="col-md-3 hidden-sm">
 
-                                <Sidebar menuItems={this.state.menuItems} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} />
+                                <Sidebar menuItems={this.state.menuItems ? this.state.menuItems : ""} category_name={this.state.category_name} brandItems={this.state.brand_Items ? this.state.brand_Items : ''} dataId={(id, index) => this.filterData(id, index)} brandData={(id) => this.brandfilter(id)} menuselected_id={this.state.menuselected_id} />
                             </div>
                         )}
 
@@ -1128,11 +1344,11 @@ class ProductList extends Component {
                             }
 
                         </Row>
-                        <div style={{display:'flex'}}>
-                        <div style={{ display: this.state.activePage == 0 ? 'none' : '' }} className="pag_arrow prev" onClick={() => this.paginate('prev')}>‹‹</div>
-                        <div>Page {this.state.activePage + 1}</div>
-                        
-                        <div onClick={() => this.paginate('next')} style={{ display: this.state.listItems ? this.state.listItems.length < 12 ? 'none' : '' : 'none', }} className="pag_arrow next">››</div>
+                        <div style={{ display: 'flex' }}>
+                            <div style={{ display: this.state.activePage == 0 ? 'none' : '' }} className="pag_arrow prev" onClick={() => this.paginate('prev')}>‹‹</div>
+                            <div>Page {this.state.activePage + 1}</div>
+
+                            <div onClick={() => this.paginate('next')} style={{ display: this.state.listItems ? this.state.listItems.length < 12 ? 'none' : '' : 'none', }} className="pag_arrow next">››</div>
                         </div>
                     </div>
                 </div>

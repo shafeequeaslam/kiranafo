@@ -336,7 +336,7 @@ constructor(props) {
                                 </table>
                                 <div >
                                 <button onClick={() => this.redirectTo()} className="mini_cart_btn">
-                                <div>View Cart and Checkout</div>
+                                <div className="mini_cart_footer">View Cart and Checkout</div>
                                 <div>₹{this.state.totalAmount}</div>
                                 </button>
                                 </div>

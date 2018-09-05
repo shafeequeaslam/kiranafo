@@ -371,7 +371,7 @@ render() {
 
 
             {/* </div> */}
-            <div className="module_container" style={{ minHeight: 300,display: this.state.shockingDealsActive === "0" ? 'none' : ''  }}>
+            <div className="module_container" style={{ minHeight: 300, }}>
                 <div className="moduleHeader"> Shocking Deals</div>
                 {/* Timer Component */}
                 <Timer shockingDeals={(data)=>{this.setState({shockingDealsActive:data}),console.log(data)}}/>

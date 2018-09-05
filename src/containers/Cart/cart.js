@@ -11,7 +11,6 @@ import store from '../../assets/Store.png';
 import withRouter from 'react-router-dom/withRouter';
 import { DELIVERY_CHARGE, CREATE_NEW_CART } from '../../utis/D2';
 import axios from 'axios'
-import Axios from 'axios';
 import close_icon from '../../assets/close icon gary@2x.png'
 import FooterComponent from '../../components/footer-components/Footer/containers/footer';
 
@@ -35,7 +34,41 @@ class CartList extends Component {
         if (userData == null) {
             window.location.href = "/login"
         }
+        this.checkStock();
         this.getLocalData();
+    }
+    checkStock(){
+        let cobj = JSON.parse(localStorage.getItem('cartObj'));
+        if(cobj != null){
+           let ids=[];
+            for(let i=0;i<cobj.length;i++){
+                ids.push(cobj[i].productData.pid)
+            }
+            console.log(ids);
+            axios({
+                method: 'GET',
+                url:"https://cms.avenue11.com/kirana11_api/out-of-stock-service.json?pid="+ids,
+                headers: {
+                    "Content-Type": 'application/x-www-form-urlencoded',
+                }
+            })
+                .then((value) => {
+                    console.log(value.data);
+                    for(let i=0;i<cobj.length;i++){
+                        if(cobj[i].product_quantity > value.data[i].stock){
+                            cobj[i].product_quantity = value.data[i].stock
+                        }
+                    //     if(value.data[i].already_bought)
+                        
+                    }
+                    localStorage.setItem('cartObj',JSON.stringify(cobj));
+                })
+            
+            .catch((err)=>{
+                console.log(err.response)
+            })
+        }
+       
     }
 
     // next() {
@@ -343,7 +376,8 @@ class CartList extends Component {
 
                                                         <tr style={{ display: 'flex', alignItems: 'center', }} key={index}>
                                                             <td className="col-sm-5">
-                                                                <Link to={{ pathname: '/product_desc', search: '?product=' + item.productData.pid, state: { 'item': { _source: item.productData }, 'type': "pid" } }}>
+                                                            {/* to={{ pathname: '/product_desc', search: '?product=' + item.productData.pid, state: { 'item': { _source: item.productData }, 'type': "pid" } }} */}
+                                                                
                                                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                                                         <div style={{ border: '1px solid #f7f7f7', height: 75, width: 75 }}>
                                                                             <img src={item.productData.image_url} width='100%' />
@@ -352,7 +386,7 @@ class CartList extends Component {
                                                                             <div style={{ color: '#d4d4d4' }}>{item.productData.title}</div>
                                                                         </div>
                                                                     </div>
-                                                                </Link>
+                                                                
                                                             </td>
                                                             <td className="col-sm-2">
                                                                 <div>₹ {item.productData.on_sale === true ? item.productData.saleprice / 100 : item.productData.mrp / 100}</div>

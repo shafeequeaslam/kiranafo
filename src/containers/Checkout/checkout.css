@@ -100,7 +100,6 @@ input[type="radio"]:disabled.delivery+.add_type {
 
 .payment_tabs .nav-tabs .nav-link {
     border: 1px solid #d4d4d4;
-    border-bottom-color:#fff;
 }
 .nav-tabs .nav-link{
     cursor: pointer;

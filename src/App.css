@@ -3,6 +3,7 @@ body{
     font-family: 'Roboto', sans-serif !important;
     font-weight: 400 !important;
     color:#333 !important;
+    font-size: 14px !important;
 }
 .moduleHeader {
     font-size: 20px;
@@ -166,10 +167,23 @@ button{
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 70px;
+    height: 40px;
     width: 100%;
     padding: 0 10px;
 }
+.bread_crum_red{
+    cursor: pointer
+}
+.heroContainer img{
+    cursor:pointer;
+}
+.cardBanner img{
+    cursor:pointer
+}
+img{
+    cursor:pointer
+}
+
 
 @media only screen and (max-width:480px) {
 

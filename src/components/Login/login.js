@@ -96,10 +96,10 @@ class LoginComponent extends Component {
                 </div>
                 {/* <div className="terms_condn">By signing up you agree to our <p>Terms and Conditions</p></div> */}
                 <div className="social_wrpr">
-                <div><img src={yt}></img></div>
-                <div><img src={twitter}></img></div>
-                <div><img src={insta}></img></div>
-                <div><img src={fb}></img></div>
+                <div onClick={()=>window.location.href="https://www.youtube.com/channel/UCnNEdu8NliSnkYHtJXXWoaw"}><img src={yt}></img></div>
+                <div onClick={()=>window.location.href="https://twitter.com/kirana11com"}><img src={twitter}></img></div>
+                <div onClick={()=>window.location.href="https://www.instagram.com/kirana11com"}><img src={insta}></img></div>
+                <div onClick={()=>window.location.href="https://www.facebook.com/kirana11com"}><img src={fb}></img></div>
                 </div>
                 <FooterComponent/>
 

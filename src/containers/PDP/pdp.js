@@ -18,6 +18,8 @@ import firebase from 'firebase';
 import FooterComponent from '../../components/footer-components/Footer/containers/footer';
 import ReactImageMagnify from 'react-image-magnify';
 
+
+
 const baseUrl = "https://img1.kirana11.com/files/public/styles/pdp_page/public/690225101127.jpg?QVNo3W2uiXKqvOOp0dIb7vJKAs8HRIwb&itok=S4L6DAC0";
 this.im_arr = undefined;
 let cartObj = undefined;
@@ -35,7 +37,10 @@ class ProductDescription extends Component {
             product_quantity: [],
             product_deal_quantity: undefined,
             im_arr: [],
-            activeButton: 0
+            activeButton: 0,
+            levelOne: undefined,
+            levelTwo: undefined,
+            levelThree: undefined
         };
     }
 
@@ -242,7 +247,7 @@ class ProductDescription extends Component {
     mapToCart_deals(val,type) {
         //console.log(val, this.props.location.state.item._source, "after items click")
         if(!type){
-        if (val.length > 0) {
+        if (val) {
 
             if (this.props.location.state.item._source) {
                 //console.log('121')
@@ -606,16 +611,20 @@ class ProductDescription extends Component {
                             <div className="col-sm-12">
                                 <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0', width: '100%' }}>
                                     <div ><Link to="/" className="bread_crum_red">Home</Link></div>
-                                    <div style={{ margin: '0 5px' }}>/</div>
+                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne? "":'none'}}>/</div>
+                                    <Link to={{ pathname: '/listing', search:this.state.levelOne ? '?categoryId=' + this.state.levelOne.tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 1 } }}  className="bread_crum_red"> {this.state.levelOne ? this.state.levelOne.name : ''}</Link>
+                                    {/* <div></div> */}
 
-                                    <div> {this.state.levelOne ? this.state.levelOne.name : ''}</div>
-
-                                    <div style={{ margin: '0 5px' }}>/</div>
-                                    <div>{this.state.levelTwo ? this.state.levelTwo.name : ""}</div>
-                                    <div style={{ margin: '0 5px' }}>/</div>
-                                    <div>{this.state.levelThree ? this.state.levelThree[0].name : ''}</div>
-                                    <div style={{ margin: '0 5px' }}>/</div>
-                                    <div >{this.state.product_data ? this.state.product_data.title : ''}</div>
+                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne&&this.state.levelTwo ? "":'none'}}>/</div>
+                                    <Link to={{ pathname: '/listing', search:this.state.levelTwo ? '?categoryId=' + this.state.levelTwo.tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 2 } }}  className="bread_crum_red"> {this.state.levelOne && this.state.levelTwo ? this.state.levelTwo.name : ""}</Link>
+                                    
+                                    <div style={{ margin: '0 5px' }} style={{search: this.state.levelOne&&this.state.levelTwo&&this.state.levelThree ? "":'none'}}>/</div>
+                                    <Link to={{ pathname: '/listing', search:this.state.levelThree ? '?categoryId=' + this.state.levelThree[0].tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 3 } }}  className="bread_crum_red" onClick={()=>{
+                                        alert(this.state.levelThree.tid)
+                                    }}> { this.state.levelOne && this.state.levelTwo && this.state.levelThree ? ReactHtmlParser(this.state.levelThree[0].name) : ''}</Link>
+                                    
+                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne && this.state.levelTwo && this.state.levelThree&&this.state.product_data ? "":'none'}}>/</div>
+                                    <div >{this.state.levelOne && this.state.levelTwo && this.state.levelThree && this.state.product_data ? this.state.product_data.title : ''}</div>
 
                                 </div>
 

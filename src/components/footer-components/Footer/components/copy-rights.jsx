@@ -5,7 +5,7 @@ class CopyRights extends Component {
     render() {
         return (
             <Container className="copy-rights">
-                <p>© 2018 Kirana11. All rights reserved.</p>
+                <p>© 2018 Avenue11. All rights reserved.</p>
             </Container>
         );
     }

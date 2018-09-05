@@ -48,7 +48,7 @@ class App extends Component {
           <Route path="/forgot_pwd" component={Otp}/>
           <Route path="/reset_pwd" component={Forgetpwd}/>
           <Route path="/change_pwd" component={ChangePassword}/>
-          <Route path="/my_rewards" component={ShakeShake}/>
+          {/* <Route path="/my_rewards" component={ShakeShake}/> */}
           <Route path="/myAddress" component={MyAddress}/>
           <Route path="/order-payment" component={Order_Status}/>
           <Route path="/myorders" component={MyOrders}/>

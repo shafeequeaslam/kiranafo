@@ -82,7 +82,7 @@ class FooterComponent extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="footer_copyrights">©2018 Kirana11. All Rights Reserved </div>
+                <div className="footer_copyrights">©2018 Avenue11. All Rights Reserved </div>
 
             </div>
         );

@@ -22,9 +22,9 @@ class AccSidebar extends Component {
                             <NavItem >
                                 <NavLink href={this.state.active === 2? '#':'/myAddress'} active={this.state.active === 2 }>Address Book</NavLink>
                             </NavItem>
-                            <NavItem >
+                            {/* <NavItem >
                                 <NavLink href={this.state.active === 3? '#':'/my_rewards'} active={this.state.active === 3 }>My Rewards</NavLink>
-                            </NavItem>
+                            </NavItem> */}
                             <NavItem>
                                 <NavLink href={this.state.active === 1? '#':'/change_pwd'} active={this.state.active === 1 }>Change Password</NavLink>
                             </NavItem>
