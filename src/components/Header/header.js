@@ -41,7 +41,7 @@ const width = window.screen.width;
 class Header extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props)
+        //console.log(this.props)
         this.state = {
             miniOpen: false,
             isOpen: false,
@@ -93,7 +93,7 @@ class Header extends Component {
         })
             .then(res => res.json())
             .then((deals) => {
-                console.log("Deals", deals);
+                //console.log("Deals", deals);
                 this.setState({
                     categorisedProducts: deals[0]._source.main_category_tree
 
@@ -166,7 +166,7 @@ class Header extends Component {
 
     _handleKeyPress(e) {
         if (e.key === 'Enter') {
-            console.log('here')
+            //console.log('here')
             this.redirectTo('plp');
         }
     }
@@ -177,7 +177,7 @@ class Header extends Component {
                 searchParam: evnt.target.value
             })
 
-            console.log(evnt.target.value.toLowerCase())
+            //console.log(evnt.target.value.toLowerCase())
             search = evnt.target.value.toLowerCase();
         }
         else {
@@ -195,7 +195,7 @@ class Header extends Component {
             })
                 // .then(res => res)
                 .then((data) => {
-                    console.log(data.data, 'data');
+                    //console.log(data.data, 'data');
                     if (data.data.length > 0) {
                         this.setState({
                             searchArray: data.data
@@ -213,7 +213,7 @@ class Header extends Component {
                     // })
                 })
                 .catch((err) => {
-                    console.log(err)
+                    //console.log(err)
                 })
         }
         else {
@@ -228,13 +228,13 @@ class Header extends Component {
         Geocode.fromLatLng(lat, long).
             then(
                 response => {
-                    console.log(response.results[0], response.results[0].address_components)
+                    //console.log(response.results[0], response.results[0].address_components)
                     selectedLocation.name = response.results[0].address_components[0].long_name,
                         selectedLocation.formattedAddress = response.results[0].formatted_address,
                         selectedLocation.lat = lat,
                         selectedLocation.lng = long,
                         selectedLocation.postalCode = this.getPostalCodeFromAddress(response.results[0].address_components);
-                    console.log('1212 . 1')
+                    //console.log('1212 . 1')
                     localStorage.setItem("location", JSON.stringify(selectedLocation));
                 }
             )
@@ -254,18 +254,18 @@ class Header extends Component {
             let usr = JSON.parse(localStorage.getItem("userDetails"));
             let params = new URLSearchParams();
             if (locationOne != null) {
-                console.log(locationOne)
+                //console.log(locationOne)
                 this.setState({
                     location: null
                 })
-                console.log('here')
+                //console.log('here')
                 params.append('address', locationOne.formattedAddress);
                 params.append('latitude', locationOne.lat);
                 params.append('longitude', locationOne.lng);
                 params.append('source', 'web');
                 if (usr != null)
                     params.append('uid', usr.user.uid);
-                console.log(params);
+                //console.log(params);
 
 
                 Axios({
@@ -281,10 +281,10 @@ class Header extends Component {
                     .then((value) => {
 
                         if (value.data.serving_area.length > 0) {
-                            console.log(value, 'data11');
+                            //console.log(value, 'data11');
                             localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
                             let loc = JSON.parse(localStorage.getItem('location'))
-                            console.log(loc, '1111')
+                            //console.log(loc, '1111')
                             if (loc != null) {
                                 this.setState({
                                     location: loc,
@@ -302,7 +302,7 @@ class Header extends Component {
 
                     })
                     .catch((err) => {
-                        console.log(err.response, 'err');
+                        //console.log(err.response, 'err');
                         localStorage.removeItem('location');
                         localStorage.removeItem('location_dc')
 
@@ -317,7 +317,7 @@ class Header extends Component {
     }
 
     setrevChange() {
-        console.log('here')
+        //console.log('here')
         this.setState({
             revChange: undefined
         })
@@ -331,12 +331,12 @@ class Header extends Component {
 
         setTimeout(() => {
             cartObj = JSON.parse(localStorage.getItem('cartObj'));
-            console.log(cartObj);
+            //console.log(cartObj);
             this.setState({
                 cartObj: cartObj,
             })
         }, 500)
-        console.log(this.props)
+        //console.log(this.props)
         if (this.props.revChange) { this.props.revChange() }
 
     }
@@ -364,22 +364,22 @@ class Header extends Component {
                                     };
 
                                     let postalCode = this.getPostalCodeFromAddress(place.address_components)
-                                    console.log(postalCode);
+                                    //console.log(postalCode);
                                     if (postalCode == null) {
                                         Geocode.fromLatLng(selectedLocation.lat, selectedLocation.lng).then(
                                             response => {
                                                 selectedLocation.postalCode = this.getPostalCodeFromAddress(response.results[0].address_components);
-                                                console.log('1212 . 1')
+                                                //console.log('1212 . 1')
                                                 localStorage.setItem("location", JSON.stringify(selectedLocation));
                                             }
                                         )
                                             .catch((err) => {
-                                                console.log(err)
+                                                //console.log(err)
                                             })
                                     }
                                     else {
                                         selectedLocation.postalCode = postalCode;
-                                        console.log('1212 . 12')
+                                        //console.log('1212 . 12')
                                         localStorage.setItem("location", JSON.stringify(selectedLocation));
                                     }
                                     // localStorage.setItem("location", JSON.stringify(selectedLocation));
@@ -396,18 +396,18 @@ class Header extends Component {
                                         let usr = JSON.parse(localStorage.getItem("userDetails"));
                                         let params = new URLSearchParams();
                                         if (locationOne != null) {
-                                            console.log(locationOne)
+                                            //console.log(locationOne)
                                             this.setState({
                                                 location: null
                                             })
-                                            console.log('here')
+                                            //console.log('here')
                                             params.append('address', locationOne.formattedAddress);
                                             params.append('latitude', locationOne.lat);
                                             params.append('longitude', locationOne.lng);
                                             params.append('source', 'web');
                                             if (usr != null)
                                                 params.append('uid', usr.user.uid);
-                                            console.log(params);
+                                            //console.log(params);
 
 
                                             Axios({
@@ -423,13 +423,13 @@ class Header extends Component {
                                                 .then((value) => {
 
                                                     if (value.data.serving_area.length > 0) {
-                                                        console.log(value, 'data11');
+                                                        //console.log(value, 'data11');
                                                         localStorage.setItem('location_dc', JSON.stringify(value.data.serving_area[0]))
                                                         //   AsyncStorage.setItem('userLocation', JSON.stringify({ 'description': json.results[0].formatted_address, 'location': location, 'pincode': pincode }))
                                                         //   this.props.getFooterActive(0);
                                                         //   Actions.home();
                                                         let loc = JSON.parse(localStorage.getItem('location'))
-                                                        console.log(loc, '1111')
+                                                        //console.log(loc, '1111')
                                                         if (loc != null) {
                                                             this.setState({
                                                                 location: loc,
@@ -446,7 +446,7 @@ class Header extends Component {
 
                                                 })
                                                 .catch((err) => {
-                                                    console.log(err.response, 'err');
+                                                    //console.log(err.response, 'err');
                                                     localStorage.removeItem('location');
                                                     localStorage.removeItem('location_dc')
 
@@ -548,7 +548,7 @@ class Header extends Component {
                                             <div className="cat_menu" style={{ display: this.state.menu == true ? 'block' : 'none' }}>
                                                 {
                                                     this.state.categorisedProducts ? this.state.categorisedProducts.map((item, id) => {
-                                                        console.log(id)
+                                                        //console.log(id)
                                                         return (
                                                             <Link to={{ pathname: '/listing', search: '?categoryId=' + item.tid, state: { 'item': item, level: 1 } }} key={id} onMouseEnter={() => { this.setState({ menu_level_one: id + 1 }) }}>
                                                                 <div className="cat_sub_menu" style={{ backgroundColor: this.state.menu_level_one === id + 1 ? '#cf2717' : '#fff', color: this.state.menu_level_one === id + 1 ? '#fff' : '' }}>
@@ -568,9 +568,9 @@ class Header extends Component {
                                                 <div className="cat_menu_second" onMouseLeave={() => this.setState({ second_level_menu: undefined })}>
                                                     {
                                                         this.state.categorisedProducts && this.state.menu_level_one ? this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree.map((sub_item, id) => {
-                                                            console.log(this.state.menu_level_one)
+                                                            //console.log(this.state.menu_level_one)
                                                             return (
-                                                                <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: { 'item': sub_item, level: 2, fullData: this.state.categorisedProducts[this.state.menu_level_one - 1] } }} key={id} onMouseEnter={() => { this.setState({ second_level_menu: id + 1 }) }}>
+                                                                <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: { level: 2, item: this.state.categorisedProducts[this.state.menu_level_one - 1] } }} key={id} onMouseEnter={() => { this.setState({ second_level_menu: id + 1 }) }}>
                                                                     <div className="cat_sub_menu">
 
                                                                         {sub_item.name}
@@ -585,7 +585,8 @@ class Header extends Component {
                                                         {
                                                             this.state.categorisedProducts && this.state.second_level_menu ? this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree[this.state.second_level_menu - 1].variant_category_tree.map((sub_item, id) => {
                                                                 return (
-                                                                    <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: { 'item': sub_item, level: 3, fullData: this.state.categorisedProducts[this.state.menu_level_one - 1], secondLevelData: this.state.categorisedProducts[this.state.menu_level_one - 1].sub_category_tree[this.state.second_level_menu - 1] } }} key={id}>
+                                                                    <Link to={{ pathname: '/listing', search: '?categoryId=' + sub_item.tid, state: {  level: 3, item: this.state.categorisedProducts[this.state.menu_level_one - 1],
+                                                                      } }} key={id}>
                                                                         <div className="cat_sub_menu">
 
                                                                             {ReactHtmlParser(sub_item.name)}
@@ -621,7 +622,7 @@ class Header extends Component {
                                             : ''}
                                     </div>
                                     <div>
-                                        <button className='search_btn' type="submit" >Search</button>
+                                        <button className='search_btn' type="submit" onClick={() => this.redirectTo('plp')}>Search</button>
                                     </div>
                                 </NavItem>
                             </Nav>
@@ -648,11 +649,11 @@ class Header extends Component {
                                                         My Orders
                                                             </div>
                                                 </Link>
-                                                <Link to={{ pathname: '/my_rewards' }}   >
+                                                {/* <Link to={{ pathname: '/my_rewards' }}   >
                                                     <div className="cat_sub_menu">
                                                         My Rewards
                                                             </div>
-                                                </Link>
+                                                </Link> */}
                                                 <Link to={{ pathname: '/change_pwd' }}   >
                                                     <div className="cat_sub_menu">
                                                         Change Password
@@ -668,12 +669,12 @@ class Header extends Component {
                                         </div>
                                     </NavLink>
                                 </NavItem>
-                                <NavItem className="header_cart" onMouseEnter={() => this.setState({ miniOpen: true })} onMouseLeave={() => this.setState({ miniOpen: false })} >
-                                    <div to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
+                                <NavItem className="header_cart" onClick={() => this.setState({ miniOpen: !this.state.miniOpen })} style={{ backgroundColor: this.props.cartIcon === false ? '#cf2717' : '' }} >
+                                    <div to="#" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}} style={{ display: this.props.cartIcon === false ? 'none' : '' }}>
                                         <img alt="cart" src={cart_icon} height="30" />
                                         <div style={{ display: this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex' : 'none') : 'none' }} className="cart_tip">{this.state.cartObj ? this.state.cartObj.length : ''}</div>
                                     </div>
-                                    <div style={{ display: this.state.miniOpen === true ? '' : 'none' }} className='minicart' style={{ display: this.props.cartIcon === false ? 'none' : '' }}>
+                                    <div style={{ display: this.state.miniOpen === true ? '' : 'none' }} className='minicart' >
                                         {this.state.miniOpen === true ?
                                             <Minicart change={this.state.change} revChange={() => this.setrevChange()} />
                                             : ""}

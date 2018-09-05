@@ -5,6 +5,7 @@
   "dependencies": {
     "apisauce": "^0.16.0",
     "axios": "^0.18.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "bootstrap": "^4.1.1",
     "firebase": "^5.4.1",
     "jquery": "^3.3.1",

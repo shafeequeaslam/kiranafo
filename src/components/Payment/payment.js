@@ -317,9 +317,9 @@ class PaymentComponent extends Component {
     render() {
         return (
             <div>
-                <div>
+                {/* <div>
                     <button onClick={() => this.addCoupon()} className="button_white" style={{ display: this.state.addCoupon ? '' : 'none', padding: '5px 10px' }}>Add Coupon</button>
-                </div>
+                </div> */}
                 <div style={{ display: !this.state.addCoupon ? '' : 'none' }} className="coupon_select_wrpr">
                     <div onClick={() => this.addCoupon()} className="coupon_wrpr_close">x</div>
                     <div className="flex_row">

@@ -105,7 +105,7 @@ class MyAddress extends Component {
 
                   })
                   .catch((err) => {
-                        if (err.response.status == 400) {
+                        if (err.response && err.response.status == 400) {
                               localStorage.removeItem('userDetails');
                               localStorage.removeItem('cartObj');
                               localStorage.removeItem('userToken')
@@ -143,7 +143,7 @@ class MyAddress extends Component {
       saveAddress() {
             if (this.state.edit == false) {
                   console.log(this.state.name, this.state.blg_name, this.state.areaPincode, this.state.landmark, this.state.street_name)
-                  if (this.state.type && this.state.blg_name && this.state.areaPincode && this.state.landmark && this.state.street_name) {
+                  if (this.state.name && this.state.type && this.state.blg_name && this.state.areaPincode && this.state.landmark && this.state.street_name) {
                         let location = JSON.parse(localStorage.getItem('location'));
                         let usr = JSON.parse(localStorage.getItem('userDetails'));
                         let location_dc = JSON.parse(localStorage.getItem('location_dc'));
@@ -215,8 +215,8 @@ class MyAddress extends Component {
                         "address_polygon": location_dc.AddressPolygon,
                         "address_id": this.state.editAddressId
                   }
-               
-                 
+
+
                   let formBody = [];
                   for (let property in details) {
                         let encodedKey = encodeURIComponent(property);
@@ -236,169 +236,181 @@ class MyAddress extends Component {
 
                         .then((data) => {
                               this.setState({
-                                    edit:false,editAddressId:undefined,
-                                    activeForm: !this.state.activeForm,buttonActive:true
+                                    edit: false, editAddressId: undefined,
+                                    activeForm: !this.state.activeForm, buttonActive: true
                               })
-                              setTimeout(()=>{
+                              setTimeout(() => {
                                     this.getAddress();
-                              },100)
-                              
+                              }, 100)
+
                         })
-                        .catch((error)=>{
+                        .catch((error) => {
                               this.getRefreshToken(undefined, "saveAddress")
                         })
 
-                  }
-             
+            }
+
       }
 
-            deleteAddress(id) {
-                  console.log('here')
-                  let usr = JSON.parse(localStorage.getItem('userToken'))
-                  Axios({
-                        url: 'https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/' + id + '.json',
-                        method: 'DELETE',
-                        headers: {
-                              'Content-Type': 'application/x-www-form-urlencoded',
-                              'Authorization': 'Bearer ' + usr.access_token
-                        },
-                        data: {
-                              "address_id": id
-                        }
+      deleteAddress(id) {
+            console.log('here')
+            let usr = JSON.parse(localStorage.getItem('userToken'))
+            Axios({
+                  url: 'https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/' + id + '.json',
+                  method: 'DELETE',
+                  headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Bearer ' + usr.access_token
+                  },
+                  data: {
+                        "address_id": id
+                  }
+            })
+
+                  .then((data) => {
+                        this.getAddress();
                   })
-
-                        .then((data) => {
-                              this.getAddress();
-                        })
-                        .catch((err) => {
-                              this.getRefreshToken(usr, 'deleteAddress', id)
-                        })
-            }
-            clearForm() {
-                  this.setState({
-                        activeTab: '',
-                        blg_name: '',
-                        street_name: '',
-                        landmark: '',
-                        type: '',
-                        activeForm: !this.state.activeForm,
-                        buttonActive:true
-
-
+                  .catch((err) => {
+                        this.getRefreshToken(usr, 'deleteAddress', id)
                   })
-            }
+      }
+      clearForm() {
+            this.setState({
+                  activeTab: '',
+                  blg_name: '',
+                  street_name: '',
+                  name: '',
+                  landmark: '',
+                  type: '',
+                  activeForm: !this.state.activeForm,
+                  buttonActive: true
 
-            render() {
-                  return (
-                        <main>
-                              <div>
-                                    <Header />
+
+            })
+      }
+
+      render() {
+            return (
+                  <main>
+                        <div>
+                              <Header />
+                        </div>
+                        <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
+                              <div className="col-sm-3" style={{ padding: 0 }}>
+                                    <AccSidebar activeType={2} />
                               </div>
-                              <div style={{ display: 'flex', width: '90%', margin: '50px auto' }}>
-                                    <div className="col-sm-3" style={{ padding: 0 }}>
-                                          <AccSidebar activeType={2} />
-                                    </div>
 
-                                    <div className="col-sm-9 address_listing" >
-                                          <div style={{ border: "1px solid #f7f7f7", maxHeight: 500, paddingBottom: 10, overflowY: 'scroll', }}>
-                                                <div style={{ flexDirection: "row", width: '100%', flexWrap: 'wrap', display: this.state.activeForm ? 'none' : 'flex' }}>
-                                                      {this.state.addressData ? this.state.addressData.map((item, ind) => {
-                                                            console.log(item)
-                                                            return (
-                                                                  <div className="addressWrpr" style={{ border: '1px solid #f1f1f1' }}>
-                                                                        <div className="address_container">
-                                                                              <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.address_type}</div>
-                                                                              <div>{item.address_1}</div>
-                                                                              <div>{item.landmark}</div>
-                                                                              <div style={{ width: '90%' }}>{item.area}</div>
-                                                                        </div>
-                                                                        <div className="address_btn_container"><button className="button_red" onClick={() => this.editAddress(item)}>Edit</button>
-
-                                                                              <button className="button_red" style={{ marginLeft: 10 }} onClick={() => this.deleteAddress(item.address_id)}>Delete</button></div>
+                              <div className="col-sm-9 address_listing" >
+                              <div style={{ width: '100%', display: 'flex', fontSize: 24, color: '#666' }}>
+                                    My Address
+                      </div>
+                                    <div style={{ border: "1px solid #f7f7f7", maxHeight: 500, paddingBottom: 10, overflowY: 'scroll', }}>
+                                          <div style={{ flexDirection: "row", width: '100%', flexWrap: 'wrap', display: this.state.activeForm ? 'none' : 'flex' }}>
+                                                {this.state.addressData ? this.state.addressData.map((item, ind) => {
+                                                      console.log(item)
+                                                      return (
+                                                            <div className="addressWrpr" style={{ border: '1px solid #f1f1f1' }}>
+                                                                  <div className="address_container">
+                                                                        <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.name}</div>
+                                                                        <div>{item.address_name}</div>
+                                                                        <div>{item.address_1}</div>
+                                                                        <div>{item.landmark}</div>
+                                                                        <div style={{ width: '90%' }}>{item.area}</div>
                                                                   </div>
-                                                            )
-                                                      }) : ''}
+                                                                  
+                                                                  <div className="address_btn_container">
+                                                                  <div className="click_transparent" onClick={() => this.editAddress(item)}>Edit</div>
+
+                                                                        <div className="click_transparent" style={{ marginLeft: 10 }} onClick={() => this.deleteAddress(item.address_id)}>Delete</div>
+                                                                        </div>
+                                                            </div>
+                                                      )
+                                                }) : ''}
 
 
-                                                </div>
+                                          </div>
 
-                                                <div style={{ display: this.state.activeForm ? '' : 'none' }} className="add_form">
-                                                      <div className="header_text">{this.state.edit === true ? 'Edit Address' : 'Add Address'}</div>
-                                                      <form style={{ marginTop: 20 }}>
-                                                            {/* <FormGroup className="checkout-form">
+                                          <div style={{ display: this.state.activeForm ? '' : 'none' }} className="add_form">
+                                                <div className="header_text">{this.state.edit === true ? 'Edit Address' : 'Add Address'}</div>
+                                                <form style={{ marginTop: 20 }}>
+                                                      {/* <FormGroup className="checkout-form">
                                                 <Label htmlFor="building_name">Name</Label>
                                                 <Input onChange={(e) => this.setState({ name: e.target.value })} />
                                             </FormGroup> */}
+                                                      <FormGroup className="checkout-form">
+                                                            <Label htmlFor="building_name">Name</Label>
+                                                            <Input onChange={(e) => { this.setState({ name: e.target.value, buttonActive: false }) }} value={this.state.name} />
+                                                      </FormGroup>
+                                                      <FormGroup className="checkout-form">
+                                                            <Label htmlFor="building_name">Building No./Name</Label>
+                                                            <Input onChange={(e) => { this.setState({ blg_name: e.target.value, buttonActive: false }) }} value={this.state.blg_name} />
+                                                      </FormGroup>
+                                                      <FormGroup className="checkout-form">
+                                                            <Label htmlFor="street_name">Street Name</Label>
+                                                            <Input onChange={(e) => this.setState({ street_name: e.target.value, buttonActive: false })} value={this.state.street_name} />
+                                                      </FormGroup>
+                                                      <FormGroup className="checkout-form">
+                                                            <Label htmlFor="landmark">Landmark</Label>
+                                                            <Input onChange={(e) => this.setState({ landmark: e.target.value, buttonActive: false })} value={this.state.landmark} />
+                                                      </FormGroup>
+                                                      <div className="form-area-disabled">
                                                             <FormGroup className="checkout-form">
-                                                                  <Label htmlFor="building_name">Building No./Name</Label>
-                                                                  <Input onChange={(e) => { this.setState({ blg_name: e.target.value, buttonActive: false }) }} value={this.state.blg_name} />
+                                                                  <Label htmlFor="area">Area</Label>
+                                                                  <Input disabled value={this.state.areaVal} value={this.state.areaVal} />
                                                             </FormGroup>
                                                             <FormGroup className="checkout-form">
-                                                                  <Label htmlFor="street_name">Street Name</Label>
-                                                                  <Input onChange={(e) => this.setState({ street_name: e.target.value, buttonActive: false })} value={this.state.street_name} />
+                                                                  <Label htmlFor="pincode">Pincode</Label>
+                                                                  <Input disabled value={this.state.areaPincode} value={this.state.areaPincode} />
                                                             </FormGroup>
-                                                            <FormGroup className="checkout-form">
-                                                                  <Label htmlFor="landmark">Landmark</Label>
-                                                                  <Input onChange={(e) => this.setState({ landmark: e.target.value, buttonActive: false })} value={this.state.landmark} />
-                                                            </FormGroup>
-                                                            <div className="form-area-disabled">
-                                                                  <FormGroup className="checkout-form">
-                                                                        <Label htmlFor="area">Area</Label>
-                                                                        <Input disabled value={this.state.areaVal} value={this.state.areaVal} />
-                                                                  </FormGroup>
-                                                                  <FormGroup className="checkout-form">
-                                                                        <Label htmlFor="pincode">Pincode</Label>
-                                                                        <Input disabled value={this.state.areaPincode} value={this.state.areaPincode} />
-                                                                  </FormGroup>
+                                                      </div>
+                                                      <div style={{ display: 'flex', flexDirection: 'row', width: '30%', justifyContent: 'space-between' }}>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'home' ? true : false} />
+                                                                  <label className="add_type" htmlFor="home">
+                                                                        <div style={{ width: '30%' }}>
+                                                                              <img src={this.state.type == 'home' ? home : home_grey} width='25' />
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Home
+                                                    </div>
+                                                                  </label>
                                                             </div>
-                                                            <div style={{ display: 'flex', flexDirection: 'row', width: '30%', justifyContent: 'space-between' }}>
-                                                                  <div style={{ width: '30%' }}>
-                                                                        <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'home' ? true : false} />
-                                                                        <label className="add_type" htmlFor="home">
-                                                                              <div style={{ width: '30%' }}>
-                                                                              <img src={this.state.type == 'home' ? home:home_grey} width='25' /> 
-                                                                              </div>
-                                                                              <div style={{ width: '60%' }}>Home
-                                                    </div>
-                                                                        </label>
-                                                                  </div>
-                                                                  <div style={{ width: '30%' }}>
-                                                                        <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'work' ? true : false} />
-                                                                        <label className="add_type" htmlFor="work">
-                                                                              <div style={{ width: '30%' }}>
-                                                                              <img src={this.state.type == 'work'? office:office_grey} width='25' /> 
-                                                                              </div>
-                                                                              <div style={{ width: '60%' }}>Work
-                                                    </div>
-                                                                        </label>
-                                                                  </div>
-                                                                  <div style={{ width: '30%' }}>
-                                                                        <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'other' ? true : false} />
-                                                                        <label className="add_type" htmlFor="other">
-                                                                              <div style={{ width: '30%' }}>
-                                                                              <img src={this.state.type == 'other' ? other : other_grey} width='25' /> 
-                                                                              </div>
-                                                                              <div style={{ width: '60%' }}>Other
-                                                    </div>
-                                                                        </label>
-                                                                  </div>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'work' ? true : false} />
+                                                                  <label className="add_type" htmlFor="work">
+                                                                        <div style={{ width: '30%' }}>
+                                                                              <img src={this.state.type == 'work' ? office : office_grey} width='25' />
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Work
+                                                                        </div>
+                                                                  </label>
                                                             </div>
+                                                            <div style={{ width: '30%' }}>
+                                                                  <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} checked={this.state.type == 'other' ? true : false} />
+                                                                  <label className="add_type" htmlFor="other">
+                                                                        <div style={{ width: '30%' }}>
+                                                                              <img src={this.state.type == 'other' ? other : other_grey} width='25' />
+                                                                        </div>
+                                                                        <div style={{ width: '60%' }}>Other
+                                                                  </div>
+                                                                  </label>
+                                                            </div>
+                                                      </div>
 
-                                                      </form>
-                                                      <button type="button" onClick={() => this.clearForm()} className="button_white" style={{ marginRight: 10 }}>Cancel</button>
-                                                      <button onClick={() => this.saveAddress()} className="button_red" disabled={this.state.buttonActive} style={{ backgroundColor: this.state.buttonActive == true ? '#d4d4d4' : '#cf2717' }}>Continue</button>
-                                                </div>
-                                          </div>
-
-                                          <div>
-                                                <button type="button" onClick={() => this.openaddAddress()} className="button_white" style={{ marginTop: 10, display: this.state.activeForm == true ? 'none' : '' }}>Add Address</button>
+                                                </form>
+                                                <button type="button" onClick={() => this.clearForm()} className="button_white" style={{ marginRight: 10 }}>Cancel</button>
+                                                <button onClick={() => this.saveAddress()} className="button_red" disabled={this.state.buttonActive} style={{ backgroundColor: this.state.buttonActive == true ? '#d4d4d4' : '#cf2717' }}>Continue</button>
                                           </div>
                                     </div>
 
+                                    <div>
+                                          <button type="button" onClick={() => this.openaddAddress()} className="button_white" style={{ marginTop: 10, display: this.state.activeForm == true ? 'none' : '' }}>Add Address</button>
+                                    </div>
                               </div>
-                        </main>
-                  );
-            }
-      }
 
-      export default MyAddress;
+                        </div>
+                  </main>
+            );
+      }
+}
+
+export default MyAddress;

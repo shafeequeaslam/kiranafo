@@ -245,6 +245,10 @@ table.card_orders_table,table.card_details_table{
     background-color: darkgreen !important;
     border: none !important;
     margin: 5px 0 !important;
+    margin-left: 10px !important;
+}
+.cancel_order_btn{
+    min-width: 50px !important;
 }
 
 .tab_content_container{
@@ -325,4 +329,11 @@ table.card_orders_table,table.card_details_table{
 
 .order_ex_data._flex .order_det_desc{
     margin-top:0
+}
+
+.cancel_checkbox div{
+    padding: 5px 0;
+}
+.cancel_checkbox .check-custom-label {
+    margin-left: 5px;
 }

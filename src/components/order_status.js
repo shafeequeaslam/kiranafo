@@ -15,7 +15,7 @@ class Order_Status extends Component {
         if(status === "failure"){
               alert('Payment failed, Please try again');
               let order_id=JSON.parse(localStorage.getItem('order_id'))
-              window.history.go('/checkout?order_id='+order_id)
+            // window.location.href='/checkout?order_id='+order_id
         }
       }
       componentWillMount(){

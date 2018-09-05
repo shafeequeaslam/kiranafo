@@ -50,7 +50,7 @@
     margin: auto 0;
     border-radius: 5px;
 }
-.bread_crum_red{
+.bread_crum_red:nth-last-child(1){
     color: #cf2717 !important;
 }
 .cart_table_body{

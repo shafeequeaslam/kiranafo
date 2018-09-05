@@ -2,17 +2,25 @@
       width: 32%;
       margin-left: 1%;
       padding: 10px;
-      min-height: 275px;  
+      min-height: 200px;  
 }
 .address_container{
       height: 80%;
 }
 .address_btn_container{
-      height: 20%;
-      display:'flex';
-      justify-content:'flex-start'
+      display:flex;
+      justify-content:space-around;
+      flex-direction: row;
+      width:80%;
+      margin: 0 auto;
+}
+.address_btn_container .click_transparent{
+      cursor:pointer;
 }
 
+.address_btn_container .click_transparent:hover{
+      color:#cf2717
+}
 .header_text{
       color:#666;
       font-size: 20px;

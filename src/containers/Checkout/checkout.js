@@ -8,6 +8,12 @@ import kiranalogo from '../../assets/Kirana logo.png';
 import Axios from 'axios';
 import { GET_ADDRESS_BY_DC } from '../../utis/D2';
 import { create } from 'apisauce'
+import home from '../../assets/home icon@2x.png'
+import office from '../../assets/office icon@2x.png'
+import other from '../../assets/others icon@2x.png'
+import home_grey from '../../assets/home icon-gray.png'
+import office_grey from '../../assets/office-icon-gray.png'
+import other_grey from '../../assets/others-icon-gray.png'
 
 class CheckoutContainer extends Component {
     constructor(props) {
@@ -34,8 +40,8 @@ class CheckoutContainer extends Component {
     toggleDate(id, date) {
         this.setState({
             dateSelected: id,
-            dateValue: date,timeSelected:0,
-            timeValue:this.state.timeSlotArr[id][0]
+            dateValue: date, timeSelected: 0,
+            timeValue: this.state.timeSlotArr[id][0]
         })
     }
     toggleTab(tab) {
@@ -56,7 +62,7 @@ class CheckoutContainer extends Component {
             console.log(user)
             this.getAddress(user.access_token);
             this.getTimeSlots();
-            
+
         }
 
 
@@ -78,7 +84,7 @@ class CheckoutContainer extends Component {
         let loc_dc = JSON.parse(localStorage.getItem('location_dc'))
         let lat = (loc.lat).toString()
         let lng = (loc.lng).toString()
-        let address_polygon=loc_dc.AddressPolygon
+        let address_polygon = loc_dc.AddressPolygon
         Axios({
             method: 'POST',
             url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_k11_customer_address.json',
@@ -89,7 +95,7 @@ class CheckoutContainer extends Component {
             data: {
                 "latitude": lat,
                 "longitude": lng,
-                address_polygon:address_polygon
+                address_polygon: address_polygon
             }
         })
             .then((value) => {
@@ -224,9 +230,9 @@ class CheckoutContainer extends Component {
             })
     }
 
-    add_address_to_order(item,i) {
+    add_address_to_order(item, i) {
         this.setState({
-            addressSelected:i
+            addressSelected: i
         })
         let url = window.location.href;
         let url_string = url;
@@ -235,7 +241,7 @@ class CheckoutContainer extends Component {
         let usr = JSON.parse(localStorage.getItem('userToken'))
         console.log(order_id)
         this.setState({
-            order_id:order_id
+            order_id: order_id
         })
         let details = {
             'order_id': order_id,
@@ -353,8 +359,8 @@ class CheckoutContainer extends Component {
         let url_string = url;
         let urlStr = new URL(url_string);
         let order_id = urlStr.searchParams.get("order_id");
-        localStorage.setItem('order_id',JSON.stringify({'order_id':order_id}))
-        
+        localStorage.setItem('order_id', JSON.stringify({ 'order_id': order_id }))
+
 
 
         const api = create({
@@ -375,12 +381,12 @@ class CheckoutContainer extends Component {
             }
         )
             .then((datas) => {
-                
+
                 this.getCartInfo();
                 console.log('111')
                 console.log(datas, '11121');
-                
-               
+
+
                 // Actions.payment({ total: this.state.total, order_id: val.data[0].order_id, totalFullAmount: this.state.totalFullAmount })
             })
             .catch((err) => {
@@ -391,102 +397,102 @@ class CheckoutContainer extends Component {
     getCartInfo() {
         console.log('here@del_ch')
         let usr = JSON.parse(localStorage.getItem('userToken'))
-                Axios({
-                    method: 'GET',
-                    url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest",
-                        "Content-Type": 'application/x-www-form-urlencoded',
-                        "Authorization": 'Bearer ' + usr.access_token
-                    }
+        Axios({
+            method: 'GET',
+            url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": 'application/x-www-form-urlencoded',
+                "Authorization": 'Bearer ' + usr.access_token
+            }
+        })
+            .then((data) => {
+                console.log(data.data);
+                let keys = Object.values(data.data.group_total.data.components);
+                this.setState({
+                    amountToPay: data.data.group_total.amount
                 })
-                    .then((data) => {
-                        console.log(data.data);
-                        let keys = Object.values(data.data.group_total.data.components);
+                for (let i = 0; i < keys.length; i++) {
+                    if (keys[i].name == "base_price") {
                         this.setState({
-                            amountToPay: data.data.group_total.amount
+                            subTotal: parseInt(keys[i].price.amount)
                         })
-                        for (let i = 0; i < keys.length; i++) {
-                            if (keys[i].name == "base_price") {
-                                this.setState({
-                                    subTotal: parseInt(keys[i].price.amount)
-                                })
-                            }
-                            else if (keys[i].name == "discount") {
-                                console.log(keys[i].price.amount,keys[i])
-                                this.setState({
-                                   
-                                    discount: parseInt(keys[i].price.amount)
-                                })
-                            }
-                            else if (keys[i].name == "flat_rate_delivery_charges") {
-                                this.setState({
-                                    delivery_fee: parseInt(keys[i].price.amount)
-                                })
-                            }
-                            else if (keys[i].name == "kirana11_discount") {
-                                this.setState({
-                                    couponAmt: parseInt(keys[i].price.amount)
-                                })
-                            }
+                    }
+                    else if (keys[i].name == "discount") {
+                        console.log(keys[i].price.amount, keys[i])
+                        this.setState({
 
-                            this.getPaymentList();
-                        }
-                        this.toggle(2);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        this.getRefreshToken(usr.access_token,"getCartInfo")
-                    })
+                            discount: parseInt(keys[i].price.amount)
+                        })
+                    }
+                    else if (keys[i].name == "flat_rate_delivery_charges") {
+                        this.setState({
+                            delivery_fee: parseInt(keys[i].price.amount)
+                        })
+                    }
+                    else if (keys[i].name == "kirana11_discount") {
+                        this.setState({
+                            couponAmt: parseInt(keys[i].price.amount)
+                        })
+                    }
+
+                    this.getPaymentList();
+                }
+                this.toggle(2);
+            })
+            .catch((err) => {
+                console.log(err);
+                this.getRefreshToken(usr.access_token, "getCartInfo")
+            })
 
 
-            // })
-            // .catch((err) => {
-            //     console.log(err)
-            // })
-        
+        // })
+        // .catch((err) => {
+        //     console.log(err)
+        // })
+
     }
     getPaymentList() {
         let usr = JSON.parse(localStorage.getItem('userToken'))
-                fetch('https://d2.kirana11.com/kirana11_api/get_k11_payment_methods.json', {
-                    method: 'GET',
-                    headers: {
-                        //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                        "Authorization": "Bearer " + usr.access_token
-                    }
-                })
-                    .then((val => val.json())
+        fetch('https://d2.kirana11.com/kirana11_api/get_k11_payment_methods.json', {
+            method: 'GET',
+            headers: {
+                //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                "Authorization": "Bearer " + usr.access_token
+            }
+        })
+            .then((val => val.json())
 
-                    )
-                    .then((data) => {
-                        this.setState({
-                            paymentModes: data
-                        })
-                    })
-                    .catch((err) => {
-                        this.getRefreshToken(usr.access_token, "getPaymentList")
-                    })
+            )
+            .then((data) => {
+                this.setState({
+                    paymentModes: data
+                })
+            })
+            .catch((err) => {
+                this.getRefreshToken(usr.access_token, "getPaymentList")
+            })
     }
     clearForm() {
         this.setState({
-              activeTab: '',
-              blg_name: '',
-              street_name: '',
-              landmark: '',
-              type: '',
-
+            activeTab: '',
+            blg_name: '',
+            street_name: '',
+            landmark: '',
+            type: '',
+            name: '',
         })
         this.addressFormActive()
-  }
-  redirect(){
-      window.location.href="/"
-  }
+    }
+    redirect() {
+        window.location.href = "/"
+    }
 
     render() {
         return (
             <div className="checkout_container">
-                <div className="headerTwo">
-                    <div style={{ display: 'flex' }}><img style={{ margin: 'auto' }} height="60" src={kiranalogo} onClick={()=>this.redirect()}></img></div>
+                <div className="headerTwo" style={{ padding: '2px 0' }}>
+                    <div style={{ display: 'flex' }}><img style={{ margin: 'auto' }} height="35" src={kiranalogo} onClick={() => this.redirect()}></img></div>
                     <div className="tele-wrpr">
                         <div className="tele-icon"></div>
                         <div className="tele-num">1800-120-0110</div>
@@ -516,11 +522,13 @@ class CheckoutContainer extends Component {
                                                 console.log(item)
                                                 return (
                                                     <div className="addressWrpr" style={{ borderRightWidth: ((ind + 1) % 3 == 0 || ind + 1 === this.state.addressData.length) ? 0 : 1 }}>
-                                                        <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.address_type}</div>
+
+                                                        <div style={{ fontWeight: '500', textTransform: 'capitalize' }}>{item.name}</div>
+                                                        <div>{item.address_name}</div>
                                                         <div>{item.address_1}</div>
                                                         <div>{item.landmark}</div>
                                                         <div style={{ width: '60%' }}>{item.area}</div>
-                                                        <div><button className={this.state.addressSelected === ind ? "button_red":'button_white'} onClick={() => this.add_address_to_order(item,ind)}>{this.state.addressSelected === ind ? "Selected":'Deliver to this Address'}</button></div>
+                                                        <div><button className={this.state.addressSelected === ind ? "button_red" : 'button_white'} onClick={() => this.add_address_to_order(item, ind)}>{this.state.addressSelected === ind ? "Selected" : 'Deliver to this Address'}</button></div>
                                                     </div>
                                                 )
                                             }) : ''}
@@ -535,6 +543,10 @@ class CheckoutContainer extends Component {
                                                 <Label htmlFor="building_name">Name</Label>
                                                 <Input onChange={(e) => this.setState({ name: e.target.value })} />
                                             </FormGroup> */}
+                                            <FormGroup className="checkout-form">
+                                                <Label htmlFor="building_name">Name</Label>
+                                                <Input onChange={(e) => { this.setState({ name: e.target.value, buttonActive: false }) }} value={this.state.name} />
+                                            </FormGroup>
                                             <FormGroup className="checkout-form">
                                                 <Label htmlFor="building_name">Building No./Name</Label>
                                                 <Input onChange={(e) => { this.setState({ blg_name: e.target.value }), console.log(e) }} />
@@ -562,17 +574,16 @@ class CheckoutContainer extends Component {
                                                     <input type="radio" id="home" className="address" name="add_type" value="home" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="home">
                                                         <div style={{ width: '30%' }}>
-
+                                                            <img src={this.state.type == 'home' ? home : home_grey} width='25' />
                                                         </div>
-                                                        <div style={{ width: '60%' }}>Home
-                                                    </div>
+                                                        <div style={{ width: '60%' }}>Home</div>
                                                     </label>
                                                 </div>
                                                 <div style={{ width: '30%' }}>
                                                     <input type="radio" id="work" className="address" name="add_type" value="work" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="work">
                                                         <div style={{ width: '30%' }}>
-
+                                                            <img src={this.state.type == 'work' ? office : office_grey} width='25' />
                                                         </div>
                                                         <div style={{ width: '60%' }}>Work
                                                     </div>
@@ -582,7 +593,7 @@ class CheckoutContainer extends Component {
                                                     <input type="radio" id="other" className="address" name="add_type" value="other" onChange={(e) => { this.setState({ type: e.target.value }) }} />
                                                     <label className="add_type" htmlFor="other">
                                                         <div style={{ width: '30%' }}>
-
+                                                            <img src={this.state.type == 'other' ? other : other_grey} width='25' />
                                                         </div>
                                                         <div style={{ width: '60%' }}>Other
                                                     </div>
@@ -637,7 +648,7 @@ class CheckoutContainer extends Component {
                                                             <div key={i} style={{ width: '30%', height: 75 }} onClick={() => this.setState({
                                                                 timeSelected: i, timeValue: time
                                                             })}>
-                                                                <input type="radio" id={i} className="address delivery" name='delivery' checked={this.state.timeSelected == i ? true :false}/>
+                                                                <input type="radio" id={i} className="address delivery" name='delivery' checked={this.state.timeSelected == i ? true : false} />
                                                                 <label className="add_type" htmlFor={i}>
                                                                     <div>{time}
                                                                     </div>
@@ -655,7 +666,7 @@ class CheckoutContainer extends Component {
 
                                         </TabContent>
                                         <div style={{ marginTop: 25 }}>
-                                            <button onClick={() => this.setDeliverySlots()} className="button_red" style={{padding:'5px 50px'}} >Confirm</button>
+                                            <button onClick={() => this.setDeliverySlots()} className="button_red" style={{ padding: '5px 50px' }} >Confirm</button>
                                         </div>
                                     </div>
                                 </CardBody>
@@ -675,8 +686,8 @@ class CheckoutContainer extends Component {
                             <Card className="checkout_card">
                                 <CardBody>
                                     {this.state.paymentModes ? (
-                                         <PaymentComponent paymentModes={this.state.paymentModes?this.state.paymentModes:''} cartInfo={this.state.paymentModes?{subTotal:this.state.subTotal,discount:this.state.discount,delivery_fee:this.state.delivery_fee,couponAmt:this.state.couponAmt,amountToPay:this.state.amountToPay,order_id:this.state.order_id}:''}/>
-                                    ):''}
+                                        <PaymentComponent paymentModes={this.state.paymentModes ? this.state.paymentModes : ''} cartInfo={this.state.paymentModes ? { subTotal: this.state.subTotal, discount: this.state.discount, delivery_fee: this.state.delivery_fee, couponAmt: this.state.couponAmt, amountToPay: this.state.amountToPay, order_id: this.state.order_id } : ''} />
+                                    ) : ''}
                                 </CardBody>
                                 {/* <button onClick={() => this.toggle(3)}>Open Next</button> */}
                             </Card>

@@ -111,7 +111,7 @@ class Sidebar extends Component {
                             console.log(data);
                             return (
                                 <NavItem key={i} onClick={() => this.filterData(i, data)}>
-                                    <NavLink href="#" active={this.state.active === i}>{ReactHtmlParser(data.name)}</NavLink>
+                                    <NavLink href="#" active={this.props.menuselected_id === i}>{ReactHtmlParser(data.name)}</NavLink>
                                 </NavItem>
                             )
                         }) : ''}

@@ -18,11 +18,19 @@ class MyOrders extends Component {
             activeTab: 1,
             OtpBtnActive: false,
             isLoggedIn: true, closedOrders: undefined,
-            modal: false
+            modal: false,
+            cancelOrder: false
         };
         this.changeBtnColor = this.changeBtnColor.bind(this);
     }
     componentDidMount() {
+        let url = window.location.href;
+        let url_string = url;
+        let urlStr = new URL(url_string);
+        let uid = urlStr.searchParams.get("order_id");
+        if(uid != null && uid){
+            this.openOrders(uid)
+        }
         this.getData();
     }
     getData() {
@@ -117,13 +125,14 @@ class MyOrders extends Component {
         if (this.state.activeTab !== tab) {
             this.setState({
                 activeTab: tab,
-                modal: false
+                modal: false,
+                cancelOrder: false
             });
         }
     }
     download(id) {
         let usr = JSON.parse(localStorage.getItem('userToken'))
-       let url="https://d2.kirana11.com/k11-pdf-redirect?refresh_token="+usr.refresh_token+"&order_id=" + id;
+        let url = "https://d2.kirana11.com/k11-pdf-redirect?refresh_token=" + usr.refresh_token + "&order_id=" + id;
         window.open(url, 'Download')
     }
 
@@ -152,30 +161,50 @@ class MyOrders extends Component {
                 console.log(data.data);
                 let str = data.data.order_details.address;
                 let indices = [];
-                let string=[]
+                let string = []
                 for (let i = 0; i < str.length; i++) {
-                    if (str[i] === ",") 
-                    indices.push(i);
+                    if (str[i] === ",")
+                        indices.push(i);
                 }
-                for(let i=0;i<indices.length;i++){
-                    if(i == 0){
-                        string.push(str.slice(0,indices[i]))
+                for (let i = 0; i < indices.length; i++) {
+                    if (i == 0) {
+                        string.push(str.slice(0, indices[i]))
                     }
-                    else{
-                        string.push(str.slice(indices[i-1] + 1,indices[i]))
+                    else {
+                        string.push(str.slice(indices[i - 1] + 1, indices[i]))
                     }
                 }
-                setTimeout(()=>{
+                setTimeout(() => {
                     this.setState({
                         orderDetails: data.data.order_details,
-                        address:string
+                        address: string
                     })
-                },100)
-                
+                }, 100)
+
             })
             .catch((err) => {
-                console.log(err.response,err)
+                console.log(err.response, err)
             })
+    }
+
+    
+    deleteOrder(){
+        let usr = JSON.stringify(localStorage.getItem('userToken'))
+
+        Axios({
+            url: 'https://d2.kirana11.com/kirana11_api/order_resources/update_oms_status.json',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + usr.access_token
+            },
+            data: {
+                "order_id": "144045",
+                "remarks": "Price issue, ",
+                "status": "canceled"
+            }
+
+        })    
     }
 
     render() {
@@ -220,6 +249,7 @@ class MyOrders extends Component {
                                     </NavItem>
 
                                 </Nav>
+
                                 <div className="tab_content_container order_details_container" style={{ display: this.state.modal === false ? 'none' : '' }}>
                                     <div className="order_details_header">Order {this.state.orderDetails ? this.state.orderDetails.order_number : ""}</div>
                                     <div className="order_det_close" onClick={() => this.modalOpen()}>X</div>
@@ -247,7 +277,7 @@ class MyOrders extends Component {
                                                             <div>{order.title}</div>
                                                         </td>
                                                         <td className="col-sm-2">
-                                                            <div>{parseInt(order.quantity) }</div>
+                                                            <div>{parseInt(order.quantity)}</div>
                                                         </td>
                                                         <td className="col-sm-2">
                                                             <div>{order.total}</div>
@@ -286,27 +316,30 @@ class MyOrders extends Component {
                                     <div className="order_ex_data">
                                         <div className="order_det_header">Shipping Address</div>
                                         <div className="order_det_desc">
-                                            {this.state.address?this.state.address.map((addr,id)=>{
-                                                return(
-                                                <div key={id}>{addr}</div>
+                                            {this.state.address ? this.state.address.map((addr, id) => {
+                                                return (
+                                                    <div key={id}>{addr}</div>
                                                 )
-                                            }):''}
+                                            }) : ''}
                                         </div>
                                     </div>
                                     <div className="order_ex_data _flex">
                                         <div className="order_det_header">Delivery Date and Time :</div>
-                                        <div className="order_det_desc" style={{marginLeft:10}}>
-                                            {this.state.orderDetails?this.state.orderDetails.delivery_date_timings:''}
+                                        <div className="order_det_desc" style={{ marginLeft: 10 }}>
+                                            {this.state.orderDetails ? this.state.orderDetails.delivery_date_timings : ''}
                                         </div>
                                     </div>
                                 </div>
+
+
+
                                 <div className="tab_content_container" style={{ display: this.state.modal === true ? 'none' : '' }}>
                                     <TabContent activeTab={this.state.activeTab}>
                                         <TabPane tabId={1}>
                                             {this.state.openOrders ? this.state.openOrders.map((order, index) => {
                                                 return (
-                                                    <div className="card_orders">
-                                                        <table className="table table-fixed card_orders_table" >
+                                                    <div className="card_orders" style={{ display: this.state.cancelOrder === true ? 'none' : '' }}>
+                                                        <table className="table table-fixed card_orders_table"  >
 
                                                             <thead>
 
@@ -342,7 +375,7 @@ class MyOrders extends Component {
                                                                     <td className="col-sm-2">
                                                                         <div>
                                                                             <button className="button_red btn_green" onClick={() => this.openOrders(order.order_number)}>Order Details</button>
-                                                                            <button className="button_red btn_green" >Cancel Order</button>
+                                                                            <button className="button_red btn_green" onClick={() => this.setState({ cancelOrder: true, cancel_order_num:order.order_number})}>Cancel Order</button>
                                                                         </div>
                                                                     </td>
                                                                 </tr>
@@ -354,11 +387,11 @@ class MyOrders extends Component {
                                                         </table>
                                                         <div className="order_status_markers">
                                                             <div>
-                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Pending')?'url('+checked+')':(order.order_status === ('Processing')?'url('+checked+')':'')}}></div>
+                                                                <div className="marker" style={{ backgroundImage: order.order_status === ('Pending') ? 'url(' + checked + ')' : (order.order_status === ('Processing') ? 'url(' + checked + ')' : ''),backgroundColor: order.order_status === ('Pending') ? '#fff' : (order.order_status === ('Processing') ? '#fff' : '')  }}></div>
                                                                 <div className="text_marker">Order Placed</div>
                                                             </div>
                                                             <div>
-                                                                <div className="marker" style={{backgroundImage:order.order_status === ('Processing')?'url('+checked+')':''}}></div>
+                                                                <div className="marker" style={{ backgroundImage: order.order_status === ('Processing') ? 'url(' + checked + ')' : '',backgroundColor: order.order_status === ('Processing') ? '#fff' : '' }}></div>
                                                                 <div className="text_marker">Order out for delivery</div>
                                                             </div>
                                                             <div>
@@ -370,6 +403,72 @@ class MyOrders extends Component {
                                                 )
                                             }) : ""}
 
+                                            <div style={{ display: this.state.cancelOrder === true ? '' : 'none' }}>
+                                                <div>Reason for Cancel</div>
+                                                <div style={{ display: 'flex' }}>
+                                                    <div className="col-md-6 cancel_checkbox">
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" value="Inconvenient delivery date/slot" onChange={(e) =>  this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label">Inconvenient delivery date/slot</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="data" name="check" type="checkbox" value="Better price available" onChange={(e) => this.handleCheck(e,1)} />
+                                                            <label htmlFor="data" className="check-custom-label">Better price available</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-3" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-3" className="check-custom-label">Price issue</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-4" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-4" className="check-custom-label">Order arriving too late</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-5" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked})} />
+                                                            <label htmlFor="check-5" className="check-custom-label">No longer needed</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-6" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked, textArea: !this.state.textArea })} />
+                                                            <label htmlFor="check-6" className="check-custom-label">OTHERS</label>
+                                                        </div>
+                                                        <div style={{ display: this.state.textArea === true ? '' : 'none' }}>
+                                                            <textarea height="75px" />
+                                                        </div>
+                                                        <div>This action cannot be undone.</div>
+
+                                                        <div>
+                                                            <button className="button_red cancel_order_btn" onClick={()=>this.deleteOrder()}>YES</button>
+
+                                                            <button className="button_red btn_green cancel_order_btn" onClick={() => this.setState({ cancelOrder: false })}>NO</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="col-md-6 cancel_checkbox">
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label"> Delivery charges</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label"> Quality issue</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label"> Product not as expected</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label">Missing products</label>
+                                                        </div>
+                                                        <div style={{ width: 'auto', fontSize: 14 }}>
+                                                            <input id="check-1" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
+                                                            <label htmlFor="check-1" className="check-custom-label">Placed order by mistake</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
                                             <div style={{ display: this.state.openOrders ? 'none' : "" }}>You have not placed any orders with us yet</div>
 
                                         </TabPane>
@@ -410,7 +509,7 @@ class MyOrders extends Component {
                                                                     <div>{order.total_order_amount}</div>
                                                                 </td>
                                                                 <td className="col-sm-2">
-                                                                    <a className="invoice" href={'https://d2.kirana11.com/invoice-pdf/'+order.order_number} download>{order.order_number}</a>
+                                                                    <a className="invoice" href={'https://d2.kirana11.com/invoice-pdf/' + order.order_number} download>{order.order_number}</a>
                                                                 </td>
 
                                                             </tr>
@@ -425,7 +524,12 @@ class MyOrders extends Component {
 
                                                     ""}
                                             </table>
+
                                             <div style={{ display: this.state.closedOrders ? 'none' : '' }}>You have not placed any orders with us yet</div>
+
+
+
+
                                         </TabPane>
                                     </TabContent>
                                 </div>
@@ -435,7 +539,7 @@ class MyOrders extends Component {
                         </div>
                     </div>
                 </div>
-            </main>
+            </main >
         );
     }
 }

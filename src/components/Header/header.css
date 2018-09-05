@@ -89,7 +89,7 @@
 .cat_menu_third{
     position: absolute;
     background: transparent;
-    width: 50%;
+    width: 100%;
     padding-bottom: 0px;
     z-index: 2;
     top: 0%;

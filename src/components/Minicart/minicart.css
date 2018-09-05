@@ -50,7 +50,8 @@
     margin: auto 0;
     border-radius: 5px;
 }
-.bread_crum_red{
+
+.bread_crum_red:nth-last-child(1){
     color: #cf2717 !important;
 }
 
@@ -111,6 +112,10 @@
 }
 .mini_value_data{
     color: rgb(207, 33, 39);
+}
+.mini_cart_footer{
+    font-size: 16px;
+    cursor: pointer
 }
 @media only screen and (max-width:480px) {
 .minicart {
