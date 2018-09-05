@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar/sidebar';
 
 import Header from '../../components/Header/header';
-import { LISTING_BY_ID_CATEGORY, SEARCH_RESULTS_FULL, DOMAIN } from '../../utis/API';
+import { LISTING_BY_ID_CATEGORY, SEARCH_RESULTS_FULL, DOMAIN, ALL_DEALS_FECTH_VIA_NAME } from '../../utis/API';
 import LinesEllipsis from 'react-lines-ellipsis';
 import CardComponent from '../../components/card';
 import Axios from 'axios';
@@ -611,7 +611,7 @@ class ProductList extends Component {
     }
     loadProductDetailsDeals(type) {
         Axios({
-            url: 'https://dev-esexpressv1.kirana11.com/deals_product?type=' + type,
+            url: ALL_DEALS_FECTH_VIA_NAME + type,
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -1185,7 +1185,7 @@ class ProductList extends Component {
                 return (
                     <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div className="plp_margin">/</div>
+                        <div className="plp_margin">></div>
                         <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
                     </div>
                 )
@@ -1199,9 +1199,9 @@ class ProductList extends Component {
                         return (
                             <div className="plp_nav_bar">
                                 <div><Link to="/">Home</Link></div>
-                                <div className="plp_margin">/</div>
+                                <div className="plp_margin">></div>
                                 <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
-                                <div className="plp_margin">/</div>
+                                <div className="plp_margin">></div>
                                 <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
                             </div>
                         )
@@ -1215,11 +1215,11 @@ class ProductList extends Component {
                             return (
                                 <div className="plp_nav_bar">
                                     <div><Link to="/">Home</Link></div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i].variant_category_tree[j])}> {ReactHtmlParser(data.menuData.sub_category_tree[i].variant_category_tree[j].name)}</div>
                                 </div>
                             )
@@ -1233,7 +1233,7 @@ class ProductList extends Component {
                 return (
                     <div className="plp_nav_bar">
                         <div><Link to="/">Home</Link></div>
-                        <div className="plp_margin">/</div>
+                        <div className="plp_margin">></div>
                         <div className="bread_crum_red"  onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
                     </div>
                 )
@@ -1247,9 +1247,9 @@ class ProductList extends Component {
                         return (
                             <div className="plp_nav_bar">
                                 <div><Link to="/">Home</Link></div>
-                                <div className="plp_margin">/</div>
+                                <div className="plp_margin">></div>
                                 <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
-                                <div className="plp_margin">/</div>
+                                <div className="plp_margin">></div>
                                 <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
                             </div>
                         )
@@ -1263,11 +1263,11 @@ class ProductList extends Component {
                             return (
                                 <div className="plp_nav_bar">
                                     <div><Link to="/">Home</Link></div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData)}> {data.menuData.name}</div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i])}> {data.menuData.sub_category_tree[i].name}</div>
-                                    <div className="plp_margin">/</div>
+                                    <div className="plp_margin">></div>
                                     <div className="bread_crum_red" onClick={()=>this.filterData(data.menuData.sub_category_tree[i].variant_category_tree[j])}> {ReactHtmlParser(data.menuData.sub_category_tree[i].variant_category_tree[j].name)}</div>
                                 </div>
                             )

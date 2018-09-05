@@ -37,7 +37,7 @@ class MyOrders extends Component {
         let usr = JSON.parse(localStorage.getItem('userToken'))
         Axios({
             method: 'get',
-            url: 'https://d2.kirana11.com/kirana11_api/get-orders-list.json',
+            url: 'https://cms.avenue11.com/kirana11_api/get-orders-list.json',
             headers: {
                 'Authorization': 'Bearer ' + usr.access_token
             }
@@ -85,7 +85,7 @@ class MyOrders extends Component {
             val = value
         Axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',
@@ -132,7 +132,7 @@ class MyOrders extends Component {
     }
     download(id) {
         let usr = JSON.parse(localStorage.getItem('userToken'))
-        let url = "https://d2.kirana11.com/k11-pdf-redirect?refresh_token=" + usr.refresh_token + "&order_id=" + id;
+        let url = "https://cms.avenue11.com/k11-pdf-redirect?refresh_token=" + usr.refresh_token + "&order_id=" + id;
         window.open(url, 'Download')
     }
 
@@ -144,7 +144,7 @@ class MyOrders extends Component {
 
     openOrders(id) {
         Axios({
-            url: 'https://d2.kirana11.com/kirana11_api/order_resources/get_order_list.json',
+            url: 'https://cms.avenue11.com/kirana11_api/order_resources/get_order_list.json',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -190,21 +190,30 @@ class MyOrders extends Component {
     
     deleteOrder(){
         let usr = JSON.stringify(localStorage.getItem('userToken'))
+        let userDetails= JSON.stringify(localStorage.getItem('userDetails'));
+
+
 
         Axios({
-            url: 'https://d2.kirana11.com/kirana11_api/order_resources/update_oms_status.json',
+            url: 'https://cms.avenue11.com/kirana11_api/order_resources/update_oms_status.json',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + usr.access_token
             },
             data: {
-                "order_id": "144045",
+                "order_id": userDetails.user.uid,
                 "remarks": "Price issue, ",
                 "status": "canceled"
             }
 
-        })    
+        })  
+        .then((data)=>{
+            console.log(data);
+        })  
+        .catch((err)=>{
+            console.log(err);
+        })
     }
 
     render() {
@@ -408,31 +417,31 @@ class MyOrders extends Component {
                                                 <div style={{ display: 'flex' }}>
                                                     <div className="col-md-6 cancel_checkbox">
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="check-1" name="check-group" type="checkbox" value="Inconvenient delivery date/slot" onChange={(e) =>  this.setState({ acceptTerms: e.target.checked })} />
-                                                            <label htmlFor="check-1" className="check-custom-label">Inconvenient delivery date/slot</label>
+                                                            <input id="issueOne" name="isseueOne" type="checkbox" value="Inconvenient delivery date/slot" onChange={(e) =>  this.setState({ issueOne: e.target.checked })} />
+                                                            <label htmlFor="issueOne" className="check-custom-label">Inconvenient delivery date/slot</label>
                                                         </div>
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="data" name="check" type="checkbox" value="Better price available" onChange={(e) => this.handleCheck(e,1)} />
-                                                            <label htmlFor="data" className="check-custom-label">Better price available</label>
+                                                            <input id="issueTwo" name="issueTwo" type="checkbox" value="Better price available" onChange={(e) => this.setState({ issueTwo: e.target.checked })} />
+                                                            <label htmlFor="issueTwo" className="check-custom-label">Better price available</label>
                                                         </div>
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="check-3" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
-                                                            <label htmlFor="check-3" className="check-custom-label">Price issue</label>
+                                                            <input id="issueThree" name="issueThree" type="checkbox" onChange={(e) => this.setState({ issueThree: e.target.checked })} />
+                                                            <label htmlFor="issueThree" className="check-custom-label">Price issue</label>
                                                         </div>
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="check-4" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked })} />
-                                                            <label htmlFor="check-4" className="check-custom-label">Order arriving too late</label>
+                                                            <input id="issueFour" name="issueFour" type="checkbox" onChange={(e) => this.setState({ issueFour: e.target.checked })} />
+                                                            <label htmlFor="issueFour" className="check-custom-label">Order arriving too late</label>
                                                         </div>
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="check-5" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked})} />
-                                                            <label htmlFor="check-5" className="check-custom-label">No longer needed</label>
+                                                            <input id="issueFive" name="issueFive" type="checkbox" onChange={(e) => this.setState({ issueFive: e.target.checked})} />
+                                                            <label htmlFor="issueFive" className="check-custom-label">No longer needed</label>
                                                         </div>
                                                         <div style={{ width: 'auto', fontSize: 14 }}>
-                                                            <input id="check-6" name="check-group" type="checkbox" onChange={(e) => this.setState({ acceptTerms: e.target.checked, textArea: !this.state.textArea })} />
-                                                            <label htmlFor="check-6" className="check-custom-label">OTHERS</label>
+                                                            <input id="issueSix" name="issueSix" type="checkbox" onChange={(e) => this.setState({ issueSix: e.target.checked, textArea: !this.state.textArea })} />
+                                                            <label htmlFor="issueSix" className="check-custom-label">OTHERS</label>
                                                         </div>
                                                         <div style={{ display: this.state.textArea === true ? '' : 'none' }}>
-                                                            <textarea height="75px" />
+                                                            <textarea height="75px" onChange={(e) => this.setState({ issueSixData: e.target.checked, textArea: !this.state.textArea })}/>
                                                         </div>
                                                         <div>This action cannot be undone.</div>
 
@@ -509,7 +518,7 @@ class MyOrders extends Component {
                                                                     <div>{order.total_order_amount}</div>
                                                                 </td>
                                                                 <td className="col-sm-2">
-                                                                    <a className="invoice" href={'https://d2.kirana11.com/invoice-pdf/' + order.order_number} download>{order.order_number}</a>
+                                                                    <a className="invoice" href={'https://cms.avenue11.com/invoice-pdf/' + order.order_number} download>{order.order_number}</a>
                                                                 </td>
 
                                                             </tr>

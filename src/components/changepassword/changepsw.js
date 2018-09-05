@@ -77,7 +77,7 @@ class ChangePassword extends Component {
             }
             formBody = formBody.join("&");
             Axios({
-                url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/change_password',
+                url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources/change_password',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -109,7 +109,7 @@ class ChangePassword extends Component {
             val = value
         Axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',

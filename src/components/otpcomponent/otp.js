@@ -74,7 +74,7 @@ class Otp extends Component {
             formBody.push(encodedKey + "=" + encodedValue);
         }
         formBody = formBody.join("&");
-        Axios("https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_forgot_password_otp", {
+        Axios("https://cms.avenue11.com/kirana11_api/customer_app_api_resources/get_forgot_password_otp", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -109,7 +109,7 @@ class Otp extends Component {
                         formBody.push(encodedKey + "=" + encodedValue);
                     }
                     formBody = formBody.join("&");
-                    Axios("https://d2.kirana11.com/kirana11_api/customer_app_api_resources/forgot_password_otp_verification", {
+                    Axios("https://cms.avenue11.com/kirana11_api/customer_app_api_resources/forgot_password_otp_verification", {
                         method: "POST",
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'

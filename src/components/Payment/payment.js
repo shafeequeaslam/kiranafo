@@ -75,7 +75,7 @@ class PaymentComponent extends Component {
         let order_id = urlStr.searchParams.get("order_id");
         let userToken = JSON.parse(localStorage.getItem('userToken'));
         Axios({
-            url:'https://d2.kirana11.com/kirana11_api/discount_coupon_apply',
+            url:'https://cms.avenue11.com/kirana11_api/discount_coupon_apply',
             method:'post',
             headers:{
                 'Authorization':'Bearer '+userToken.access_token,
@@ -102,7 +102,7 @@ class PaymentComponent extends Component {
         let usr = JSON.parse(localStorage.getItem('userToken'))
                 Axios({
                     method: 'GET',
-                    url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
+                    url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources.json',
                     headers: {
                         "X-Requested-With": "XMLHttpRequest",
                         "Content-Type": 'application/x-www-form-urlencoded',
@@ -209,7 +209,7 @@ class PaymentComponent extends Component {
             formBody = formBody.join("&");
 
             Axios({
-                url: 'https://d2.kirana11.com/kirana11_api/orders/checkout_completion_update.json',
+                url: 'https://cms.avenue11.com/kirana11_api/orders/checkout_completion_update.json',
                 method: 'post',
                 headers: {
                     'Authorization': 'Bearer ' + usr.access_token
@@ -246,7 +246,7 @@ class PaymentComponent extends Component {
             }
             formBody = formBody.join("&");
             Axios({
-                  url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/set_k11_payment_method',
+                  url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources/set_k11_payment_method',
                   method: 'post',
                   headers: {
                         'Authorization': 'Bearer ' + usr.access_token
@@ -256,7 +256,7 @@ class PaymentComponent extends Component {
                   // .then((res=>res.json()))
                   .then((data) => {
                         console.log(data.data, 'data');
-                       window.location.href="https://d2.kirana11.com/k11-payment-redirect?refresh_token=" + usr.refresh_token + "&order_id=" + this.props.cartInfo.order_id 
+                       window.location.href="https://cms.avenue11.com/k11-payment-redirect?refresh_token=" + usr.refresh_token + "&order_id=" + this.props.cartInfo.order_id 
 
                   })
                   .catch((err) => {
@@ -274,7 +274,7 @@ class PaymentComponent extends Component {
             val = value
         Axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',

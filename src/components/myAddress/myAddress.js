@@ -51,7 +51,7 @@ class MyAddress extends Component {
 
             Axios({
                   method: 'POST',
-                  url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_k11_customer_all_address.json',
+                  url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources/get_k11_customer_all_address.json',
                   headers: {
                         "Content-Type": 'application/json',
                         "Authorization": "Bearer " + token
@@ -85,7 +85,7 @@ class MyAddress extends Component {
                   val = value
             Axios({
                   method: 'post',
-                  url: 'https://d2.kirana11.com/oauth2/token',
+                  url: 'https://cms.avenue11.com/oauth2/token',
                   data: {
                         grant_type: 'refresh_token',
                         client_id: 'client',
@@ -170,7 +170,7 @@ class MyAddress extends Component {
                         }
                         formBody = formBody.join("&");
 
-                        Axios('https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources', {
+                        Axios('https://cms.avenue11.com/kirana11_api/user_addressbook_api_resources', {
                               method: 'POST',
                               headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -225,7 +225,7 @@ class MyAddress extends Component {
                   }
                   formBody = formBody.join("&");
 
-                  Axios('https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/' + this.state.editAddressId + '.json', {
+                  Axios('https://cms.avenue11.com/kirana11_api/user_addressbook_api_resources/' + this.state.editAddressId + '.json', {
                         method: 'PUT',
                         headers: {
                               'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -256,7 +256,7 @@ class MyAddress extends Component {
             console.log('here')
             let usr = JSON.parse(localStorage.getItem('userToken'))
             Axios({
-                  url: 'https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources/' + id + '.json',
+                  url: 'https://cms.avenue11.com/kirana11_api/user_addressbook_api_resources/' + id + '.json',
                   method: 'DELETE',
                   headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

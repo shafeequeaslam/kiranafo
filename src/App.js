@@ -23,6 +23,7 @@ import Refund from './components/footer-components/Refund';
 import ServiceArea from './components/footer-components/ServiceArea';
 import shakepage from './components/shake_main/shakepage';
 import Faq from './components/footer-components/Faq/Faq';
+import Timer from './containers/HomePage/Timer';
 
 class App extends Component {
   constructor(props) {
@@ -59,6 +60,8 @@ class App extends Component {
           <Route path="/refund_return_policies" component={Refund}/>
           <Route path="/service_areas" component={ServiceArea}/>
           <Route path="/faqs" component={Faq}/>
+          <Route path="/timer" component={Timer}/>
+          
           
           
           {/* <Route path="/deals_listing" component={ProductList} />
