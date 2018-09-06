@@ -36,8 +36,8 @@ jobs:
       # run tests!
 
       - run:
-        name: Build
-        command:  CI=false npm run build
-        command:  ls -l  build
-        type: approval
+          name: Build
+          command:  CI=false npm run build
+          command:  ls -l  build
+          type: approval
 
