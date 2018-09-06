@@ -37,6 +37,6 @@ jobs:
 
       - run:
           name: Build
-          command:  CI=false npm run build
+          command:  CI=false npm run build && ls -l
           type: approval
 
