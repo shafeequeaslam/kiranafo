@@ -60,7 +60,7 @@ class LoginForm extends Component {
                   username: this.state.email,
                   password: this.state.password
             }
-            fetch('https://d2.kirana11.com/oauth2/token', {
+            fetch('https://cms.avenue11.com/oauth2/token', {
                   method: 'POST',
                   body:JSON.stringify(postData),
                   headers: {
@@ -85,7 +85,7 @@ class LoginForm extends Component {
       getUserData = () => {
             const userAccessToken = JSON.parse(localStorage.getItem("userToken"));
             console.log(userAccessToken,'111');
-            fetch("https://d2.kirana11.com/kirana11_api/get_k11_user_profile.json", {
+            fetch("https://cms.avenue11.com/kirana11_api/get_k11_user_profile.json", {
                   method: "GET",
                   headers: {
                         'Content-Type': 'application/json',

@@ -204,7 +204,7 @@ class CartList extends Component {
         console.log(val.refresh_token)
         axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',
@@ -330,7 +330,7 @@ class CartList extends Component {
                     <div>
                         <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0 0 10%' }}>
                             <div><Link to="/">Home</Link></div>
-                            <div style={{ margin: '0 5px' }}>/</div>
+                            <div style={{ margin: '0 5px' }}>></div>
                             <div><Link className="bread_crum_red" to="#">Cart</Link></div>
                         </div>
                         <div style={{ width: '80%', margin: '10px auto 0' }}>

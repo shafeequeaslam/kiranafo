@@ -77,7 +77,7 @@ class SignUpForm extends Component {
                   formBody.push(encodedKey + "=" + encodedValue);
             }
             formBody = formBody.join("&");
-            Axios("https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_registration_otp", {
+            Axios("https://cms.avenue11.com/kirana11_api/customer_app_api_resources/get_registration_otp", {
                   method: "POST",
                   headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -112,7 +112,7 @@ class SignUpForm extends Component {
                                     formBody.push(encodedKey + "=" + encodedValue);
                               }
                               formBody = formBody.join("&");
-                              Axios("https://d2.kirana11.com/kirana11_api/customer_app_api_resources/registration_otp_verification", {
+                              Axios("https://cms.avenue11.com/kirana11_api/customer_app_api_resources/registration_otp_verification", {
                                     method: "POST",
                                     headers: {
                                           'Content-Type': 'application/x-www-form-urlencoded'
@@ -148,7 +148,7 @@ class SignUpForm extends Component {
             console.log('here', this.state.formValid, this.state.otpVerified, this.state.salutation != null, this.state.acceptTerms)
             if (this.state.formValid && this.state.otpVerified && this.state.salutation != null && this.state.acceptTerms) {
                   Axios({
-                        url: "https://d2.kirana11.com/kirana11_api/customer_app_api_resources/user_register",
+                        url: "https://cms.avenue11.com/kirana11_api/customer_app_api_resources/user_register",
                         method: 'POST',
                         headers: {
                               'Content-Type': 'application/json'

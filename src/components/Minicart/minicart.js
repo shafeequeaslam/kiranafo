@@ -192,7 +192,7 @@ constructor(props) {
         console.log(val.refresh_token)
         axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',
@@ -278,8 +278,8 @@ constructor(props) {
 
                                     <thead className="minicart_table_head">
 
-                                    <tr style={{ display: 'flex',marginLeft:10 }}>
-                                            <th style={{ textAlign:'center'}} className="col-md-3 col-sm-4">Title</th>
+                                    <tr style={{ display: 'flex' }}>
+                                            <th  className="col-md-3 col-sm-4">Title</th>
                                             <th className="col-md-2 hidden-sm">Store</th>
                                             <th className="col-sm-2">Unit Price</th>
                                             <th className="col-md-2 col-sm-3">Quantity</th>
@@ -306,7 +306,7 @@ constructor(props) {
                                                                 </div>
                                                             </td>
                                                             <td className="col-md-2 hidden-sm">
-                                                                <div style={{marginTop: -10 }}>My Grocer</div>
+                                                                <div>My Grocer</div>
                                                             </td>
                                                             <td className="col-sm-2">
                                                                 <div>₹ {item.productData.on_sale === true ? item.productData.saleprice / 100 : item.productData.mrp / 100}</div>

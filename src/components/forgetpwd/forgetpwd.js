@@ -69,7 +69,7 @@ class Forgetpwd extends Component {
             }
             formBody = formBody.join("&");
             Axios({
-                url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/reset_password',
+                url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources/reset_password',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'

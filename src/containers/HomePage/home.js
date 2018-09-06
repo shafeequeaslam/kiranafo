@@ -26,6 +26,8 @@ import CardComponent from '../../components/card';
 import Axios from 'axios';
 import HomePageBanners from './banners';
 import Timer from './Timer';
+import Banner from '../../components/banner/banner';
+import DealProductBanner from '../../components/grid-deals-banner/deal-product-banner';
 
 class HomePage extends Component {
     constructor(props) {
@@ -65,8 +67,8 @@ class HomePage extends Component {
         this.getProductShockingDeals();
         this.getProductCategoriesList();
         this.getBanners();
-        this.getExcitingBanners();
-        this.getCategoryBanners();
+        // this.getExcitingBanners();
+        // this.getCategoryBanners();
 
         // let self = this;
         // let firebaseRef = firebase.database().ref('');
@@ -94,43 +96,6 @@ getBanners() {
             //console.log(data.data);
             this.setState({
                 bannerData: data.data
-            })
-        })
-        .catch((err) => {
-            //console.log(err)
-        })
-}
-
-getExcitingBanners() {
-    Axios(HOMEPAGE_EXCITING_DEALS_BANNER + '&sort=asc&mode=min', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-        .then((data) => {
-            //console.log(data.data);
-            this.setState({
-                exciting_bannerData: data.data
-            })
-        })
-        .catch((err) => {
-            //console.log(err.response)
-        })
-}
-getCategoryBanners() {
-    Axios(HOMEPAGE_EXCITING_CAT_BANNERS + '&sort=asc&mode=min', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-        .then((data) => {
-            //console.log(data.data);
-            this.setState({
-                exciting_cat_bannerData: data.data
             })
         })
         .catch((err) => {
@@ -181,10 +146,15 @@ getProductCategoriesList = () => {
                     }
                 })
                     .then((data) => {
+                        if(JSON.parse(data.data)=={}){
+
+                        }
                         // dealData=data;
                         //console.log(data.data, "121");
+                        else{
                         dealData[i] = [];
                         dealData[i] = data.data
+                        }
                         //console.log(dealData[i])
                         //  //console.log(dealData, '12qwq1');
                         // //console.log(dealData, "11")
@@ -371,7 +341,7 @@ render() {
 
 
             {/* </div> */}
-            <div className="module_container" style={{ minHeight: 300, }}>
+            <div className="module_container" style={{ minHeight: 300,display: this.state.shockingDealsActive === "0" ? 'none' : ''  }}>
                 <div className="moduleHeader"> Shocking Deals</div>
                 {/* Timer Component */}
                 <Timer shockingDeals={(data)=>{this.setState({shockingDealsActive:data}),console.log(data)}}/>
@@ -397,18 +367,7 @@ render() {
             </div>
             <div className="homepage_ex_banner">
                 <div className="moduleHeader">Exciting Deals</div>
-                <Row className="banners_wrpr">
-                    {
-                        this.state.exciting_bannerData ? this.state.exciting_bannerData.map((item, index) => {
-                            //console.log(this.state.exciting_bannerData)
-                            return (
-                                <Col className='cardBanner' sm='6' style={{ padding: '0px !important' }} onClick={()=>this.checkBannerRedirect(item._source.banners)}>
-                                    <img src={item._source.banners.web_banner_path} width="100%"  />
-                                </Col>
-                            )
-                        }) : ''
-                    }
-                </Row>
+            <DealProductBanner api_type={HOMEPAGE_EXCITING_DEALS_BANNER}/>
             </div>
             <div style={{ width: '100%', }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }} className="moduleHeader">Category Deals</div>
@@ -420,7 +379,7 @@ render() {
                         <Row style={{ width: '85%', margin: '0 auto' }}>
 
                             {this.state.cat_deals_products ? this.state.cat_deals_products.length > 0 ? (
-                                //console.log('here'),
+                                console.log(this.state.cat_deals_products,"212121"),
 
                                 this.state.cat_deals_products[this.state.activeTab].map((pr_deal, index) => {
                                     //console.log(pr_deal)
@@ -441,20 +400,8 @@ render() {
                 </TabContent>
             </div>
             <div className="homepage_ex_banner">
-                <div className="moduleHeader">Exciting Deals</div>
-                <Row className="banners_wrpr">
-
-                    {
-                        this.state.exciting_cat_bannerData ? this.state.exciting_cat_bannerData.map((item, index) => {
-                            console.log(item,"test")
-                            return (
-                                <Col className='cardBanner' sm='12' style={{  padding: '0px !important' }} onClick={()=>this.checkBannerRedirect(item._source.banners)}>
-                                    <img src={item._source.banners.web_banner_path} width="100%"  />
-                                </Col>
-                            )
-                        }) : ''
-                    }
-                </Row>
+                <div className="moduleHeader">Awesome Deals</div>
+                <DealProductBanner api_type={HOMEPAGE_EXCITING_CAT_BANNERS}/>
             </div>
             {/* <div style={{height:'500px',width:'100%'}}> */}
             {/* <iframe src="https://www.google.com" width="100%" height="500px" id="iframe_id" onLoad={()=>this.getIframe}></iframe> */}
@@ -465,6 +412,7 @@ render() {
                 <div className='col-sm-6' style={{ height: '100%', backgroundImage: "url('https://img1.kirana11.com/files/public/summer-blog-post.jpg?56eV1KUYK9Fatn6jY1MBp.frmG_LcFTg')", backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', borderRightWidth: 5, borderStyle: 'solid', borderColor: '#fff' }}>
                 </div>
             </div>
+            <Banner/>
             <div style={{ width: '80%', margin: '0 auto' }}>
                 <FooterComponent/>
             </div>

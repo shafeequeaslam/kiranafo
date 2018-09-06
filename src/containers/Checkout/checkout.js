@@ -87,7 +87,7 @@ class CheckoutContainer extends Component {
         let address_polygon = loc_dc.AddressPolygon
         Axios({
             method: 'POST',
-            url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_k11_customer_address.json',
+            url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources/get_k11_customer_address.json',
             headers: {
                 "Content-Type": 'application/json',
                 "Authorization": "Bearer " + token
@@ -123,7 +123,7 @@ class CheckoutContainer extends Component {
             val = value
         Axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/oauth2/token',
+            url: 'https://cms.avenue11.com/oauth2/token',
             data: {
                 grant_type: 'refresh_token',
                 client_id: 'client',
@@ -208,7 +208,7 @@ class CheckoutContainer extends Component {
         }
         formBody = formBody.join("&");
 
-        Axios('https://d2.kirana11.com/kirana11_api/user_addressbook_api_resources', {
+        Axios('https://cms.avenue11.com/kirana11_api/user_addressbook_api_resources', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -256,7 +256,7 @@ class CheckoutContainer extends Component {
         formBody = formBody.join("&");
         Axios({
             method: 'post',
-            url: 'https://d2.kirana11.com/kirana11_api/orders/order_address_update',
+            url: 'https://cms.avenue11.com/kirana11_api/orders/order_address_update',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + usr.access_token
@@ -295,7 +295,7 @@ class CheckoutContainer extends Component {
         }
 
         formBody = formBody.join("&");
-        Axios('https://d2.kirana11.com/kirana11_api/customer_app_api_resources/get_homedelivery_slots.json', {
+        Axios('https://cms.avenue11.com/kirana11_api/customer_app_api_resources/get_homedelivery_slots.json', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -364,13 +364,13 @@ class CheckoutContainer extends Component {
 
 
         const api = create({
-            baseURL: 'https://d2.kirana11.com/kirana11_api/orders/delivery_type_update',
+            baseURL: 'https://cms.avenue11.com/kirana11_api/orders/delivery_type_update',
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": "Bearer " + usr.access_token
             },
         })
-        api.post('https://d2.kirana11.com/kirana11_api/orders/delivery_type_update',
+        api.post('https://cms.avenue11.com/kirana11_api/orders/delivery_type_update',
             {
                 "orders": [{
                     "delivery_date": this.state.dateToSend[this.state.dateSelected],
@@ -399,7 +399,7 @@ class CheckoutContainer extends Component {
         let usr = JSON.parse(localStorage.getItem('userToken'))
         Axios({
             method: 'GET',
-            url: 'https://d2.kirana11.com/kirana11_api/customer_app_api_resources.json',
+            url: 'https://cms.avenue11.com/kirana11_api/customer_app_api_resources.json',
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
                 "Content-Type": 'application/x-www-form-urlencoded',
@@ -454,7 +454,7 @@ class CheckoutContainer extends Component {
     }
     getPaymentList() {
         let usr = JSON.parse(localStorage.getItem('userToken'))
-        fetch('https://d2.kirana11.com/kirana11_api/get_k11_payment_methods.json', {
+        fetch('https://cms.avenue11.com/kirana11_api/get_k11_payment_methods.json', {
             method: 'GET',
             headers: {
                 //     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',

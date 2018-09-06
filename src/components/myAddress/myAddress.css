@@ -5,7 +5,8 @@
       min-height: 200px;  
 }
 .address_container{
-      height: 80%;
+      min-height: 200px;
+      padding-bottom: 5px;
 }
 .address_btn_container{
       display:flex;

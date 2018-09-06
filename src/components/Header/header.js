@@ -674,13 +674,14 @@ class Header extends Component {
                                         <img alt="cart" src={cart_icon} height="30" />
                                         <div style={{ display: this.state.cartObj ? (this.state.cartObj.length > 0 ? 'flex' : 'none') : 'none' }} className="cart_tip">{this.state.cartObj ? this.state.cartObj.length : ''}</div>
                                     </div>
-                                    <div style={{ display: this.state.miniOpen === true ? '' : 'none' }} className='minicart' >
+                               
+                                </NavItem>
+                                <div style={{ display: this.state.miniOpen === true ? '' : 'none' }} className='minicart' >
                                         {this.state.miniOpen === true ?
                                             <Minicart change={this.state.change} revChange={() => this.setrevChange()} />
                                             : ""}
 
                                     </div>
-                                </NavItem>
                             </Nav>
                         </Collapse>
                     </Navbar>

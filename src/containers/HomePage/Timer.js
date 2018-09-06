@@ -15,7 +15,7 @@ class Timer extends Component {
       componentWillMount() {
             let time;
             Axios({
-                  url:'https://d2.kirana11.com/kirana11_api/shocking_deal_timer.json',
+                  url:'https://cms.avenue11.com/kirana11_api/shocking_deal_timer.json',
                   method:'GET'
             })
             .then((res)=>{

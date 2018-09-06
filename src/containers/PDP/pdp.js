@@ -611,16 +611,16 @@ class ProductDescription extends Component {
                             <div className="col-sm-12">
                                 <div style={{ display: 'flex', flexDirection: 'row', padding: '5', margin: '25px 0', width: '100%' }}>
                                     <div ><Link to="/" className="bread_crum_red">Home</Link></div>
-                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne? "":'none'}}>/</div>
+                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne? "":'none'}}>></div>
                                     <Link to={{ pathname: '/listing', search:this.state.levelOne ? '?categoryId=' + this.state.levelOne.tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 1 } }}  className="bread_crum_red"> {this.state.levelOne ? this.state.levelOne.name : ''}</Link>
                                     {/* <div></div> */}
 
-                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne&&this.state.levelTwo ? "":'none'}}>/</div>
+                                    <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne&&this.state.levelTwo ? "":'none'}}>></div>
                                     <Link to={{ pathname: '/listing', search:this.state.levelTwo ? '?categoryId=' + this.state.levelTwo.tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 2 } }}  className="bread_crum_red"> {this.state.levelOne && this.state.levelTwo ? this.state.levelTwo.name : ""}</Link>
                                     
-                                    <div style={{ margin: '0 5px' }} style={{search: this.state.levelOne&&this.state.levelTwo&&this.state.levelThree ? "":'none'}}>/</div>
+                                    <div style={{ margin: '0 5px' }} style={{search: this.state.levelOne&&this.state.levelTwo&&this.state.levelThree ? "":'none'}}>></div>
                                     <Link to={{ pathname: '/listing', search:this.state.levelThree ? '?categoryId=' + this.state.levelThree[0].tid :'', state: { 'item': this.state.levelOne ? this.state.levelOne:'', level: 3 } }}  className="bread_crum_red" onClick={()=>{
-                                        alert(this.state.levelThree.tid)
+                                        // alert(this.state.levelThree.tid)
                                     }}> { this.state.levelOne && this.state.levelTwo && this.state.levelThree ? ReactHtmlParser(this.state.levelThree[0].name) : ''}</Link>
                                     
                                     <div style={{ margin: '0 5px' }} style={{search:this.state.levelOne && this.state.levelTwo && this.state.levelThree&&this.state.product_data ? "":'none'}}>/</div>
